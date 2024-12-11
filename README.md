@@ -147,7 +147,7 @@ This snippet is imported from, again, Minideck package. I modified the `hider` f
 
 This one is a bit long, but it is very simple. I modified the `hider` function used by `pause` so that it is conpatible with the `canvas` of `cetz`. Despite our helper functions flexibility, *they can only take effect on the content inside its scope*. Therefore, I have to update the number of pauses in the `self.pauses` variable by `#{ self.pauses += 2 }` so that the content outside the `cetz-pause` function appears on the correct subslide.
 
-## Lists of all functions 
+## List of all functions 
 - `presentate-config(handout: false, drafted: false, theme: it => it, ..args)`
 - `pause(self, func)`
 - `only(self, ..when, from: none, hider: it => none, func)`
