@@ -3,10 +3,11 @@ Presentate is a Typst package for creating presentation. It provides you a varie
 Presentate is implemented without using any  `context`, `counter`s, or `state`s, so it can be used with *any* functions in Typst, but with the correct hiding functions though.
 ## Basic Usage 
 
-Let's start with 
+Let's start with `pause` 
 ```typst
-#import "path-to-presentate-package": * 
+#import "path-to-presentate-package": *
 
+// unpack and configure the slides.
 #let (presentate-slide,) = presentate-config()
 
 #set text(size: 25pt)
@@ -29,6 +30,41 @@ Let's start with
 ])
 ```
 You have to specify the number of repetitions of the slide in `steps` argument. This is because I cannot think of a way to access the repetitions without using `state` or `counter` (Those always cause the limitation of using the helper functions since it only returns `content`).
+- `presentate-config` is used to specify the modes such as `handout` and `drafted`.
+
+More examples with `pinit` 
+
+```typst
+#import "@preview/pinit:0.2.2": *
+
+#presentate-slide(steps: 3, self => [
+  = Works well with `pinit`
+
+  Pythagorean theorem:
+
+  $ #pin(1)a^2#pin(2) + #pin(3)b^2#pin(4) = #pin(5)c^2#pin(6) $
+
+  #pause(self, self =>[
+    $a^2$ and $b^2$ : squares of triangle legs
+  
+
+    #only(self, 2, {
+      pinit-highlight(1,2)
+      pinit-highlight(3,4)
+    })
+
+    #pause(self, self => [
+      $c^2$ : square of hypotenuse
+
+      #pinit-highlight(5,6, fill: green.transparentize(80%))
+      #pinit-point-from(6)[larger than $a^2$ and $b^2$]
+    ])
+  ])
+])
+```
+This is imported from [minideck](https://github.com/knuesel/typst-minideck) package. As you can see, the `only` function also have the `self` argument.
+
+
 ## Internals
 `presentate` uses `self.subslide` to determine when the content should be shown and `self.pauses` to keep track of number of pauses. Therefore, *all* helper functions will have a `self` argument to access the current `self.subslide`. 
 
