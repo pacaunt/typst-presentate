@@ -145,7 +145,7 @@ This snippet is imported from, again, Minideck package. I modified the `hider` f
 ![image](https://github.com/user-attachments/assets/268f9b06-8066-4935-b3b0-8bc22313e8f6)
 ![image](https://github.com/user-attachments/assets/87a356f1-a9eb-43f6-b2f4-8bc06707ae85)
 
-This one is a bit long, but it is very simple. I modified the `hider` function used by `pause` so that it is conpatible with the `canvas` of `cetz`. Despite our helper functions flexibility, *they can only take effect on the content inside its scope*. Therefore, I have to update the number of pauses in the `self.pauses` argument so that the content outside the `cetz-pause` function appears on the correct subslide.
+This one is a bit long, but it is very simple. I modified the `hider` function used by `pause` so that it is conpatible with the `canvas` of `cetz`. Despite our helper functions flexibility, *they can only take effect on the content inside its scope*. Therefore, I have to update the number of pauses in the `self.pauses` variable by `#{ self.pauses += 2 }` so that the content outside the `cetz-pause` function appears on the correct subslide.
 
 
 
