@@ -3,7 +3,7 @@
 #let (presentate-slide,) = presentate-config()
 
 #set text(size: 25pt)
-#set page(paper: "presentation-16-9")
+#set page(paper: "presentation-16-9", numbering: "1")
 
 #presentate-slide(steps: 3, self => [
   = Hello Typst!
@@ -34,31 +34,30 @@
     $a^2$ and $b^2$ : squares of triangle legs
   
 
-  #only(self, 2, {
-    pinit-highlight(1,2)
-    pinit-highlight(3,4)
-  })
+    #only(self, 2, {
+      pinit-highlight(1,2)
+      pinit-highlight(3,4)
+    })
 
-  #pause(self, self => [
-    $c^2$ : square of hypotenuse
+    #pause(self, self => [
+      $c^2$ : square of hypotenuse
 
-    #pinit-highlight(5,6, fill: green.transparentize(80%))
-    #pinit-point-from(6)[larger than $a^2$ and $b^2$]
-  ])
+      #pinit-highlight(5,6, fill: green.transparentize(80%))
+      #pinit-point-from(6)[larger than $a^2$ and $b^2$]
+    ])
   ])
 ])
 
 #presentate-slide(steps: 4, self => [
   = Lists and Enum 
-  Help?
+  To fully cover the `list` and `enum`, you can modify the `hider` argument in *all* of the helper functions!
   #one-by-one(self, hider: it => hide(block(it)),[
-    + ABC
+    + First Item
   ], [
-    + Def
+    + Second Item
   ], [
-    + GHI
+    + Third Item
   ])
-  Help?
 ])
 
 #import "@preview/cetz:0.3.1": canvas, draw
@@ -110,3 +109,20 @@
     })
   ])
 ])
+
+#set math.equation(numbering: "(1)")
+#set heading(numbering: "1.1")
+
+#presentate-slide(self => [
+  #outline()
+])
+
+#presentate-slide(steps: 4, self => [
+  = Hello
+  $ a^2 + b^2 $
+  #pause(self, 3, self => [
+    $ c^2 + d^2 $
+  ])
+])
+
+

@@ -42,7 +42,13 @@
   assert(type(hider) == function, message: "hider must be a function")
 
   let present_index = when-and-content.pos()
-  let body = present_index.pop()
+  let func = present_index.pop()
+  if type(func) != function {
+    func = it => func
+  }
+
+  let body = func(self)
+
   // to escape when handout
   if self.handout { return body }
 
@@ -75,6 +81,7 @@
   if when.len() == 0 {
     if self.subslide >= self.pauses { func(self) } else { hider(func(self)) }
   } else {
+    self.pauses = when.at(0)
     if self.subslide >= when.at(0) { func(self) } else { hider(func(self)) }
   }
 }
@@ -101,6 +108,9 @@
 ///
 #let one-by-one(self, ..funcs, hider: none) = {
   funcs = funcs.pos()
+  if type(funcs.at(0)) == int {
+    self.pauses = funcs.remove(0) - 1
+  }
   let clean_funcs = ()
   let result = ()
   for func in funcs {
@@ -185,7 +195,33 @@
 /// - title: The title of the slide (default: auto).
 ///
 /// Returns: The body of the slide, either as a single subslide (in handout mode) or as a composition of multiple subslides.
-#let presentate-slide(steps: 1, self: states, func) = {
+#let presentate-slide(steps: 1, self: states, frozen-states: (), func) = context {
+  let default-frozen-states = (
+    counter(math.equation),
+    counter(heading),
+    counter(figure.where(kind: "image")),
+    counter(figure.where(kind: "table")),
+    counter(quote),
+  )
+  let frozen-states = if type(frozen-states) == function {
+    frozen-states(default-frozen-states)
+  } else {
+    default-frozen-states + frozen-states
+  }
+  let getValueState = ()
+  for i in frozen-states {
+    getValueState.push(i.get())
+  }
+
+  let frozen-func = it => {
+    for (key, val) in frozen-states.zip(getValueState) {
+      key.update(val)
+    }
+    it
+  }
+
+  let func = it => frozen-func(func(it))
+
   if self.handout { return (subslide(steps, func))(self).body }
 
   let result = ()
@@ -196,7 +232,16 @@
 }
 
 
-#let presentate-config(default-steps: 1, handout: false, drafted: false, pause-cover: hide, uncover-cover: hide, theme: it => (:), ..args) = {
+#let presentate-config(
+  default-steps: 1,
+  handout: false,
+  drafted: false,
+  pause-cover: hide,
+  uncover-cover: hide,
+  theme: it => (:),
+  frozen-states: (),
+  ..args,
+) = {
   let init = (
     pauses: 1,
     subslide: 1,
@@ -214,7 +259,11 @@
   )
   return (
     states: init,
-    presentate-slide: presentate-slide.with(self: init, steps: default-steps),
-    ..theme(init, ..args)
+    presentate-slide: presentate-slide.with(
+      self: init,
+      steps: default-steps,
+      frozen-states: frozen-states,
+    ),
+    ..theme(init, ..args),
   )
 }
