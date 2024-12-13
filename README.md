@@ -243,8 +243,9 @@ This snippet produce the first slide on topic 1.1, and
 )
 ```
 produces the 1.2 topic. 
-![image](https://github.com/user-attachments/assets/1a566312-cb79-4c8f-b5b5-4b68f59d1276)
-![image](https://github.com/user-attachments/assets/fb683a13-f39d-4c42-bf95-6fb7fc71ff0e)
+![image](https://github.com/user-attachments/assets/1a5fd284-e2b8-48fa-b287-b911172eac42)
+![image](https://github.com/user-attachments/assets/11c5b141-5ff7-49f3-89de-d0dc5d9cfe57)
+
 
 As you can see, the power of function-based implementation allows users to *modify* anything, even the label so that we can reference through slides!.  
 
