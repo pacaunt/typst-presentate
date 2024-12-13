@@ -1,6 +1,6 @@
 # typst-presentate
 Presentate is a Typst package for creating presentation. It provides you a variety of helper functions to create dynamic slides.
-Presentate is implemented without using any  `context`, `counter`s, or `state`s, so it can be used with *any* functions in Typst, but with the correct hiding functions though.
+Presentate's helper functions are implemented without using any  `context`, `counter`s, or `state`s, so it can be used with *any* functions in Typst, but with the correct hiding functions though.
 ## Basic Usage 
 
 Let's start with `pause` 
@@ -147,6 +147,109 @@ This snippet is imported from, again, Minideck package. I modified the `hider` f
 
 This one is a bit long, but it is very simple. I modified the `hider` function used by `pause` so that it is conpatible with the `canvas` of `cetz`. Despite our helper functions flexibility, *they can only take effect on the content inside its scope*. Therefore, I have to update the number of pauses in the `self.pauses` variable by `#{ self.pauses += 2 }` so that the content outside the `cetz-pause` function appears on the correct subslide.
 
+## Numbering and Frozen States
+
+This is the only place where `presentate` uses `context`. Let's see the example
+```typst
+#set heading(numbering: "1.1")
+
+#presentate-slide(
+  steps: 4,
+  self => [
+    = Hello Typst!
+    #alter(self, 4, [
+        This is the first slide in `presentate`
+
+        #one-by-one(
+          self,
+          [
+            You can see this time the heading has numbered!
+
+          ],
+          [
+            By default, `page`, `equation` `figure`, `quote`, and `heading` counters are frozen.
+          ],
+          [
+            By the way, you can change the layout by `alter` function
+          ],
+        )],
+      it => align(horizon, it),
+    )
+  ],
+)
+```
+![image](https://github.com/user-attachments/assets/6b921c6a-c454-47e8-9aab-2c8f96b03a9c)
+I implemented fake frozen states by get their value at the beginning of the slides, and update them to that value on every subslides.
+If you have more custom states or counters, you can add it via `frozen-states` argument in the `presentate-config()` function. 
+
+Let's see more examples on equations:
+
+```typst
+#set math.equation(numbering: "(1)")
+
+#let my-label(self, x) = if self.subslide == 1 {
+  label(x)
+}
+
+#presentate-slide(
+  steps: 5,
+  self => [
+    == `math.equation` example
+    #my-label(self, "first")
+
+
+    For example, the following equation:
+
+    #one-by-one(
+      self,
+      [
+
+        $ E = m c^2 $#my-label(self, "eq1")
+        $ a^2 + b^2 = c^2 $#my-label(self, "eq2")
+      ],
+      [
+        It is shown with the same number!
+      ],
+      [
+        However, it is still not referencable.
+        Typst will complain you about the labeled content occuring in the document.
+      ],
+      [
+        So I hacked with `self.subslide`:
+
+        @eq1 is from Eistein. \
+        @eq2 is from Pythagoras.
+      ],
+    )
+  ],
+)
+```
+This snippet produce the first slide on topic 1.1, and 
+```typst
+#presentate-slide(
+  steps: 2,
+  self => [
+    == More equations
+    #set align(horizon)
+
+    $ K E = 1 / 2 m v^2 $
+    #pause(
+      self,
+      self => [
+        As mentioned in @first, the equation numbering is working!
+      ],
+    )
+  ],
+)
+```
+produces the 1.2 topic. 
+![image](https://github.com/user-attachments/assets/1a566312-cb79-4c8f-b5b5-4b68f59d1276)
+![image](https://github.com/user-attachments/assets/fb683a13-f39d-4c42-bf95-6fb7fc71ff0e)
+
+As you can see, the power of function-based implementation allows users to *modify* anything, even the label so that we can reference through slides!.  
+
+
+
 ## List of all functions 
 - `presentate-config(handout: false, drafted: false, theme: it => it, ..args)`
 - `pause(self, func)`
@@ -154,6 +257,7 @@ This one is a bit long, but it is very simple. I modified the `hider` function u
 - `uncover(self, ..when, from: none, hider: hide, func)`
 - `change(self, before, after)` 
 - `alter(self, ..when, from: none, before, after)`
+- `one-by-one(self, when, ..funcs)`
 
 Note that: 
 - `func` arguments in the helper functions can be any information, but using callback `self => { .. }` gives you an access to the current subslide by `self.subslide` variable.
