@@ -27,6 +27,7 @@
   style: (
     slide-title: heading.with(level: 2),
   ),
+  steps: 1,
 )
 
 /// Reveals content based on the current subslide number.
@@ -187,6 +188,43 @@
   }
 }
 
+/// Defines a list of default counters to be frozen during slide transitions.
+///
+/// This constant contains counters for equations, headings, images, tables, and quotes.
+#let default-frozen-counters = (
+  counter(math.equation),
+  counter(heading),
+  counter(figure.where(kind: "image")),
+  counter(figure.where(kind: "table")),
+  counter(quote),
+)
+
+/// Defines a list of default counter names corresponding to the frozen counters.
+///
+/// This constant contains string names for equations, headings, images, tables, and quotes.
+#let default-frozen-counter-names = (
+  "math.equation",
+  "heading",
+  "image",
+  "table",
+  "quote",
+)
+
+/// Generates a dictionary of cover counters based on the provided counter names.
+///
+/// - frozen-counter-names: A list of strings representing the names of counters to be covered.
+///
+/// Returns: A dictionary where keys are the provided counter names and values are
+///          newly created counters prefixed with "presentate-cover-".
+#let generate-cover-counters(frozen-counter-names) = {
+  let out = (:)
+  for name in frozen-counter-names {
+    assert(type(name) == str, message: "counter name must be a string")
+    out.insert(name, counter("presentate-cover-" + name + "-counter"))
+  }
+  out
+}
+
 /// Creates a slide with multiple steps.
 ///
 /// - steps: The number of steps in the slide (default: 1).
@@ -195,32 +233,69 @@
 /// - title: The title of the slide (default: auto).
 ///
 /// Returns: The body of the slide, either as a single subslide (in handout mode) or as a composition of multiple subslides.
-#let presentate-slide(steps: 1, self: states, frozen-states: (), func) = context {
-  let default-frozen-states = (
-    counter(math.equation),
-    counter(heading),
-    counter(figure.where(kind: "image")),
-    counter(figure.where(kind: "table")),
-    counter(quote),
-  )
-  let frozen-states = if type(frozen-states) == function {
-    frozen-states(default-frozen-states)
-  } else {
-    default-frozen-states + frozen-states
-  }
-  let getValueState = ()
-  for i in frozen-states {
-    getValueState.push(i.get())
-  }
+#let presentate-slide(steps: 1, self: states, func) = {
+  let frozen-counter-names = default-frozen-counter-names
+  let cover-counters = generate-cover-counters(frozen-counter-names)
+  let is-numbering(element) = element.has("numbering")
 
-  let frozen-func = it => {
-    for (key, val) in frozen-states.zip(getValueState) {
-      key.update(val)
-    }
+  show math.equation: it => {
     it
+    if is-numbering(it) { cover-counters.at("math.equation").step() }
+  }
+  show heading: it => {
+    it
+    if is-numbering(it) { cover-counters.at("heading").step(level: it.level) }
+  }
+  show figure.where(kind: "image"): it => {
+    it
+    if is-numbering(it) { cover-counters.at("image").step() }
+  }
+  show figure.where(kind: "table"): it => {
+    it
+    if is-numbering(it) { cover-counters.at("table").step() }
+  }
+  show quote: it => {
+    it
+    if is-numbering(it) { cover-counters.at("quote").step() }
   }
 
-  let func = it => frozen-func(func(it))
+  /// Wraps a slide function to manage counter updates and freezing between subslides.
+  ///
+  /// - func: The original slide function to be wrapped.
+  ///
+  /// Returns: A new function that handles counter management before and after executing the original function.
+  ///   The returned function takes a single parameter 'it', which represents the current slide state.
+  let wrapper(func) = (
+    it => {
+      // Reset all cover counters to 0
+      for c in cover-counters.values() {
+        c.update(0)
+      }
+
+      // Execute the original slide function
+      func(it)
+
+      // If not on the last subslide, freeze counters
+      if it.subslide != it.steps {
+        context {
+          // Get current values of cover counters
+          let cover-counter-values = cover-counters.values().map(it => it.get())
+          // Update normal counters based on cover counter values
+          for (normal, covered) in default-frozen-counters.zip(cover-counter-values) {
+            normal.update((..n) => {
+              subtract-array(n.pos(), covered).map(it => {
+                if it < 0 { return 100 + it /* for debugging*/ } else { it }
+              })
+            })
+          }
+        }
+      }
+    }
+  )
+
+  func = wrapper(func)
+
+  self.steps = steps
 
   if self.handout { return (subslide(steps, func))(self).body }
 
@@ -239,7 +314,7 @@
   pause-cover: hide,
   uncover-cover: hide,
   theme: it => (:),
-  frozen-states: (),
+  //frozen-counter-names: (),
   ..args,
 ) = {
   let init = (
@@ -262,7 +337,7 @@
     presentate-slide: presentate-slide.with(
       self: init,
       steps: default-steps,
-      frozen-states: frozen-states,
+      //frozen-counter-names: frozen-counter-names,
     ),
     ..theme(init, ..args),
   )
