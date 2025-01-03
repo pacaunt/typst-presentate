@@ -238,7 +238,7 @@
   let cover-counters = generate-cover-counters(frozen-counter-names)
   let is-numbering(element) = element.has("numbering")
 
-  show math.equation: it => {
+  show math.equation.where(block: true): it => {
     it
     if is-numbering(it) { cover-counters.at("math.equation").step() }
   }
