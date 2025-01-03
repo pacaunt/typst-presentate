@@ -147,7 +147,7 @@ This snippet is imported from, again, Minideck package. I modified the `hider` f
 
 This one is a bit long, but it is very simple. I modified the `hider` function used by `pause` so that it is conpatible with the `canvas` of `cetz`. Despite our helper functions flexibility, *they can only take effect on the content inside its scope*. Therefore, I have to update the number of pauses in the `self.pauses` variable by `#{ self.pauses += 2 }` so that the content outside the `cetz-pause` function appears on the correct subslide.
 
-## Numbering and Frozen States
+## Heading Numbering
 
 This is the only place where `presentate` uses `context`. Let's see the example
 ```typst
@@ -178,10 +178,7 @@ This is the only place where `presentate` uses `context`. Let's see the example
   ],
 )
 ```
-![image](https://github.com/user-attachments/assets/6b921c6a-c454-47e8-9aab-2c8f96b03a9c)
-I implemented fake frozen states by get their value at the beginning of the slides, and update them to that value on every subslides.
-If you have more custom states or counters, you can add it via `frozen-states` argument in the `presentate-config()` function. 
-
+![image](https://github.com/user-attachments/assets/6b921c6a-c454-47e8-9aab-2c8f96b03a9c)  
 Let's see more examples on equations:
 
 ```typst
@@ -248,11 +245,16 @@ produces the 1.2 topic.
 
 
 As you can see, the power of function-based implementation allows users to *modify* anything, even the label so that we can reference through slides!.  
-
+Currently, only element function counters are frozen through subslides, and it cannot detect manual updates of the original counters.
 
 
 ## List of all functions 
+- `presentate-slide(steps: 1, func)`
+  - `steps` : an integer indicates the number of subslides needed.
 - `presentate-config(handout: false, drafted: false, theme: it => it, ..args)`
+  - `handout` : if set to `true`, only the last subslide is printed.
+  - `drafted` : if set to `true`, there will be a transparent number printed on each subslides to indicate current subslide number.
+  - `theme` : is a function for theme system (for further implementation).
 - `pause(self, func)`
 - `only(self, ..when, from: none, hider: it => none, func)`
 - `uncover(self, ..when, from: none, hider: hide, func)`
