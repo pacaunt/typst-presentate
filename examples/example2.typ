@@ -85,3 +85,10 @@
     )
   ],
 )
+
+#presentate-slide(steps: 4, self => [
+  = More equations again 
+  
+  $ a^2 + b^2 + c^2 $
+])
+
