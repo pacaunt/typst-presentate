@@ -1,6 +1,10 @@
+#let get-pauses(self) = {
+  self.filter(it => type(it) == int).sum(default: 0)
+}
+
 #let pause(self, body, hider: none) = {
   let info = self.remove(0)
-  let pauses = self.filter(it => type(it) == int).sum(default: 0)
+  let pauses = get-pauses(self)
   let shown-idx = pauses + 1
 
   if hider == none {
@@ -45,6 +49,16 @@
       uncover(self, from: from + i, hider: hider, body)
       i += 1
     }
+  }
+}
+
+#let blink(self, body, hider: it => none) = {
+  let pauses = get-pauses(self)
+  let info = self.first()
+  if info.subslide == pauses + 1 {
+    body
+  } else {
+    hider(body)
   }
 }
 

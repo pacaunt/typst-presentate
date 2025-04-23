@@ -26,6 +26,10 @@
     real: counter(quote),
     cover: alias-counter("quote"),
   ),
+  "footnote": (
+    real: counter(footnote),
+    cover: alias-counter("footer"),
+  ),
 )
 
 #let pdfpc-slide-markers(self) = context [
@@ -112,6 +116,10 @@
   show quote: it => {
     it
     if is-numbering(it) { covering.at("quote").cover.step() }
+  }
+  show footnote: it => {
+    it
+    if is-numbering(it) { covering.at("footnote").cover.step() }
   }
   cont
 }

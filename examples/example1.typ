@@ -106,9 +106,6 @@
   #self.push(4)
 ], self))
 
-#slide(s => ([
-  = Hello 
-  Does it capable of doing its own style? May be jaaa
-], s))
+
 
 
