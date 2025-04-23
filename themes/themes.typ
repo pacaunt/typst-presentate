@@ -1,1 +1,1 @@
-#import "simple.typ"
+#import "simple.typ": simple

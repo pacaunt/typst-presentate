@@ -1,94 +1,37 @@
-#import "../export.typ": *
+#import "../export.typ": * 
+#let (slide, title-slide, focus-slide, plain-slide) = presentate-config(freeze-counter: true, theme: themes.simple)
 
-#let (presentate-slide,) = presentate-config()
+#set page(paper: "presentation-16-9")
+#set text(size: 25pt, font: "Lato")
 
-#set text(size: 25pt)
-#set page(paper: "presentation-16-9", numbering: "1", number-align: right)
-#set heading(numbering: "1.1")
-
-#presentate-slide(
-  steps: 4,
-  self => [
-    = Hello Typst!
-    #alter(self, 4, [
-        This is the first slide in `presentate`
-
-        #one-by-one(
-          self,
-          [
-            You can see this time the heading has numbered!
-
-          ],
-          [
-            By default, `page`, `equation` `figure`, `quote`, and `heading` counters are frozen.
-          ],
-          [
-            By the way, you can change the layout by `alter` function
-          ],
-        )],
-      it => align(horizon, it),
-    )
-  ],
-)
-
-#set math.equation(numbering: "(1)")
-
-#let my-label(self, x) = if self.subslide == 1 {
-  label(x)
+#set heading(numbering: "1.1.")
+#show math.equation: set text(font: "Lete Sans Math")
+#show heading.where(level: 1): it => {
+  focus-slide(s => (it, s))
 }
 
-#presentate-slide(
-  steps: 5,
-  self => [
-    == `math.equation` example
-    #my-label(self, "first")
+#set math.equation(numbering: "(1)")
+= Hello Gradar
+#slide(wrapper: {
+  (self, body) => {
+    set page(fill: luma(20))
+    set text(fill: white)
+    set align(center + horizon)
+    body
+  }
+}, s => ([
+ #progress(s, hider: it => none, left-on-slide: false,
+  [Howdy!], 
+  [This is Tan], 
+  [Nice to Meet You!], 
+  [Ya]
 
+ )
+ #s.push(4)
+ #show: pause.with(s) + s.push(1)
+ This 
+], s))
 
-    For example, the following equation:
-
-    #one-by-one(
-      self,
-      [
-
-        $ E = m c^2 $#my-label(self, "eq1")
-        $ a^2 + b^2 = c^2 $#my-label(self, "eq2")
-      ],
-      [
-        It is shown with the same number!
-      ],
-      [
-        However, it is still not referencable.
-        Typst will complain you about the labeled content occuring multiple times in the document.
-      ],
-      [
-        So I hacked with `self.subslide`:
-
-        @eq1 is from Eistein. \
-        @eq2 is from Pythagoras.
-      ],
-    )
-  ],
-)
-
-#presentate-slide(
-  steps: 2,
-  self => [
-    == More equations
-    #set align(horizon)
-
-    $ K E = 1 / 2 m v^2 $
-    #pause(
-      self,
-      self => [
-        As mentioned in @first, the equation numbering is working!
-      ],
-    )
-  ],
-)
-
-#presentate-slide(steps: 4, self => [
-  = More equations again 
-  
-  $ a^2 + b^2 + c^2 $
-])
-
+#slide(title: "Hello", s => ([
+  Gradar is a girl who lives in london.
+], s))
