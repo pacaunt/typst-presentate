@@ -21,11 +21,11 @@
       text(fill: white)[LOGO],
     ),
   ),
-  last-topic: () => query(selector(heading.where(level: 2, outlined: true).before(here()))).at(
+  last-topic: () => query(selector(heading.where(level: 2).before(here()))).at(
     -1,
     default: box[],
   ),
-  last-section: () => query(selector(heading.where(level: 1, outlined: true).before(here()))).at(
+  last-section: () => query(selector(heading.where(level: 1).before(here()))).at(
     -1,
     default: box[],
   ),
