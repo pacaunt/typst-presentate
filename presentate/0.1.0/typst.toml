@@ -1,0 +1,5 @@
+[package]
+name = "presentate"
+version = "0.1.0"
+entrypoint = "export.typ"
+

@@ -1,0 +1,2 @@
+#import "../SlidesTools.typ": slide
+
