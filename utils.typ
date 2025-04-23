@@ -1,3 +1,11 @@
+#let superhide(it) = {
+  show enum: hide
+  show list: hide 
+  show: hide 
+  it
+}
+
+
 /// Merges two dictionaries recursively.
 ///
 /// - dictA: The dictionary to merge into the base dictionary.
@@ -15,19 +23,6 @@
   return base
 }
 
-/// Composes a function from an array of functions.
-///
-/// - init: The initial state (default: empty dictionary).
-/// - funcs: An array of functions to compose.
-///
-/// Returns: The result of applying all functions in the array to the initial state.
-#let compose_func_from_array(init: (:), funcs) = {
-  let out = init
-  for func in funcs {
-    out = func(out)
-  }
-  return out
-}
 
 /// Creates a new function that wraps the given function with additional context-aware behavior.
 ///

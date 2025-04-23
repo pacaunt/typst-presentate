@@ -1,128 +1,114 @@
-#import "../export.typ": * 
+#import "../export.typ": *
 
-#let (presentate-slide,) = presentate-config()
+#let (slide,) = presentate-config(freeze-counter: true)
 
-#set text(size: 25pt)
-#set page(paper: "presentation-16-9", numbering: "1")
+#set page(paper: "presentation-16-9",)
+#set text(size: 25pt, font: "Lato")
 
-#presentate-slide(steps: 3, self => [
-  = Hello Typst!
+#set heading(numbering: "1.1.")
+
+#slide(logical-slide: false, self => ([
+  #set align(center + horizon)
+  #set text(size: 2em, weight: "bold")
+
+  Welcome!
+
+], self))
+
+#slide(logical-slide: false, self => ([
+  #outline()
+], self))
+
+#slide(self => ([
+  = A Simple Animation
 
   #set align(horizon)
 
-  This is the first `presentate` presentation!
+  #show: pause.with(self) + self.push(1)
 
-  #pause(self, self => [
-    You can use `pause` to make the content appear after.
-    
-    #pause(self, self => [
-      However, the `pause`s must be nested to take effect. 
-    ])
-  ])
-])
+  Hello, Presentate 
 
-#import "@preview/pinit:0.2.2": *
+  #pause(self)[Hello, Typst!] #self.push(1)
 
-#presentate-slide(steps: 3, self => [
-  = Works well with `pinit`
 
-  Pythagorean theorem:
+], self))
 
-  $ #pin(1)a^2#pin(2) + #pin(3)b^2#pin(4) = #pin(5)c^2#pin(6) $
+#slide(self => ([
+  = Uncover and Only Function
 
-  #pause(self, self =>[
-    $a^2$ and $b^2$ : squares of triangle legs
-  
+  #set align(horizon)
 
-    #only(self, 2, {
-      pinit-highlight(1,2)
-      pinit-highlight(3,4)
-    })
+  #uncover(self, 1, 3, 4, from: 6)[
+    #set text(fill: red)
+    This can be seen only in subslides 1, 3, 4, and from 6.
+  ]
+  #self.push((6,))
 
-    #pause(self, self => [
-      $c^2$ : square of hypotenuse
+  #show: pause.with(self) + self.push(1)
+  Use `uncover` for reserving space, and `only` for not reserving space. 
 
-      #pinit-highlight(5,6, fill: green.transparentize(80%))
-      #pinit-point-from(6)[larger than $a^2$ and $b^2$]
-    ])
-  ])
-])
+  #only(self, 2, 5)[
+    #set text(fill: blue)
+    This is on subslide 2 and 5.
+  ] 
 
-#presentate-slide(steps: 4, self => [
-  = Lists and Enum 
-  To fully cover the `list` and `enum`, you can modify the `hider` argument in *all* of the helper functions!
-  #one-by-one(self, hider: it => hide(block(it)),[
-    + First Item
-  ], [
-    + Second Item
-  ], [
-    + Third Item
-  ])
-])
+  _This text is moveable because `only` does not reserve space!_
 
-#import "@preview/cetz:0.3.1": canvas, draw
 
-#presentate-slide(steps: 3, self =>[
-  #let cetz-uncover = uncover.with(hider: draw.hide.with(bounds: true))
-  = In a CeTZ figure
+], self))
 
-  Above canvas
-  #canvas({
-    import draw: *
-    only(self, 3, rect((0,-2), (14,4), stroke: 3pt))
-    cetz-uncover(self, from: 2, rect((0,-2), (16,2), stroke: blue+3pt))
-    content((8,0), box(stroke: red+3pt, inset: 1em)[
-      A typst box #only(self, 2)[on 2nd subslide]
-    ])
-  })
-  Below canvas
-])
+#let myslide(fn, title: none, ..args) = {
+  slide(..args, preamble: (self, body) => [
+    #heading(level: 1, title) 
+    #set align(center + horizon)
+    #body
+  ], fn)
+}
 
-#presentate-slide(steps: 7, self => [
-  = `pause` in CeTZ
+#myslide(title: "Custom Slide", self => ([
+  #show: pause.with(self) + self.push(1)
+  Now, it's work!
+], self))
 
-  #let cetz-pause = pause.with(hider: draw.hide.with(bounds: true))
-  #canvas({
-    import draw: * 
-    circle((), fill: red) 
-    cetz-pause(self, self => {
-      circle((rel: (1, 0)), fill: green)
-      cetz-pause(self, self => {
-        circle((rel: (1, 0)), fill: blue)
-      })
-    })
-  })
+#let qns = counter("question")
+#let qn(txt) = {
+  [
+    #qns.step()
+    #alias-counter("question").step()
+    #context { qns.get().map(str).at(0) };. #txt
+  ]
+}
 
-  #{ self.pauses += 2 }
+#let (slide,) = presentate-config(freeze-counter: true, frozen-counters: ("question": (
+  real: qns, 
+  cover: alias-counter("question")
+)))
 
-  #pause(self, self => [
-    Or you can use `one-by-one`. 
-    #let cetz-one-by-one = one-by-one.with(hider: draw.hide.with(bounds: true))
+#slide(self => ([
+  = Custom Frozen Counters 
+  #show: pause.with(self) + self.push(1)
+  #qn[ First Question]
 
-    #canvas({
-      import draw: * 
-      cetz-one-by-one(self, 
-        rect((0, 0), (rel: (3, 2)), fill: red), 
-        rect((), (rel: (3, 2)), fill: green), 
-        rect((rel: (0, -2)), (rel: (-3, -2)), fill: blue),
-      )
-    })
-  ])
-])
+  #show: pause.with(self) + self.push(1)
+  #qn[ Second Question]
 
-#set math.equation(numbering: "(1)")
-#set heading(numbering: "1.1")
+], self))
 
-#presentate-slide(self => [
-  #outline()
-])
+#slide(self => ([
+  = Cool Movement
+  #transform(self, [A], 
+    place.with(dx: 1cm, dy: 1cm), 
+    place.with(dx: 2cm, dy: 2cm), 
+    place.with(dx: 3cm, dy: 3cm)
+  )
+  #self.push(4)
+  $ #transform(hider: it => none, self, $a times a$, it => it, it => $a^2$) + c $
+  #self.push(4)
+], self))
 
-#presentate-slide(steps: 4, self => [
-  = Hello
-  $ a^2 + b^2 $
-  #pause(self, 3, self => [
-    $ c^2 + d^2 $
-  ])
-])
+#slide(s => ([
+  = Hello 
+  Does it capable of doing its own style? May be jaaa
+], s))
 
 
