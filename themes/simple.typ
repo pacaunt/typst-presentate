@@ -1,144 +1,128 @@
-#import "../presentate.typ": *
+#import "../presentate.typ" as p
+#import "../store.typ": *
 
-#let (slide,) = presentate-config()
+#let current-section = context {
+  query(heading.where(level: 1).before(here())).at(-1, default: box[]).body
+}
 
-#let palette = (
-  main: eastern,
-  text: black,
-  sub: gray,
-)
+#let current-heading = context {
+  query(heading.where(level: 2).before(here()))
+    .filter(h => {
+      counter(heading).get().at(0) == counter(heading).at(h.location()).at(0)
+    })
+    .at(-1, default: [])
+  if heading.numbering != none {
+    alias-counter("heading").update((..n) => {
+      n = n.pos()
+      n.at(1) -= 1
+      n
+    })
+  }
+}
 
-#let default-info = (
-  author: [AUTHOR],
-  title: [TITLE],
-  date: [DATETIME],
-  institute: [INSTITUTE OF PRESENTATION],
-  logo: align(
-    horizon + center,
-    circle(
-      radius: 1cm,
-      fill: eastern,
-      text(fill: white)[LOGO],
-    ),
-  ),
-  last-topic: () => query(selector(heading.where(level: 2).before(here()))).at(
-    -1,
-    default: box[],
-  ),
-  last-section: () => query(selector(heading.where(level: 1).before(here()))).at(
-    -1,
-    default: box[],
-  ),
-  freeze-counter: true,
-  palette: palette,
-  new-section-slide: true, 
-)
+#let empty-slide(..args) = {
+  set page(margin: 0pt, header: none, footer: none)
+  p.slide(..args)
+}
 
-#let title-slide(logical-slide: false, ..args) = {
-  slide(
-    ..args,
-    logical-slide: logical-slide,
-    preamble: (self, body) => [
-      #set align(center + horizon)
-      #set text(size: 2em, weight: "bold")
 
-      #self.title
-      #v(-0.5em)
+#let slide(..args, align: top) = {
+  let kwargs = args.named()
+  let args = args.pos()
+  let title
+  let body
 
-      #set text(size: 0.4em, fill: gray)
-      #self.author
+  if args.len() == 1 {
+    body = args
+    title = current-heading
+  } else if args.at(0) == auto {
+    (_, ..body) = args
+    title = current-heading
+  } else if args.len() >= 2 {
+    (title, ..body) = args
+    title = heading(level: 2, title)
+  }
+
+  p.slide(
+    ..kwargs,
+    [
+      #title
+      #set std.align(align)
+      #grid(columns: (1fr,) * body.len(), ..body, gutter: 1em)
     ],
-    it => ([], it),
   )
 }
 
-#let simple-plain-slide(body-fn, ..args) = {
-  slide(..args, body-fn)
-}
-
-#let simple-focus-slide(body-fn, logical-slide: false, ..args) = {
-  slide(
+#let focus-slide(..args, fill: eastern, body) = {
+  empty-slide(
     ..args,
-    logical-slide: logical-slide,
-    body-fn,
-    wrapper: (self, body) => {
-      set page(fill: self.palette.main)
+    {
+      set page(fill: fill)
+      set text(fill: white)
       body
     },
-    preamble: (self, body) => {
+  )
+}
+
+#let template(
+  body,
+  header: auto,
+  footer: auto,
+  author: [Author Name],
+  title: [Title of Presentation],
+  subtitle: [Some description of the presentation.],
+  date: datetime.today().display(),
+  enable-section-slide: true,
+  aspect-ratio: "16-9",
+  ..options,
+) = {
+  if header == auto {
+    header = {
+      set text(fill: gray, size: 0.8em)
+      current-section
+    }
+  }
+
+  if footer == auto {
+    footer = {
+      set text(fill: gray, size: 0.8em)
+      author
+      h(1fr)
+      context counter(page).display("1")
+    }
+  }
+
+  set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
+  set text(size: 20pt, font: "Lato")
+  show math.equation: set text(font: "Lete Sans Math")
+
+  empty-slide(
+    logical-slide: false,
+    {
       set align(center + horizon)
-      set text(fill: white, weight: "bold", size: 1.2em)
-      body
+      text(size: 2em, weight: "bold", title)
+      v(-1em)
+      emph(subtitle)
+      linebreak()
+      grid(columns: 2, author, grid.vline(), date, inset: (x: 0.5em))
     },
   )
-}
 
-#let simple-slide(body-fn, ..args, title: auto) = {
-  slide(
-    ..args,
-    wrapper: (self, body) => [
-      #set page(
-        header: [
-          #set text(size: 0.6em, fill: gray)
-          #context (self.last-section)().body
-          #h(1fr)
-          #place(right, self.logo)
-        ],
-        footer: [
-          #set text(size: 0.6em, fill: gray)
-          #(self.author)
-          #h(1fr)
-          #context {
-            let arr = counter(page).get() + counter(page).final()
-            arr.map(str).join(" / ")
-          }
-        ],
-      )
-      #body
-    ],
-    preamble: (self, body) => [
-      #if title == auto {
-        context (self.last-topic)()
-      } else if title != none {
-        heading(level: 2, title)
-      } else {
-        none
-      }
-      #v(1em)
-      #body
-    ],
-    body-fn,
-  )
-}
-
-#let simple-template(body, self: none) = {
-  set page(paper: "presentation-16-9")
-  set text(size: 25pt)
-  show heading.where(level: 1): it => {
-    slide(
-      self: self,
+  show heading.where(level: 1): h => {
+    focus-slide(
       logical-slide: false,
-      self => (
-        [
-          #set align(center + horizon)
-          #it
-        ],
-        self,
-      ),
+      {
+        set align(center + horizon)
+        set text(size: 1.5em, weight: "bold")
+        h
+      },
     )
   }
+
+  show heading.where(level: 2): set text(size: 1.5em)
+  show emph: set text(fill: eastern)
+
+  set-options(..options)
+
   body
-}
-
-
-#let simple(states, ..info) = {
-  info = merge-dicts(info.named(), base: default-info)
-  states = merge-dicts(info, base: states)
-  (
-    title-slide: title-slide.with(self: states),
-    slide: simple-slide.with(self: states),
-    template: simple-template.with(self: states),
-    plain-slide: simple-plain-slide.with(self: states),
-    focus-slide: simple-focus-slide.with(self: states),
-  )
 }

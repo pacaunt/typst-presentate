@@ -1,11 +1,10 @@
 [package]
-name = "example"
+name = "presentate"
 version = "0.1.0"
 entrypoint = "export.typ"
-authors = ["Pakorn Limpornchitwilai"]
+authors = ["pacaunt <@pacaunt>"]
 license = "MIT"
-description = "A package for creating presentation in Typst."
+compiler = "0.11.0"
 repository = "https://github.com/pacaunt/typst-presentate"
+description = "A package to create slides with ease."
 categories = ["presentation"]
-keywords = ["presentation", "beamer", "slides", "slide", "talk", "lecture", "presentate"]
-

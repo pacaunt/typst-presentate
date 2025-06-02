@@ -1,1 +1,2 @@
-#import "simple.typ": simple
+#import "default.typ"
+#import "simple.typ"

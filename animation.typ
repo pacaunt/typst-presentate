@@ -1,127 +1,252 @@
-#let get-pauses(self) = {
-  self.filter(it => type(it) == int).sum(default: 0)
+#import "utils.typ"
+#import "store.typ"
+#import "freeze_counters.typ": default-frozen-counters
+
+
+// animations
+#let sequence = [].func()
+#let style = [#set text(fill: red)].func()
+// update marker
+#let update-pause(s) = {
+  s.pause += 1
+  s.steps = calc.max(s.pause, s.steps)
+  return s
 }
 
-#let pause(self, body, hider: none) = {
-  let info = self.remove(0)
-  let pauses = get-pauses(self)
-  let shown-idx = pauses + 1
+#let update-meanwhile(s) = {
+  s.pause = 1
+  return s
+}
 
-  if hider == none {
-    hider = info.cover
-  }
-  // show only when the current number of pauses are less than current subslide.
-  if shown-idx < info.subslide {
+#let is-kind(it, kind) = {
+  if it.func() == metadata and type(it.value) == dictionary and "kind" in it.value.keys() {
+    it.value.kind == store.prefix + kind
+  } else { false }
+}
+
+#let pause = metadata((kind: store.prefix + "pause"))
+
+#let meanwhile = metadata((kind: store.prefix + "meanwhile"))
+
+
+// show content based on its environment. Idea from Polylux 0.3.*
+#let paused-content(i, body, hider: hide) = context {
+  if store.pauses(i).get() <= i or store.settings.get().handout {
     body
   } else {
     hider(body)
   }
 }
 
+#let conditional-display(
+  ..args,
+  from: auto,
+  hider: it => none,
+  marker: it => it,
+  combine: (it, mark) => it + mark,
+) = {
+  let n = store.subslides.get()
+  let (..idx, body) = args.pos()
 
-#let uncover(self, from: none, ..when, body, hider: none) = {
-  let self = self.at(0)
-  hider = if hider == none { self.cover } else { hider }
-  assert(type(hider) == function, message: "hider must be a function")
+  let cond = (
+    n in idx or if type(from) == int { n >= from } else { false } or store.settings.get().handout
+  )
 
-  let present_index = when.pos()
+  let output = if cond { body } else { hider(body) }
 
-  if self.subslide in present_index or { type(from) == int and self.subslide >= from } {
+  if type(from) != int { from = 0 }
+
+  let updater(s) = {
+    s.steps = calc.max(s.pause, s.steps, ..idx, from)
+    return s
+  }
+  combine(output, marker(store.dynamics.update(updater)))
+}
+
+#let only(..args) = { conditional-display(hider: it => none, ..args) }
+
+#let uncover(..args) = { conditional-display(hider: hide, ..args) }
+
+#let blink(
+  body,
+  cover: hide,
+  clear: it => none,
+  update-pause: true,
+  marker: auto,
+  reserve-space: true,
+) = {
+  let n = store.subslides.get()
+  hider = if not reserve-space { clear } else if reserve-space {
+    cover
+  }
+  if store.subslides.get() == store.dynamics.get().pause {
     body
   } else {
     hider(body)
   }
+  //marker = get-option-if-auto(marker, "marker")
+  if update-pause {
+    marker(pause)
+  }
 }
 
-// show the body progressively
-#let gradual(self, from: none, ..bodies, hider: none) = {
-  if hider == none { hider = self.at(0).cover }
-  bodies = bodies.pos()
+#let step-transform(
+  ..args,
+  start: auto,
+  update-pause: false,
+  repeat-last: true,
+  hider: it => none,
+  marker: it => it,
+  reserve-space: true,
+  align: center,
+) = {
+  let n = store.subslides.get()
+  let start-idx = if start == auto { store.dynamics.get().pause } else if type(start) == int {
+    start
+  } else { panic("start must be an integer.") }
 
-  if type(from) != int {
-    for body in bodies {
-      pause(self, body, hider: hider)
-      self.push(1)
+  let bodies = args.pos()
+  let kwargs = args.named()
+  let last-idx = start-idx + bodies.len()
+
+  //hider = get-option-if-auto(hider, "clear")
+
+  let wrapper = if reserve-space {
+    let w = calc.max(..bodies.map(body => measure(body).width))
+    it => box(width: w, std.align(align, it))
+  } else { it => it }
+
+  // for space reservation, not wobbling around.
+  wrapper(for (i, body) in bodies.enumerate() {
+    let curr-idx = start-idx + i + 1
+    if (
+      curr-idx == n
+        or if repeat-last {
+          i == bodies.len() - 1 and n >= last-idx
+        } else {
+          false
+        }
+    ) {
+      body
+    } else {
+      hider(body)
+    }
+  })
+
+  let updater
+  if not update-pause {
+    updater = s => {
+      if start == auto {
+        let start = s.pause
+      }
+      s.steps = calc.max(start + bodies.len(), s.steps)
+      return s
     }
   } else {
-    let i = 0
-    for body in bodies {
-      uncover(self, from: from + i, hider: hider, body)
-      i += 1
+    updater = s => {
+      if start == auto {
+        let start = s.pause
+      }
+      s.pause = start + bodies.len()
+      s.steps = calc.max(start + bodies.len(), s.steps)
+      return s
     }
   }
+
+  marker(store.dynamics.update(updater))
 }
 
-#let blink(self, body, hider: it => none) = {
-  let pauses = get-pauses(self)
-  let info = self.first()
-  if info.subslide == pauses + 1 {
-    body
+#let animate(cover: hide, clear: it => none, marker: it => it, combine: (it, mark) => it + mark) = (
+  only: only.with(hider: clear, marker: marker, combine: combine),
+  uncover: uncover.with(hider: cover, marker: marker, combine: combine),
+  // blink: blink.with(cover: cover, clear: clear, marker: marker),
+  // step-transform: step-transform.with(hider: clear, marker: marker),
+)
+
+// Ideas from Touying.
+// These reconstruction functions work because of the label.
+// show rule for sequence.children
+#let reconstruct-sequence(i, it) = {
+  let fields = it.fields()
+  let children = fields.remove("children")
+  if it.has("label") and it.label == label("_presentate_elem") {
+    it
   } else {
-    hider(body)
+    if it.has("label") {
+      let _ = fields.remove("label")
+    }
+    let new-children = children.map(c => {
+      if (
+        c.func()
+          in (
+            enum.item,
+            list.item,
+            terms.item,
+            linebreak,
+            parbreak,
+            block,
+            box,
+            par,
+            sequence,
+            style,
+            metadata,
+          )
+          or c in (pause, meanwhile, [ ], [])
+      ) { c } else {
+        paused-content(i, c)
+      }
+    })
+    [#(it.func())(new-children)<_presentate_elem>]
   }
 }
 
-
-#let only(self, from: none, ..when, body, hider: it => none) = {
-  uncover(self, from: from, hider: hider, ..when, body)
+#let reducer(func: it => it, cover: hide, ..args) = {
+  let kwargs = args.named()
+  let args = args.pos()
+  metadata((kind: store.prefix + "reducer", func: func, kwargs: kwargs, args: args, cover: cover))
 }
 
-// alternates the content
-#let alter(self, from: none, ..when, before, after) = {
-  let change_index = when.pos()
+#let reconstruct-reducer(subslide, func: (..args) => none, kwargs: (:), args: (), cover: hide) = {
+  context {
+    let curr-pause = store.pauses(subslide).get()
+    let meta-marks = ()
+    let new-args = ()
 
-  if type(after) == function { after = after(before) }
+    for arg in args {
+      if arg == pause {
+        curr-pause += 1
+        continue
+      }
 
-  uncover(self, from: from, ..change_index, after, hider: it => before)
-}
+      if arg == meanwhile {
+        curr-pause = 1
+        continue
+      }
 
-// alternates the content based on `pause` progress
-#let change(self, before, after) = {
-  after = if type(after) == function { after(before) } else { after }
-  pause(self, after, hider: it => before)
-}
+      if type(arg) == content and arg.func() == state(".").update(1).func() {
+        continue
+      }
 
-#let progress(self, init: auto, hider: it => none, ..frames, left-on-slide: true) = {
-  let info = self.at(0)
-  let frames = frames.pos()
-  let shown-idx
-  if init == auto {
-    let pauses = self.filter(it => type(it) == int).sum(default: 0)
-    shown-idx = pauses + 1
-  } else {
-    assert(type(init) == int, message: "init must be a subslide index")
-    shown-idx = init
+      if curr-pause <= subslide {
+        new-args.push(arg)
+      } else {
+        new-args.push(cover(arg))
+      }
+    }
+    func(..kwargs, ..new-args)
   }
-
-  for i in range(frames.len()) {
-    uncover(
-      self,
-      ..{
-        if left-on-slide and i == frames.len() - 1 { (from: i + shown-idx) } else { (shown-idx + i,) }
-      },
-      frames.at(i), 
-      hider: hider
-    )
-  }
+  let marks = args
+    .filter(it => {
+      type(it) == content
+    })
+    .join()
+  marks
 }
 
-#let transform(self, init: auto, hider: none, body, ..funcs, left-on-slide: true) = {
-  let info = self.at(0)
-  let funcs = funcs.pos()
-  let shown-idx
-  if init == auto {
-    let pauses = self.filter(it => type(it) == int).sum(default: 0)
-    shown-idx = pauses + 1
-  } else {
-    assert(type(init) == int, message: "init must be a subslide index")
-    shown-idx = init
-  }
-  let reveal-content
-  for i in range(funcs.len()) {
-    reveal-content = (funcs.at(i))(body)
-    uncover(self, ..{
-        if left-on-slide and i == funcs.len() - 1 { (from: i + shown-idx) } else { (shown-idx + i,) }
-      }, reveal-content, hider: hider)
-  }
-}
+
+#let pdfpc-slide-markers(i) = context [
+  #metadata((t: "NewSlide")) <pdfpc>
+  #metadata((t: "Idx", v: here().page())) <pdfpc>
+  #metadata((t: "Overlay", v: i - 1)) <pdfpc>
+  #metadata((t: "LogicalSlide", v: counter(page).get().first())) <pdfpc>
+]
