@@ -9,7 +9,7 @@ Import the package with
 and then, the functions are automatically available. 
 
 ### creating slides 
-```
+```typst
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
 
