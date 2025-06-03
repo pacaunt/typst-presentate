@@ -166,7 +166,7 @@
     Results:
 
     Hello #only(1, 3, text(fill: red)[
-      Only at subslide 2!
+      Only at subslide 1, 3!
     ]) There!
 
     Uncover #uncover(
