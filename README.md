@@ -44,4 +44,4 @@ Here are some examples:
 
 ## Acknowledgement 
 Thanks [Mimideck package author](https://github.com/knuesel/typst-minideck) for the `minideck` package that inspires me the syntax and examples.
-[Touying package authors]() and [Polylux author]() for inspring me the syntax and parsing method. 
+[Touying package authors](https://github.com/touying-typ/touying) and [Polylux author](https://github.com/polylux-typ/polylux) for inspring me the syntax and parsing method. 
