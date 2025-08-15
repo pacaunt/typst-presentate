@@ -67,16 +67,38 @@ Use can use the `render` function to create a workspace, and import the `animati
 For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
 ```typst
 #import "@preview/cetz:0.4.1": canvas, draw
+#import "@preview/fletcher:0.5.8": diagram, edge, node
+
+#set page(paper: "presentation-16-9")
+#set text(size: 25pt)
+
+#slide[
+  = CeTZ integration
+  #render(s => ({
+      import animation: *
+      let (pause,) = settings(hider: draw.hide.with(bounds: true))
+      canvas({
+        import draw: *
+        pause(s, circle((0, 0), fill: green))
+        s.push(auto) // update s
+        pause(s, circle((1, 0), fill: red))
+      })
+    },s)
+  )
+]
+
+#slide[
+  = Fletcher integration
   #render(s => ({
     import animation: *
-    let (pause,) = settings(hider: draw.hide.with(bounds: true))
-    canvas({
-      import draw: *
-      pause(s, circle((0, 0), fill: green,))
-      s.push(auto) // update s
-      pause(s, circle((1, 0), fill: red))
-    })
-  }, s))
+    diagram($
+        pause(#s, A edge(->)) #s.push(auto)
+          & pause(#s, B edge(->)) #s.push(auto)
+            pause(#s, edge(->, "d") & C) \
+          & pause(#s, D)
+    $,)
+  }, s,))
+]
 ```
 Results: 
 <img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
