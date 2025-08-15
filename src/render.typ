@@ -39,8 +39,9 @@
   hider: hide,
   update-pause: true,
   update-increment: true,
+  item-wrapper: it => it,
 ) = {
-  let bodies = bodies.pos()
+  let bodies = bodies.pos().map(item-wrapper)
   let n = bodies.len()
   if update-pause and update-increment {
     context {
@@ -55,7 +56,7 @@
     }
   } else {
     context {
-      a.fragments(states.get(), start: start, ..bodies, hider: hider)
+      a.fragments(states.get(), start: start, ..bodies, hider: hider, item-wrapper: item-wrapper)
     }
     states.update(s => {
       if update-pause {

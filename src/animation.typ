@@ -56,10 +56,11 @@
   hider: it => none,
   reveal-step: false,
   repeat-last: true,
+  item-wrapper: it => it,
 ) = {
   let (info, ..x) = s
   let (results: (start,)) = indices.resolve-indices(s, start)
-  bodies = bodies.pos()
+  bodies = bodies.pos().map(item-wrapper)
   let last-index = if not repeat-last { start + bodies.len() - 1 } else { () }
 
   // Very similar idea to Polylux's one-by-one and friends.
