@@ -37,8 +37,7 @@ You can style the slides as you would do with normal Typst document. For example
 
 #slide[
   = Welcome to Presentate! 
-  \
-  A lazy author \
+  \ A lazy author \
   #datetime.today().display()
 ]
 
