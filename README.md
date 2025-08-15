@@ -61,6 +61,25 @@ You can style the slides as you would do with normal Typst document. For example
 
 <img width="1479" height="850" alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
 
+### Package Integration 
+
+Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
+For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
+```typst
+#import "@preview/cetz:0.4.1": canvas, draw
+  #render(s => ({
+    import animation: *
+    let (pause,) = settings(hider: draw.hide.with(bounds: true))
+    canvas({
+      import draw: *
+      pause(s, circle((0, 0), fill: green,))
+      s.push(auto) // update s
+      pause(s, circle((1, 0), fill: red))
+    })
+  }, s))
+```
+Results: 
+<img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
 
  
 
