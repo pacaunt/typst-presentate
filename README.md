@@ -1,10 +1,10 @@
 # Presentate
-**Presentate** is a package for creating presentation in Typst. It comes with simple animations like `#pause`, `#meanwhile`, `#uncover`, and `#only`. For usage, please refer to [demo](https://github.com/pacaunt/typst-presentate/blob/main/examples/demo.pdf).
+**Presentate** is a package for creating presentation in Typst. It comes with simple animations like `#pause`, `#meanwhile`, `#uncover`, and `#only`. For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/21792851/demo.pdf).
 
 ## Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.1.0": *
+#import "@preview/presentate:0.2.0": *
 ```
 and then, the functions are automatically available. 
 
@@ -23,6 +23,7 @@ and then, the functions are automatically available.
   + Third
 ]
 ```
+
 Results in 
 ![image](https://github.com/user-attachments/assets/89adc75e-be3c-471c-ac4f-5681feef17ca)
 
