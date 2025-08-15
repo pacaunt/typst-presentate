@@ -1,47 +1,189 @@
 # Presentate
-**Presentate** is a package for creating presentation in Typst. It comes with simple animations like `#pause`, `#meanwhile`, `#uncover`, and `#only`. For usage, please refer to [demo](https://github.com/pacaunt/typst-presentate/blob/main/examples/demo.pdf).
+**Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
+For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/21795556/demo.pdf)
 
-## Usage 
+
+## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.1.0": *
+#import "@preview/presentate:0.2.0": *
 ```
 and then, the functions are automatically available. 
 
-### creating slides 
+### Creating slides 
+You can create a slide using `slide` function. For simple animation, you can use `pause` function to show show some content later.
+The easiest is to type `#show: pause`. For example,
 ```typst
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
 
 #slide[
-  = Welcome 
+  Hello World!
+  #show: pause;
 
-  + First #pause 
-
-  + Second #pause 
-
-  + Third
+  This is `presentate`.
 ]
 ```
-Results in 
-![image](https://github.com/user-attachments/assets/89adc75e-be3c-471c-ac4f-5681feef17ca)
 
-### CeTZ, Equation, Pinit, and Fletcher Support
-Please look at the details in [demo](https://github.com/pacaunt/typst-presentate/blob/main/examples/demo.pdf).
-Here are some examples: 
-1. Correct page numbering and compatible with Typst `outline()` ![image](https://github.com/user-attachments/assets/46079a87-7917-41ff-bfed-1f37769bb463)
+which results in 
+<img width="1620" height="464" alt="example1" src="https://github.com/user-attachments/assets/8bc0d428-cf3f-4e49-96b2-093cbbf10e2e" />
 
-2. `#pause` and `#meanwhile` for simple animations, with correct hiding marks and numbers. ![image](https://github.com/user-attachments/assets/97d77d9f-5f79-400b-9d22-2d1ef0b992d9)
+You can style the slides as you would do with normal Typst document. For example, 
 
-3. Simple animations in `math.equation` support. ![image](https://github.com/user-attachments/assets/2ca66888-3f47-4cf3-8286-47f0997812bd)
-4. `#uncover` and `#only`. ![image](https://github.com/user-attachments/assets/4040857c-9322-42a2-972c-57a7fc68f7e0)
-5. CeTZ hackable: ![image](https://github.com/user-attachments/assets/5ec8d403-5c09-444e-a299-5fa238c90aac)
-6. Pinit compatible (example from [minideck](https://github.com/knuesel/typst-minideck)): ![image](https://github.com/user-attachments/assets/d3459085-0b74-4f7f-8887-7840fd6817df)
+```typst
+#set page(paper: "presentation-16-9")
+#set text(size: 25pt, font: "FiraCode Nerd Font Mono")
+#set align(horizon)
 
-7. Fletcher hackable (Inspired from [Touying reducer](https://touying-typ.github.io/docs/integration/fletcher)): ![image](https://github.com/user-attachments/assets/7f1e3440-13af-4795-991d-d1ae567caf42)
-8. Fake Frozen counters for equation, heading, figure, numbering. 
- 
+#slide[
+  = Welcome to Presentate! 
+  \ A lazy author \
+  #datetime.today().display()
+]
+
+#set align(top)
+
+#slide[
+  == Tips for Typst.
+
+  #set align(horizon)
+  Do you know that $pi != 3.141592$?
+
+  #show: pause 
+  Yeah. Certainly.
+
+  #show: pause 
+  Also $pi != 22/7$.
+]
+
+
+```
+
+<img width="1479" height="850" alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
+
+### Relative Index Specification 
+You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
+This is useful for modifying steps of the animation so that some contents appear with or after another. 
+One application is for showing contents in sync: 
+
+```typst
+#slide[
+  = Content in Sync
+  #table(columns: (1fr, 1fr), stroke: 1pt)[
+    First
+
+    #show: pause;
+    I am
+
+    #show: pause;
+
+    in sync.
+  ][
+    // `[]` is a dummy content.
+    #uncover(1, [], update-pause: true)
+    Second
+
+    #show: pause;
+    I am
+
+    #show: pause;
+
+    in sync.
+    
+    #show: pause 
+    Heheh
+  ]
+]
+```
+
+<img width="1463" height="842" alt="image" src="https://github.com/user-attachments/assets/cfff30c3-eae0-4d8c-bcec-3d891368d662" />
+
+
+
+
+
+### Package Integration 
+
+Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
+For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
+```typst
+#import "@preview/cetz:0.4.1": canvas, draw
+#import "@preview/fletcher:0.5.8": diagram, edge, node
+
+#slide[
+  = CeTZ integration
+  #render(s => ({
+      import animation: *
+      let (pause,) = settings(hider: draw.hide.with(bounds: true))
+      canvas({
+        import draw: *
+        pause(s, circle((0, 0), fill: green))
+        s.push(auto) // update s
+        pause(s, circle((1, 0), fill: red))
+      })
+    },s)
+  )
+]
+
+#slide[
+  = Fletcher integration
+  #render(s => ({
+    import animation: *
+    diagram($
+        pause(#s, A edge(->)) #s.push(auto)
+          & pause(#s, B edge(->)) #s.push(auto)
+            pause(#s, edge(->, "d") & C) \
+          & pause(#s, D)
+    $,)
+  }, s,))
+]
+```
+Results: 
+
+<img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
+
+You can incrementally show the content from other package by wrap the functions in the `animate` function, with a modifiers that modifies the function's arguments to hide the content using `modifier`. 
+For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
+
+```typst
+#import "@preview/alchemist:0.1.6" as alc
+
+#let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
+#let (single,) = animation.animate(modifier: modifier, alc.single)
+#let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment) // hide the molecule with `none`
+
+#slide[
+  = Alchemist Molecules
+  #render(s => ({
+      alc.skeletize({
+        fragment(s, "H_3C")
+        s.push(auto)
+        single(s, angle: 1)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, angle: -1, from: 0)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, from: 0, angle: 1)
+        fragment(s, "CH_3")
+      })
+    },s)
+  )
+]
+```
+
+which results in 
+
+<img width="1008" height="879" alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
+
+
+## Versions
+### 0.2.0
+- Change the framework of animations, using one state for all cover functions.
+- Introduce `render` and `animation` for more flexible package integration.
+### 0.1.0 
+Initial Release
 
 ## Acknowledgement 
-Thanks [Mimideck package author](https://github.com/knuesel/typst-minideck) for the `minideck` package that inspires me the syntax and examples.
+Thanks [Minideck package author](https://github.com/knuesel/typst-minideck) for the `minideck` package that inspires me the syntax and examples.
 [Touying package authors](https://github.com/touying-typ/touying) and [Polylux author](https://github.com/polylux-typ/polylux) for inspring me the syntax and parsing method. 

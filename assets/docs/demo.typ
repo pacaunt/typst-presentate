@@ -137,10 +137,9 @@
 
   #import "@preview/alchemist:0.1.6" as alc
   #{
-    let modifier(func, ..args) = func(stroke: none, ..args)
+    let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
     let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
-    let (fragment,) = animation.animate(hider: it => none, alc.fragment)
-
+    let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment)  // hide the atoms
 
     utils.multicols(
       (1fr, 1fr),
@@ -1053,6 +1052,9 @@
 
 #empty-slide[
   #set align(center + horizon)
-  For more information, you can contact us \ 
-  
+  For more information, you can contact us at \
+  #link("https://github.com/pacaunt/typst-presentate/")[Presentate's github]\
+  (#link("https://github.com/pacaunt/typst-presentate/"))
+
+  Enjoy making presentation!
 ]
