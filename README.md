@@ -1,31 +1,30 @@
 # Presentate
-**Presentate** is a package for creating presentation in Typst. It comes with simple animations like `#pause`, `#meanwhile`, `#uncover`, and `#only`. For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/21792851/demo.pdf).
+**Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
+For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/21792851/demo.pdf).
 
-## Usage 
+## Simple Usage 
 Import the package with 
 ```typst
 #import "@preview/presentate:0.2.0": *
 ```
 and then, the functions are automatically available. 
 
-### creating slides 
+### Creating slides 
 ```typst
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
 
 #slide[
-  = Welcome 
+  Hello World!
+  #show: pause;
 
-  + First #pause 
-
-  + Second #pause 
-
-  + Third
+  This is `presentate`.
 ]
 ```
 
 Results in 
-![image](https://github.com/user-attachments/assets/89adc75e-be3c-471c-ac4f-5681feef17ca)
+<img width="1620" height="464" alt="example1" src="https://github.com/user-attachments/assets/8bc0d428-cf3f-4e49-96b2-093cbbf10e2e" />
+
 
 ### CeTZ, Equation, Pinit, and Fletcher Support
 Please look at the details in [demo](https://github.com/pacaunt/typst-presentate/blob/main/examples/demo.pdf).
