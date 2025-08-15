@@ -61,6 +61,28 @@ You can style the slides as you would do with normal Typst document. For example
 
 <img width="1479" height="850" alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
 
+### Relative Index Specification 
+You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
+This is useful for modifying steps of the animation so that some contents appear with or after another. 
+One application is to hide the marker of `enum` and `list`: 
+
+```typst
+
+#slide[
+  = List Hacks with Relative Index
+  #set list(marker: uncover(from: auto, update-pause: false, [-]))
+
+  - #show: pause; First Item.
+  - #show: pause; Second Item. 
+  - #show: pause; Third Item.
+]
+```
+
+<img width="1322" height="764" alt="image" src="https://github.com/user-attachments/assets/de1710c1-b6aa-4585-8a74-acfb3a394f72" />
+
+
+
+
 ### Package Integration 
 
 Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
@@ -68,9 +90,6 @@ For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) an
 ```typst
 #import "@preview/cetz:0.4.1": canvas, draw
 #import "@preview/fletcher:0.5.8": diagram, edge, node
-
-#set page(paper: "presentation-16-9")
-#set text(size: 25pt)
 
 #slide[
   = CeTZ integration
@@ -105,17 +124,14 @@ Results:
 <img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
 
 You can incrementally show the content from other package by wrap the functions in the `animate` function, with a modifiers that modifies the function's arguments to hide the content using `modifier`. 
-For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) pakcage: 
+For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
 
 ```typst
 #import "@preview/alchemist:0.1.6" as alc
 
-#set page(paper: "presentation-16-9")
-#set text(size: 25pt)
-
-#let modifier(func, ..args) = func(stroke: none, ..args)
+#let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
 #let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment)
+#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // hide the molecule with `fill: white`
 
 #slide[
   = Alchemist Molecules
@@ -140,6 +156,7 @@ For example, this molecule animation is created compatible with [Alchemist](http
 which results in 
 
 <img width="1073" height="927" alt="image" src="https://github.com/user-attachments/assets/7a79c210-c16d-4dca-959c-c26ba6752886" />
+
 
 
 ## Acknowledgement 
