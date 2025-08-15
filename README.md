@@ -101,9 +101,46 @@ For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) an
 ]
 ```
 Results: 
+
 <img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
 
- 
+You can incrementally show the content from other package by wrap the functions in the `animate` function, with a modifiers that modifies the function's arguments to hide the content using `modifier`. 
+For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) pakcage: 
+
+```typst
+#import "@preview/alchemist:0.1.6" as alc
+
+#set page(paper: "presentation-16-9")
+#set text(size: 25pt)
+
+#let modifier(func, ..args) = func(stroke: none, ..args)
+#let (single,) = animation.animate(modifier: modifier, alc.single)
+#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment)
+
+#slide[
+  = Alchemist Molecules
+  #render(s => ({
+      alc.skeletize({
+        fragment(s, "H_3C")
+        s.push(auto)
+        single(s, angle: 1)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, angle: -1, from: 0)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, from: 0, angle: 1)
+        fragment(s, "CH_3")
+      })
+    },s)
+  )
+]
+```
+
+which results in 
+
+<img width="1073" height="927" alt="image" src="https://github.com/user-attachments/assets/7a79c210-c16d-4dca-959c-c26ba6752886" />
+
 
 ## Acknowledgement 
 Thanks [Mimideck package author](https://github.com/knuesel/typst-minideck) for the `minideck` package that inspires me the syntax and examples.
