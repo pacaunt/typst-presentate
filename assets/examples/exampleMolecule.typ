@@ -7,7 +7,7 @@
 
 #let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
 #let (single,) = animation.animate(modifier: modifier, alc.single) 
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // set atom colors to white
+#let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment) // set atom colors to white
 
 #slide[
   = Alchemist Molecules

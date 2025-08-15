@@ -135,13 +135,11 @@
 
   Like the following molecule drawing animation from #footlink("https://typst.app/universe/package/alchemist")[Alchemist] package:
 
-  #import "@preview/alchemist:0.1.7" as alc
+  #import "@preview/alchemist:0.1.6" as alc
   #{
-    let modifier(func, ..args) = func(stroke: none, ..args)
+    let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
     let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
-    let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment)
-
-
+    let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment)  // hide the atoms
 
     utils.multicols(
       (1fr, 1fr),
@@ -1054,8 +1052,9 @@
 
 #empty-slide[
   #set align(center + horizon)
-  For more information, you can contact us at \ 
-  #link("https://github.com/pacaunt/typst-presentate/")[Presentate's github]
+  For more information, you can contact us at \
+  #link("https://github.com/pacaunt/typst-presentate/")[Presentate's github]\
+  (#link("https://github.com/pacaunt/typst-presentate/"))
 
   Enjoy making presentation!
 ]
