@@ -29,6 +29,36 @@ which results in
 
 You can style the slides as you would do with normal Typst document. For example, 
 
+```typst
+#set page(paper: "presentation-16-9")
+#set text(size: 25pt, font: "FiraCode Nerd Font Mono")
+#set align(horizon)
+
+#slide[
+  = Welcome to Presentate! 
+  \
+  A lazy author \
+  #datetime.today().display()
+]
+
+#set align(top)
+
+#slide[
+  == Tips for Typst.
+
+  #set align(horizon)
+  Do you know that $pi != 3.141592$?
+
+  #show: pause 
+  Yeah. Certainly.
+
+  #show: pause 
+  Also $pi != 22/7$.
+]
+
+
+```
+
 <img width="1479" height="850" alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
 
 
