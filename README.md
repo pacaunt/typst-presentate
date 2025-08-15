@@ -177,7 +177,12 @@ which results in
 <img width="1008" height="879" alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
 
 
-
+## Versions
+### 0.2.0
+- Change the framework of animations, using one state for all cover functions.
+- Introduce `render` and `animation` for more flexible package integration.
+### 0.1.0 
+Initial Release
 
 ## Acknowledgement 
 Thanks [Minideck package author](https://github.com/knuesel/typst-minideck) for the `minideck` package that inspires me the syntax and examples.
