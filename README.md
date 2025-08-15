@@ -65,21 +65,40 @@ You can style the slides as you would do with normal Typst document. For example
 ### Relative Index Specification 
 You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
 This is useful for modifying steps of the animation so that some contents appear with or after another. 
-One application is to hide the marker of `enum` and `list`: 
+One application is for showing contents in sync: 
 
 ```typst
-
 #slide[
-  = List Hacks with Relative Index
-  #set list(marker: uncover(from: auto, update-pause: false, [-]))
+  = Content in Sync
+  #table(columns: (1fr, 1fr), stroke: 1pt)[
+    First
 
-  - #show: pause; First Item.
-  - #show: pause; Second Item. 
-  - #show: pause; Third Item.
+    #show: pause;
+    I am
+
+    #show: pause;
+
+    in sync.
+  ][
+    // `[]` is a dummy content.
+    #uncover(1, [], update-pause: true)
+    Second
+
+    #show: pause;
+    I am
+
+    #show: pause;
+
+    in sync.
+    
+    #show: pause 
+    Heheh
+  ]
 ]
 ```
 
-<img width="1322" height="764" alt="image" src="https://github.com/user-attachments/assets/de1710c1-b6aa-4585-8a74-acfb3a394f72" />
+<img width="1463" height="842" alt="image" src="https://github.com/user-attachments/assets/cfff30c3-eae0-4d8c-bcec-3d891368d662" />
+
 
 
 
@@ -132,7 +151,7 @@ For example, this molecule animation is created compatible with [Alchemist](http
 
 #let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
 #let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // hide the molecule with `fill: white`
+#let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment) // hide the molecule with `none`
 
 #slide[
   = Alchemist Molecules
@@ -156,7 +175,8 @@ For example, this molecule animation is created compatible with [Alchemist](http
 
 which results in 
 
-<img width="1073" height="927" alt="image" src="https://github.com/user-attachments/assets/7a79c210-c16d-4dca-959c-c26ba6752886" />
+<img width="1008" height="879" alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
+
 
 
 
