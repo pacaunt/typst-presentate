@@ -23,6 +23,8 @@
       counter(heading), 
       counter(math.equation), 
     ),
+    add-page-index: 0, // for pdfpc and BeamerPresenter.
+    logical-slide: true,
   ),
 )
 

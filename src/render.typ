@@ -69,7 +69,15 @@
 }
 }
 
-#let transform(start: auto, body, ..funcs, repeat-last: true, hider: hide, update-pause: true, before-func: hide) = {
+#let transform(
+  start: auto,
+  body,
+  ..funcs,
+  repeat-last: true,
+  hider: hide,
+  update-pause: true,
+  before-func: hide,
+) = {
   context a.transform(
     states.get(),
     start: start,
@@ -119,4 +127,41 @@
     result.at(0)
   }
   states.update(s => func(s).at(-1, default: s))
+}
+
+#let step-item(body, numbering: auto, marker: auto, ..args) = context {
+  if body.func() != [].func() {
+    panic("Styling in step-list function is not supported.")
+  }
+
+  let numbering = if numbering == auto { enum.numbering }
+  let marker = if marker == auto { list.marker }
+
+  let inside-wrapper = it => pause({
+    // revert to default
+    set enum(numbering: numbering)
+    set list(marker: marker)
+    it
+  })
+
+  let children = body.children.map(i => {
+    if i.func() == enum.item {
+      let fields = i.fields()
+      let body = i.body
+      let number = fields.at("number", default: none)
+      enum.item(number, inside-wrapper(body))
+    } else if i.func() == list.item {
+      let body = i.body
+      list.item(inside-wrapper(body))
+    } else { i }
+  })
+  let cover = uncover.with(from: auto, update-pause: false)
+
+  let new-marker = if type(marker) == array { marker.map(cover) } else { cover(marker) }
+  let new-numbering = (..n) => cover(std.numbering(numbering, ..n))
+
+  set enum(numbering: new-numbering, ..args)
+  set list(marker: new-marker, ..args)
+
+  children.sum()
 }

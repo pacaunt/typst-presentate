@@ -137,9 +137,11 @@
 
 // Touying and Polylux's Idea.
 #let pdfpc-slide-markers(i) = context [
+  #let (info, ..x) = store.states.get()
+  #if not info.logical-slide { info.add-page-index += 1 }
   #metadata((t: "NewSlide")) <pdfpc>
-  #metadata((t: "Idx", v: here().page())) <pdfpc>
+  #metadata((t: "Idx", v: here().page() - 1)) <pdfpc>
   #metadata((t: "Overlay", v: i - 1)) <pdfpc>
-  #metadata((t: "LogicalSlide", v: counter(page).get().first())) <pdfpc>
+  #metadata((t: "LogicalSlide", v: counter(page).get().first() + info.add-page-index)) <pdfpc>
 ]
 

@@ -15,20 +15,21 @@
   })
 
   // Touying x Polylux's originals
-  pdfpc-slide-markers(i)
 
   {
     set heading(outlined: i == 1, bookmarked: i == 1)
 
     body
   }
+  v(0pt)
 
-  v(0pt, weak: true)
 
   // freeze page number, tricks from minideck.
   if i > 1 or not logical-slide {
     counter(page).update(x => x - 1)
   }
+
+  pdfpc-slide-markers(i)
 
   context if states.get().at(0).drafted {
     place(
@@ -40,9 +41,24 @@
   pagebreak(weak: true)
 }
 
-#let slide(body, steps: auto, body-fn: it => it, preamble: it => it, logical-slide: true) = {
+#let slide(
+  body,
+  steps: auto,
+  body-fn: it => it,
+  preamble: it => it,
+  logical-slide: true,
+) = {
   // Save the location, idea from Touying.
   context start-location.update(here())
+  states.update(s => {
+    let (info, ..x) = s
+    if not info.logical-slide {
+      info.add-page-index += 1
+    }
+    info.logical-slide = logical-slide
+
+    (info, ..x)
+  })
 
   let subslide = subslide.with(preamble: preamble, logical-slide: logical-slide)
   body = body-fn(body)
@@ -54,7 +70,9 @@
     let steps = steps
     let s = states.get()
     let (info, ..x) = s
-    if steps == auto { (steps,) = indices.resolve-indices(s) }
+    if steps == auto {
+      (steps,) = indices.resolve-indices(s)
+    }
     if not info.handout {
       // Polylux's originals
       for i in range(2, steps + 1) {
