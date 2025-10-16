@@ -63,7 +63,25 @@ You can style the slides as you would do with normal Typst document. For example
 
 ### Relative Index Specification 
 You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
+```typ
+#slide[
+  = Relative `auto` and `none` Indices
 
+  This is present first 
+
+  #show: pause 
+
+  #only(auto)[This came later, but *not* preserve space.]
+ _This will shift._
+
+ #uncover(none)[This comes with current `pause`.]
+
+ #show: pause 
+ This is the next `pause`.
+]
+```
+
+<img alt="image" src="https://github.com/user-attachments/assets/ddc51c6b-a2f6-444a-aee9-2c31dc282b59" />
 
 ### Varying Timeline
 You can specify the `update-pause` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
