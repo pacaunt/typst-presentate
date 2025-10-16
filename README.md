@@ -173,7 +173,7 @@ For example, this molecule animation is created compatible with [Alchemist](http
 
 #let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
 #let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,), ..args), alc.fragment) // hide the molecule with white color
+#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // set atom colors to white
 
 #slide[
   = Alchemist Molecules
@@ -197,7 +197,8 @@ For example, this molecule animation is created compatible with [Alchemist](http
 
 which results in 
 
-<img alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
+<img alt="image" src="https://github.com/user-attachments/assets/af9de234-aef8-4e01-a6c4-b6d28feef41f" />
+
 
 
 ## Versions
