@@ -103,16 +103,13 @@
 
     Slide animation requires information in type `content`; however, most packages for creating visual data output requires #emph[non-`content`] input, such as
 
-    #fragments(hider: utils.hide-enum-list)[
+    #step-item[
 
       - CeTZ: arrays of functions
-    ][
 
       - Fletcher: special metadata
-    ][
-
       - Alchemist: arrays of dictionary
-    ]
+    ]  
   ][
     #show: pause
 
@@ -135,11 +132,11 @@
 
   Like the following molecule drawing animation from #footlink("https://typst.app/universe/package/alchemist")[Alchemist] package:
 
-  #import "@preview/alchemist:0.1.6" as alc
+  #import "@preview/alchemist:0.1.8" as alc
   #{
     let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
     let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
-    let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment)  // hide the atoms
+    let (fragment,) = animation.animate(modifier: (func, ..args) => func(..args, colors: (white,)), alc.fragment)  // hide the atoms
 
     utils.multicols(
       (1fr, 1fr),
@@ -196,21 +193,18 @@
 
 
   #utils.multicols((1fr, 1fr), align: top)[
-    #animate-items[
+    #step-item[
       - revealing content step-by-step from `#show: pause`,
 
-    ][
       - revealing content specifically from
         `#uncover(..)` and `#only(..)`,
     ]
   ][
-    #animate-items[
+    #step-item[
       - transform content by `#transform(..)` ,
 
-    ][
       - relative index like `#auto` and `#none`,
 
-    ][
       - render frame for package integration, with `#animation` module.
     ]
   ]
@@ -314,16 +308,12 @@
 
   Presentate provides the following functions for creating dynamic slides:
 
-  #animate-items[
+  #step-item[
     + `#pause(..)` for basic reveal of content in chunks.
 
-  ][
     + `#uncover(..)` and `#only(..)`  for precise steps of revealing content.
-  ][
     + `#fragments(..)` for revealing content one-by-one.
-  ][
     + `#transform(..)` for transform the content by functions.
-  ][
     + `#render(..)` and `#animate(..)` for handling non-content type data.
   ]
 ]
@@ -374,42 +364,67 @@
 
   *Note:* default `#hide` function cannot hide the number or list markers.\
   To solve this, we will introduce the alternative way to 'hide' them.
+]
 
+#slide[The `#step-item` function][
+  This function was created specifically for step-by-step revealing lists and enums, with ability to hide the markers and numbers. 
+  #show: pause 
+  #let src = ```
+  #step-item[
+    + First Item 
+    + Second Item 
+    + Third Item
+  ]
+  ```
+  #utils.multicols((1fr,1fr), src, show-results(render-code(src)))
+]
 
+#slide[
+  It can be nested as long as you like. #let src = ```
+  #step-item[
+    + First Item
+      #step-item[
+        - Sub-First
+        - Sub-First-Second
+      ] 
+    + Second Item 
+    + Third Item
+  ]
+  ```
+  #utils.multicols((1fr,1fr), src)[
+    #show-results(render-code(src))
+    #show: pause 
+    It works by modifying `item` input and the markers with varying timeline of `#pause`.
+  ]
 ]
 
 #slide[The `#hider` argument][
   Every function that can 'hide' and reveal content has a named argument called `#hider`. This argument has a default value of Typst's native `#hide()` function.
 
   #show: pause
+  However, if you want other modes of _hiding_ something? E.g. make it _transparent_.
+  You can modify this with `#text.with(fill: gray.transparentize(50%))`:
 
-  However, this `#hide()` function cannot hide list and enum's markers effectively, as seen in the previous example (and actually can be changed to suit with your type).
-
-  #show: pause
-  We can hack using a new hider: `#utils.hide-enum-list()` function from the `#utils` module of our package. For example:
+  
 ]
 
 
 #slide[
   #codly(highlighted-lines: (2,))
   #let src = ```
-  #fragments(
-    hider: utils.hide-enum-list
-  )[
-    + A // space around is needed.
+  #let lg = gray.transparentize(50%)
+  #let pause = pause.with(hider: text.with(lg))
+  
+  Hello! 
+  #show: pause
 
-  ][+ B][+ C]
+  It's gray
   ```
-  #utils.multicols((1fr, 1fr), align: top)[
+  #utils.multicols((1fr, 0.5fr), align: top)[
     #src
   ][
     #show-results(render-code(src))
   ]
-  #show: pause
-  *Warning!* This hider _will affect_ the layout if the list is `#tight`,
-  so, new lines are needed to make it _non-tight_, and it _cannot be nested_.
-
-  This function is useful for both `#enum.item` and `#list.item`.
 ]
 
 
@@ -512,10 +527,9 @@
   + #show: pause;
     *Relative* index: `#auto` and `#none`, relative to _number of pauses_
 
-    #animate-items[
+    #step-item[
       - `#auto` means index _after_ the current number of pauses.
 
-    ][
       - `#none` means index _as same as_ the current number of pauses.
     ]
 
@@ -724,11 +738,9 @@
 
   However, to create animation with `#render` without generating #mnt.dtype("content") during the way, Presentate provides the same set of functionality like `#pause`, `#only`, `#fragments`, `#alert`, `#uncover`, and so on, with some key differences:
 
-  #animate-items[
+  #step-item[
     + These functions must be imported from `#animation` module.
-  ][
     + The functions will always accepts the _state_ (`#s`) as first positional argument.
-  ][
     + *You have to update the state variable (`#s`) manually*.
   ]
 ]
@@ -821,12 +833,10 @@
 
   The state variable `s` is an _array_, so updating it is basically _push_ the new information to it. The infomation added determine the current animation states as
 
-  #animate-items[
+  #step-item[
     - `#auto` is pushed to *increase the number of pauses by 1.*
-  ][
 
     - `1, 2, 3, ..` intergers are pushed to set the *current number of pauses*.
-  ][
     - `(1, 2,..)` array of integers are pushed to set the *minimum number of subslides*, _without_ updating pauses.
   ]
 ]
@@ -938,11 +948,9 @@
 
 #slide[Modes and Utility][
   Presentate provides three modes for different purposes:
-  #animate-items[
+  #step-item[
     - *Normal* for animated slides. [Default]
-  ][
     - *Handout* for disabling all animations.
-  ][
     - *Drafted* for showing the subslide number.
   ]
   #show: pause

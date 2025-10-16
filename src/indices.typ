@@ -5,12 +5,13 @@
 /// - auto: after current slide
 /// - int: absolute number. Set the pauses state to that number.
 /// - array of int: apply the animation on the subslide whose index is in the array, without affecting the pauses.
-/// - dictionary: in the form `(rel: int, to: indices)
+/// - dictionary: in the form `(rel: int, to: indices)`
 
 #let resolve-indices(s, ..inputs) = {
   let inputs = inputs.pos()
   let (info, ..idx) = s
   let pauses = 1
+  let saved = ()
   let max = (1,)
 
   let _get-pauses-and-max(idx, max: max, pauses: pauses) = {

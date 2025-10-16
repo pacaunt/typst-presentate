@@ -9,13 +9,7 @@
   return base
 }
 
-// This can be used to create multiple column layout. 
-#let multicols(columns, ..kwargs) = grid(columns: columns, gutter: 1em, ..kwargs) 
+// This can be used to create multiple column layout.
+#let multicols(columns, ..kwargs) = grid(columns: columns, gutter: 1em, ..kwargs)
 
-// Hide list marker and enum number, but shift the layout. To use this, change the hider to `utils.hide-enum-list` and create a  "non-tight" enum and list for not affecting the layout. 
-#let hide-enum-list = it => {
-  show list: hide
-  show enum: hide 
-  show: hide
-  it
-}
+

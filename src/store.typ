@@ -5,7 +5,7 @@
 
 #let default-states = (
   (
-    /// initial number of pauses
+    /// initial number of subslides required for rendering pauses
     pauses: 1,
     /// number of subslides required
     steps: 1,
@@ -36,4 +36,15 @@
     s.at(0) = utils.merge-dicts(base: s.at(0), options)
     return s
   })
+}
+
+#let is-kind(thing, kind) = {
+  if (
+    type(thing) == content
+      and thing.func() == metadata
+      and type(thing.value) == dictionary
+      and thing.value.kind == prefix + kind
+  ) {
+    true
+  } else { false }
 }
