@@ -1,4 +1,6 @@
-#import "@submit/presentate:0.2.0": *
+#import "@submit/presentate:0.2.1": *
+#import "@preview/layout-ltd:0.1.0": layout-limiter
+#show: layout-limiter.with(max-iterations: 3)
 
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
@@ -25,8 +27,29 @@
     #show: pause;
 
     in sync.
-    
-    #show: pause 
+
+    #show: pause
     Heheh
   ]
+]
+
+#slide[
+  #step-item[
+    - A
+      #step-item[
+        - H 
+        - I 
+        - J
+      ]
+    - B
+    - C
+  ]
+]
+
+#slide[
+  A 
+  #show: pause.with(update: false)
+  B
+  #show: pause 
+  C 
 ]

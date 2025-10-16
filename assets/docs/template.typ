@@ -1,4 +1,4 @@
-#import "@submit/presentate:0.2.0" as p: *
+#import "@submit/presentate:0.2.1" as p: *
 #import themes.simple: *
 #import "@preview/codly:1.3.0": *
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
@@ -14,16 +14,7 @@
 )
 
 #let slide = slide.with(align: horizon)
-#let animate-items(..args) = {
-  let kwargs = args.named() 
-  let args = args.pos() 
-  args = args.map(it => [ 
 
-  ] + it + [ 
-
-  ])
-  fragments(hider: utils.hide-enum-list, ..kwargs, ..args)
-} 
 #let show-results(output, title: []) = {
   [Output: ] + title
   rect(width: 100%, output, radius: 0.3cm)

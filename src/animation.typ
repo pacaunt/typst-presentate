@@ -101,6 +101,10 @@
 }
 
 #let alert(s, ..n, from: auto, to: (), body, func: emph) = {
+  let (info, ..x) = s
+  if info.handout {
+    func = it => it
+  }
   uncover(s, ..n, func(body), hider: it => body, from: from, to: to)
 }
 
@@ -114,16 +118,25 @@
 ) = {
   funcs
     .pos()
-    .map(func => (s, ..args) => wrapper(
-      s,
-      hider: {
-        if modifier != none {
-          // modifier will replace `hider` if it is specified.
-          it => modifier(func, ..args)
-        } else { hider }
-      },
-      func(..args),
-    ))
+    .map(func => (s, ..args) => {
+      if type(s) != array or type(s.at(0, default: none)) != dictionary {
+        panic(
+          "Did you forget to put the state `s` in the argument of the function `"
+            + repr(func)
+            + "` ?",
+        )
+      }
+      wrapper(
+        s,
+        hider: {
+          if modifier != none {
+            // modifier will replace `hider` if it is specified.
+            it => modifier(func, ..args)
+          } else { hider }
+        },
+        func(..args),
+      )
+    })
 }
 
 #let settings(hider: it => none, start: auto) = {
@@ -137,9 +150,11 @@
 
 // Touying and Polylux's Idea.
 #let pdfpc-slide-markers(i) = context [
+  #let (info, ..x) = store.states.get()
+  #if not info.logical-slide { info.add-page-index += 1 }
   #metadata((t: "NewSlide")) <pdfpc>
-  #metadata((t: "Idx", v: here().page())) <pdfpc>
+  #metadata((t: "Idx", v: here().page() - 1)) <pdfpc>
   #metadata((t: "Overlay", v: i - 1)) <pdfpc>
-  #metadata((t: "LogicalSlide", v: counter(page).get().first())) <pdfpc>
+  #metadata((t: "LogicalSlide", v: counter(page).get().first() + info.add-page-index)) <pdfpc>
 ]
 
