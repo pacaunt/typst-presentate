@@ -26,7 +26,7 @@ The easiest is to type `#show: pause`. For example,
 ```
 
 which results in 
-<img width="1620" height="464" alt="example1" src="https://github.com/user-attachments/assets/8bc0d428-cf3f-4e49-96b2-093cbbf10e2e" />
+<img alt="example1" src="https://github.com/user-attachments/assets/8bc0d428-cf3f-4e49-96b2-093cbbf10e2e" />
 
 You can style the slides as you would do with normal Typst document. For example, 
 
@@ -59,10 +59,15 @@ You can style the slides as you would do with normal Typst document. For example
 
 ```
 
-<img width="1479" height="850" alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
+<img alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
 
 ### Relative Index Specification 
 You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
+
+
+### Varying Timeline
+You can specify the `update-pause` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
+
 This is useful for modifying steps of the animation so that some contents appear with or after another. 
 One application is for showing contents in sync: 
 
@@ -96,7 +101,7 @@ One application is for showing contents in sync:
 ]
 ```
 
-<img width="1463" height="842" alt="image" src="https://github.com/user-attachments/assets/cfff30c3-eae0-4d8c-bcec-3d891368d662" />
+<img alt="image" src="https://github.com/user-attachments/assets/cfff30c3-eae0-4d8c-bcec-3d891368d662" />
 
 
 
@@ -140,17 +145,17 @@ For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) an
 ```
 Results: 
 
-<img width="833" height="973" alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
+<img alt="image" src="https://github.com/user-attachments/assets/971a4739-1c13-45f6-9699-308760dc34d9" />
 
 You can incrementally show the content from other package by wrap the functions in the `animate` function, with a modifiers that modifies the function's arguments to hide the content using `modifier`. 
 For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
 
 ```typst
-#import "@preview/alchemist:0.1.6" as alc
+#import "@preview/alchemist:0.1.8" as alc
 
 #let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
 #let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => none, alc.fragment) // hide the molecule with `none`
+#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,), ..args), alc.fragment) // hide the molecule with white color
 
 #slide[
   = Alchemist Molecules
@@ -174,10 +179,13 @@ For example, this molecule animation is created compatible with [Alchemist](http
 
 which results in 
 
-<img width="1008" height="879" alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
+<img alt="image" src="https://github.com/user-attachments/assets/e6e04579-e4a0-464e-b4b7-4189ad162d5d" />
 
 
 ## Versions
+### 0.2.1 
+- Added `step-item` function for revealing items step-by-step. 
+- Update the packages examples.
 ### 0.2.0
 - Change the framework of animations, using one state for all cover functions.
 - Introduce `render` and `animation` for more flexible package integration.
