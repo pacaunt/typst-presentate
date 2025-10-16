@@ -229,7 +229,7 @@
 #slide[Getting Started][
   Start with the following snippets:
   ```typ
-  #import "@preview/presentate:0.2.0": *
+  #import "@preview/presentate:0.2.1": *
   #set text(size: 25pt) // of your choice
 
   #slide[
@@ -805,7 +805,7 @@
 ]
 
 #let src3 = ```
-#import "@preview/cetz:0.4.1": canvas, draw
+#import "@preview/cetz:0.4.2": canvas, draw
 #render(s => ({
   import animation: *
   canvas({
@@ -907,7 +907,7 @@
   So we use the hider as a `#modifier` the function's argument.
 
   ```
-  #import "@preview/alchemist:0.1.6": *
+  #import "@preview/alchemist:0.1.8": *
   #let (single,) = animation.animate(
     single, modifier: (func, ..args) => func(stroke: 0pt, ..args)
   )
