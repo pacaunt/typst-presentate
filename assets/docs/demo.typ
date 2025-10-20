@@ -63,15 +63,8 @@
     Imagine creating visual graphs that update directly from your source project.
 
     #show: pause
-    #let _alert(..args, body) = {
-      let kwargs = args.named()
-      let n = args.pos() 
-      if n.len() == 0 {
-        n = (auto,)
-      } 
-      alert(..n, ..kwargs, body)
-    }
-    So you #_alert[don't have to update them manually].
+
+    So you #alert(auto)[don't have to update them manually].
   ]
 ]
 
@@ -641,15 +634,15 @@
   Most of the functions we provide up until now can only create animations of hiding and showing stuff. How about _changing_ its appearance? e.g. color?
 
   #show: pause
-  You can #alert[emphasize] your words by using `#alert` like in this sentence. \
-  `#alert` can #alert[alert] the audience by wrapping the input with its `#func` argument,\  which is `#emph` function by default.
+  You can #alert(auto)[emphasize] your words by using `#alert` like in this sentence. \
+  `#alert` can #alert(auto)[alert] the audience by wrapping the input with its `#func` argument,\  which is `#emph` function by default.
 
   #show: pause
   #let src = ```
-  Please #alert[FOCUS] me
-  and #alert(
-    func: text.with(fill: red), [Warn]
-  ) them.
+  Please #alert(auto)[FOCUS] me
+  and 
+  #alert(auto, func: text.with(red))[Warn]
+  them.
   ```
   #utils.multicols((70%, 1fr))[
     #src
