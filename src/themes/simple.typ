@@ -1,8 +1,6 @@
 #import "../presentate.typ" as p
 #import "../store.typ": *
 
-//#let used-lbl = label(prefix + "_used-headings") // prevent query loops
-
 #let save-headings = state(prefix + "_headings")
 
 #let current-section() = {
@@ -13,7 +11,7 @@
   context {
     let hs = save-headings.get() 
     if hs != () and hs.last().level == 2 {
-      hs.last()
+      hs.last() // If new section is reached, this will return empty.
     }
   }
 }
@@ -40,6 +38,7 @@
     (title, body) = args
     title = heading(level: 2, title)
   }
+  // Save both level 1 and level 2 headings.
   context save-headings.update(query(selector.or(heading.where(level: 1, outlined: true), heading.where(level: 2, outlined: true)).before(here())))
   p.slide(
     ..kwargs,
@@ -99,7 +98,6 @@
   show math.equation: set text(font: "Lete Sans Math")
 
   empty-slide(
-    logical-slide: false,
     {
       set align(center + horizon)
       block(
@@ -107,7 +105,7 @@
         inset: (bottom: 1.2em),
         stroke: (bottom: 2pt + eastern),
       )
-      //v(-1em)
+ 
       emph(subtitle)
       linebreak()
       grid(
@@ -121,7 +119,6 @@
   show heading.where(level: 1): h => {
     set page(fill: eastern)
     empty-slide(
-      logical-slide: false,
       {
         set align(center + horizon)
         set text(size: 1.5em, weight: "bold", fill: white)
