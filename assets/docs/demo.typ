@@ -63,8 +63,15 @@
     Imagine creating visual graphs that update directly from your source project.
 
     #show: pause
-
-    So you #alert[don't have to update them manually].
+    #let _alert(..args, body) = {
+      let kwargs = args.named()
+      let n = args.pos() 
+      if n.len() == 0 {
+        n = (auto,)
+      } 
+      alert(..n, ..kwargs, body)
+    }
+    So you #_alert[don't have to update them manually].
   ]
 ]
 

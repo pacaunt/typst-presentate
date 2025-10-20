@@ -98,15 +98,21 @@
 }
 
 #let alert(..n, from: (), to: (), body, func: emph, update-pause: false) = {
-  context a.alert(states.get(), ..n, body, from: from, to: to, func: func)
-  states.update(s => {
-    let n = n.pos()
-    if update-pause {
-      s + (..n, from, to)
-    } else {
-      s + ((..n, from, to),)
-    }
-  })
+  let kwargs = n.named()
+  let n = n.pos()
+  if n.len() == 0 {
+    n = (auto,)
+  }
+  context {
+    states.update(s => {
+      if update-pause {
+        s + (..n, from, to)
+      } else {
+        s + ((..n, from, to),)
+      }
+    })
+    a.alert(states.get(), ..n, body, from: from, to: to, func: func)
+  }
 }
 
 #let render(start: auto, func) = {
