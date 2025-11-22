@@ -118,20 +118,25 @@
 #let render(start: auto, func) = {
   states.update(s => s + (start,))
   // func must return two things: display content and updated states.
+  assert(
+    type(func) == function,
+    message: "`render` accepts only a function that returns an array of length two consisting of body and updated states.",
+  )
+
   context {
     let result = func(states.get())
-
-    assert(
-      type(func) == function,
-      message: "`render` accepts only a function that returns an array of length two consisting of body and updated states.",
-    )
 
     let message = "Returning value from the render function must be an array of length 2: one for the content, and the other for updated states."
 
     assert(type(result) == array, message: message)
     assert(result.len() == 2, message: message)
+    assert(
+      type(result.at(-1)) == array and type(result.at(-1).at(0)) == dictionary,
+      message: "Invalid State Modification. The state `s` is an array of indices. You must update the array with the array methods.",
+    )
     result.at(0)
   }
+
   states.update(s => func(s).at(-1, default: s))
 }
 
@@ -148,18 +153,17 @@
     panic("Styling in step-list function is not supported.")
   }
 
+  let pause = pause.with(hider: hider)
+
   let numbering = if numbering == auto { enum.numbering }
   let marker = if marker == auto { list.marker }
 
-  let inside-wrapper(it) = pause(
-    {
-      // revert to default
-      set enum(numbering: numbering, ..args)
-      set list(marker: marker, ..args)
-      body-wrapper(it)
-    },
-    hider: hider,
-  )
+  let inside-wrapper(it) = pause({
+    // revert to default
+    set enum(numbering: numbering, ..args)
+    set list(marker: marker, ..args)
+    body-wrapper(it)
+  })
 
   let children = body.children.map(i => {
     if i.func() == enum.item {
