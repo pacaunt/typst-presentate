@@ -141,6 +141,7 @@
   marker: auto,
   body-wrapper: it => it,
   marker-wrapper: it => it,
+  hider: hide,
   ..args,
 ) = context {
   if body.func() != [].func() {
@@ -150,12 +151,15 @@
   let numbering = if numbering == auto { enum.numbering }
   let marker = if marker == auto { list.marker }
 
-  let inside-wrapper = it => pause({
-    // revert to default
-    set enum(numbering: numbering, ..args)
-    set list(marker: marker, ..args)
-    body-wrapper(it)
-  })
+  let inside-wrapper(it) = pause(
+    {
+      // revert to default
+      set enum(numbering: numbering, ..args)
+      set list(marker: marker, ..args)
+      body-wrapper(it)
+    },
+    hider: hider,
+  )
 
   let children = body.children.map(i => {
     if i.func() == enum.item {
@@ -172,7 +176,7 @@
       list.item(inside-wrapper(body))
     } else { i }
   })
-  let cover = it => pause(update: false, marker-wrapper(it))
+  let cover(it) = pause(update: false, marker-wrapper(it))
 
   let new-marker = if type(marker) == array { marker.map(cover) } else { cover(marker) }
   let new-numbering = (..n) => cover(std.numbering(numbering, ..n))
@@ -181,50 +185,5 @@
   set list(marker: new-marker, ..args)
 
   children.sum()
-}
-
-#let next = metadata((kind: prefix + "_next-marker"))
-
-#let make-cover(..funcs, modifier: (func, ..args) => func(..args)) = {
-  funcs
-    .pos()
-    .map(func => {
-      (..args) => metadata((
-        kind: prefix + "_cover",
-        func: func,
-        modifier: modifier,
-        args: arguments(..args),
-      ))
-    })
-}
-
-#let parser(
-  arr,
-  hider: it => none,
-  start: auto,
-  func: (arr, ..args) => arr.sum(),
-  ..args,
-  mapper: it => it,
-) = {
-  states.update(s => s + (start,))
-  context {
-    let s = states.get()
-    let (info, ..x) = s
-    let internal-s = ()
-    let result = ()
-    for elem in arr {
-      if is-kind(elem, "_cover") {
-        let (func, modifier, args) = elem.value
-        result.push(mapper(a.pause(s, hider: it => modifier(func, ..args), func(..args))))
-      } else if is-kind(elem, "_next-marker") {
-        internal-s.push(auto)
-        s.push(auto)
-      } else {
-        result.push(a.pause(s, hider: hider, mapper(elem)))
-      }
-    }
-    states.update(s => s + internal-s)
-    func(result, ..args)
-  }
 }
 
