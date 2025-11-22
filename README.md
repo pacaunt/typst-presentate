@@ -202,6 +202,8 @@ which results in
 
 
 ## Versions
+### 0.2.2 
+- Added `hider` argument to `#step-item` function ([#8](https://github.com/pacaunt/typst-presentate/issues/8)).
 ### 0.2.1 
 - Added `step-item` function for revealing items step-by-step. 
 - Update the packages examples.
