@@ -1,13 +1,13 @@
-#import "@local/presentate:0.2.1" as p: *
+#import "@local/presentate:0.2.2" as p: *
 #import themes.simple: *
 #import "@preview/codly:1.3.0": *
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
-#import "@preview/cetz:0.4.1" as cetz: canvas, draw
+#import "@preview/cetz:0.4.2" as cetz: canvas, draw
 #import "@preview/pinit:0.2.2": *
 #import "@preview/gentle-clues:1.2.0" as gtc
 #import "@preview/mantys:1.0.2" as mnt
 #import "@preview/layout-ltd:0.1.0": layout-limiter
-#import "@preview/alchemist:0.1.7": single, fragment, skeletize, branch
+#import "@preview/alchemist:0.1.8": single, fragment, skeletize, branch
 #let (single,) = animation.animate(
   single,
   modifier: (func, ..args) => func(stroke: 0pt, ..args),

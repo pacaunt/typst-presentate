@@ -28,7 +28,7 @@
   #utils.multicols(2)[
     #cetz.canvas({
       import cetz.draw: *
-      import "@preview/cetz-plot:0.1.2": *
+      import "@preview/cetz-plot:0.1.3": *
       plot.plot(
         name: "p",
         size: (4, 4),
@@ -109,7 +109,7 @@
 
       - Fletcher: special metadata
       - Alchemist: arrays of dictionary
-    ]  
+    ]
   ][
     #show: pause
 
@@ -136,7 +136,7 @@
   #{
     let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
     let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
-    let (fragment,) = animation.animate(modifier: (func, ..args) => func(..args, colors: (white,)), alc.fragment)  // hide the atoms
+    let (fragment,) = animation.animate(modifier: (func, ..args) => func(..args, colors: (white,)), alc.fragment) // hide the atoms
 
     utils.multicols(
       (1fr, 1fr),
@@ -229,7 +229,7 @@
 #slide[Getting Started][
   Start with the following snippets:
   ```typ
-  #import "@preview/presentate:0.2.1": *
+  #import "@preview/presentate:0.2.2": *
   #set text(size: 25pt) // of your choice
 
   #slide[
@@ -251,7 +251,7 @@
 #slide[
   You may styling the way you want, for example:
   ```
-  #import "@submit/presentate:0.2.0": *
+  #import "@preview/presentate:0.2.2": *
   #set page(paper: "presentation-16-9")
   #set text(size: 25pt, font: "FiraCode Nerd Font Mono")
   #set align(horizon)
@@ -261,11 +261,6 @@
     #datetime.today().display()
   ]
   ```<codly-ex2-1>
-
-
-
-
-
 ]
 
 #slide[
@@ -367,16 +362,16 @@
 ]
 
 #slide[The `#step-item` function][
-  This function was created specifically for step-by-step revealing lists and enums, with ability to hide the markers and numbers. 
-  #show: pause 
+  This function was created specifically for step-by-step revealing lists and enums, with ability to hide the markers and numbers.
+  #show: pause
   #let src = ```
   #step-item[
-    + First Item 
-    + Second Item 
+    + First Item
+    + Second Item
     + Third Item
   ]
   ```
-  #utils.multicols((1fr,1fr), src, show-results(render-code(src)))
+  #utils.multicols((1fr, 1fr), src, show-results(render-code(src)))
 ]
 
 #slide[
@@ -386,14 +381,14 @@
       #step-item[
         - Sub-First
         - Sub-First-Second
-      ] 
-    + Second Item 
+      ]
+    + Second Item
     + Third Item
   ]
   ```
-  #utils.multicols((1fr,1fr), src)[
+  #utils.multicols((1fr, 1fr), src)[
     #show-results(render-code(src))
-    #show: pause 
+    #show: pause
     It works by modifying `item` input and the markers with varying timeline of `#pause`.
   ]
 ]
@@ -405,7 +400,7 @@
   However, if you want other modes of _hiding_ something? E.g. make it _transparent_.
   You can modify this with `#text.with(fill: gray.transparentize(50%))`:
 
-  
+
 ]
 
 
@@ -414,8 +409,8 @@
   #let src = ```
   #let lg = gray.transparentize(50%)
   #let pause = pause.with(hider: text.with(lg))
-  
-  Hello! 
+
+  Hello!
   #show: pause
 
   It's gray
@@ -640,7 +635,7 @@
   #show: pause
   #let src = ```
   Please #alert(auto)[FOCUS] me
-  and 
+  and
   #alert(auto, func: text.with(red))[Warn]
   them.
   ```
@@ -746,7 +741,7 @@
 ]
 
 #let src1 = ```
-#import "@preview/cetz:0.4.1": canvas, draw
+#import "@preview/cetz:0.4.2": canvas, draw
 #render(s => ({
   import animation: *
   canvas({
@@ -758,7 +753,7 @@
 }, s))
 ```
 #let src2 = ```
-#import "@preview/cetz:0.4.1": canvas, draw
+#import "@preview/cetz:0.4.2": canvas, draw
   #render(s => ({
     import animation: *
     let (pause,) = settings(hider: draw.hide.with(bounds: true))
@@ -797,7 +792,7 @@
 #slide[
   You can change the default `#hider` by using `#settings` functions, which will return a dictionary containing the functions:
   ```typc
-  // import "@preview/cetz:0.4.1": canvas, draw
+  // import "@preview/cetz:0.4.2": canvas, draw
   let (uncover, pause) = settings(hider: draw.hide.with(bounds: true))
   ```
   For this change, the last example would become the
