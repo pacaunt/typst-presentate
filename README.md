@@ -6,7 +6,7 @@ For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.2.1": *
+#import "@preview/presentate:0.2.2": *
 ```
 and then, the functions are automatically available. 
 
