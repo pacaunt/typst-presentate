@@ -121,9 +121,7 @@
     .map(func => (s, ..args) => {
       if type(s) != array or type(s.at(0, default: none)) != dictionary {
         panic(
-          "Did you forget to put the state `s` in the argument of the function `"
-            + repr(func)
-            + "` ?",
+          "Did you forget to put the state `s` in the argument of the function `" + repr(func) + "` ?",
         )
       }
       wrapper(
@@ -138,6 +136,72 @@
       )
     })
 }
+
+#let tag(s, name, body, hider: auto) = {
+  let (info, ..x) = s
+  let shown = info.tags
+  if hider == auto { hider = info.tag-hider }
+  if name in shown { body } else { hider(body) }
+}
+
+#let motion(
+  s,
+  // contains the tags.
+  func,
+  /// This is an array of motion control.
+  /// (A, B, C) means show A then B then C.
+  /// (A, (B, C), C) means shown A, then B + C, and then C.
+  controls: (),
+  hider: it => none,
+  start: none,
+) = {
+  let (info, ..x) = s
+  let (pauses, results: (start,)) = indices.resolve-indices(s, start)
+  let n = info.subslide
+
+  info.tag-hider = hider
+  // Change the array of controlled tags into dictionary of state.
+  let tags = controls
+    .flatten()
+    .map(name => {
+      if name.contains(".") {
+        name.match(regex(".+\.")).text.trim(".")
+      } else { name }
+    })
+    .dedup()
+  // A dictionary contains the states of each tags.
+  let tags-status = tags.zip((false,) * tags.len()).to-dict()
+  let shown-filter(status) = status.pairs().filter(((k, v)) => v).map(((k, v)) => k)
+
+  let rules = ()
+  let shown = ()
+  for rule in controls {
+    if type(rule) == str { rule = (rule,) }
+    shown = ()
+    for name in rule {
+      if name.contains(".") {
+        // alter the showing state of the objects.
+        let (tag, status) = name.split(".")
+        if status == "start" { tags-status.at(tag) = true } else if status == "stop" { tags-status.at(tag) = false }
+      } else {
+        // show only one time
+        shown.push(name)
+      }
+    }
+    shown.push(shown-filter(tags-status))
+    rules.push(shown.flatten())
+  }
+
+  let shown-tags = if n < start { () } else if n - start >= rules.len() { 
+    shown-filter(tags-status)
+   } else {
+    rules.at(n - start)
+  }
+  // put the information to the state.
+  info.tags = shown-tags
+  func((info,))
+}
+
 
 #let settings(hider: it => none, start: auto) = {
   (

@@ -37,7 +37,9 @@
         } else {
           panic("Cannot resolve relative index.")
         }
-        max.push(ref + i.at("rel"))
+        let idx = ref + i.at("rel")
+        pauses = idx
+        max.push(idx)
       }
     }
     return (pauses, max)

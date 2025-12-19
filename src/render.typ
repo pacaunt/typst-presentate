@@ -1,12 +1,12 @@
 #import "utils.typ"
 #import "store.typ": is-kind, prefix, states
 #import "indices.typ"
-#import "animation.typ" as a
+#import "animation.typ"
 /// This file is use to render in mark up mode [content output] only.
 
 #let pause(body, hider: hide, update: true) = {
   context {
-    a.pause(states.get() + (auto,), hider: hider, {
+    animation.pause(states.get() + (auto,), hider: hider, {
       if update { states.update(s => if update { s + (auto,) } else { s + ((auto,),) }) }
       body
     })
@@ -23,7 +23,7 @@
         s + ((..n, from, to),)
       }
     })
-    a.uncover(states.get(), ..n, hider: hider, from: from, to: to, {
+    animation.uncover(states.get(), ..n, hider: hider, from: from, to: to, {
       body
     })
   }
@@ -51,12 +51,12 @@
       for (i, body) in bodies.enumerate() {
         if i > 0 { states.update(s => s + (auto,)) }
 
-        a.uncover(s, from: start + i, body, hider: hider)
+        animation.uncover(s, from: start + i, body, hider: hider)
       }
     }
   } else {
     context {
-      a.fragments(states.get(), start: start, ..bodies, hider: hider, item-wrapper: item-wrapper)
+      animation.fragments(states.get(), start: start, ..bodies, hider: hider, item-wrapper: item-wrapper)
     }
     states.update(s => {
       if update-pause {
@@ -78,7 +78,7 @@
   update-pause: true,
   before-func: hide,
 ) = {
-  context a.transform(
+  context animation.transform(
     states.get(),
     start: start,
     body,
@@ -111,7 +111,7 @@
         s + ((..n, from, to),)
       }
     })
-    a.alert(states.get(), ..n, body, from: from, to: to, func: func)
+    animation.alert(states.get(), ..n, body, from: from, to: to, func: func)
   }
 }
 
@@ -191,3 +191,35 @@
   children.sum()
 }
 
+#let tag = animation.tag
+
+#let motion(
+  // contains the tags.
+  func,
+  /// This is an array of motion control.
+  /// (A, B, C) means show A then B then C.
+  /// (A, (B, C), C) means shown A, then B + C, and then C.
+  controls: (),
+  hider: hide,
+  start: none,
+  update-pause: false,
+) = {
+  let n = controls.len()
+  if n == 0 { n = 1 }
+  context {
+    states.update(s => {
+      if update-pause {
+        s + (start,) + (auto,) * (n - 1)
+      } else {
+        s + ((start,) + (auto,) * (n - 1),)
+      }
+    })
+    animation.motion(
+      states.get(),
+      func,
+      controls: controls,
+      hider: hider,
+      start: start,
+    )
+  }
+}
