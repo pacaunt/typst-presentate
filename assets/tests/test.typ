@@ -246,3 +246,10 @@
   #show: pause
   Good 
 ]
+
+
+#slide[
+  #uncover((rel: 1), [This is at subslide 1], update-pause: true)
+  #show: pause; 
+  Hey
+]

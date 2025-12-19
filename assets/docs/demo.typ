@@ -229,7 +229,7 @@
 #slide[Getting Started][
   Start with the following snippets:
   ```typ
-  #import "@preview/presentate:0.2.2": *
+  #import "@preview/presentate:0.2.3": *
   #set text(size: 25pt) // of your choice
 
   #slide[
@@ -251,7 +251,7 @@
 #slide[
   You may styling the way you want, for example:
   ```
-  #import "@preview/presentate:0.2.2": *
+  #import "@preview/presentate:0.2.3": *
   #set page(paper: "presentation-16-9")
   #set text(size: 25pt, font: "FiraCode Nerd Font Mono")
   #set align(horizon)
@@ -520,15 +520,12 @@
   + #show: pause; *Absolute* index: the actual integer subslide number, and
 
   + #show: pause;
-    *Relative* index: `#auto` and `#none`, relative to _number of pauses_
-
+    *Relative* index: `#auto`, `#none` and `(rel: int)`, relative to _number of pauses_
     #step-item[
       - `#auto` means index _after_ the current number of pauses.
-
       - `#none` means index _as same as_ the current number of pauses.
+      - `#(rel: int)` means index that is `int` subslides away from the current number of pauses. (e.g. `#(rel: 1)` is equivalent to `#auto`).
     ]
-
-
 ]
 
 #slide[
@@ -549,8 +546,8 @@
   ][
     #render-result(src)
   ]
-
 ]
+
 
 #slide[Varying Timeline][
   If you look at the last example carefully, it is noticeable that when `After Content` appears, it follows the `#show: pause` function, as if there where no `#uncover` in between.
@@ -625,6 +622,26 @@
   ]
 ]
 
+#slide[
+  Moreover, you can set some content to be shown _before_ one another by using _negative relative indices_ such as `#(rel: -1)` in the example.
+  #let src = ```
+  #step-item[
+    - First
+    - Second
+    - Third
+  ]
+  #only((rel: -1), [Second Too!], update-pause: true)
+  #show: pause; After Second.
+  ```
+  #utils.multicols((55%, 1fr))[
+    #codly(highlighted-lines: (6,))
+    #src
+  ][
+    #render-result(src)
+    So the `After Second` is revealed at the same time as the last item.
+  ]
+]
+
 #slide[Animated Decorations][
   Most of the functions we provide up until now can only create animations of hiding and showing stuff. How about _changing_ its appearance? e.g. color?
 
@@ -685,6 +702,86 @@
     You can use this to highlight different lines of code with #footlink("https://typst.app/universe/package/codly/")[Codly].
     #render-result(src)
   ]
+]
+
+#let src-motion = ```
+#motion(s => [#table(
+    columns: (1fr, 1fr),
+    tag(s, "A", [Ant]),
+    tag(s, "B", [Bird]),
+    tag(s, "C", [Cat]),
+    tag(s, "D", [Dog])
+)],
+  controls: (
+    "A",
+    ("A", "B"),
+    "C.start",
+    "D",
+    ("C.stop", "B")
+  ))
+```
+#slide[The `#motion` workspace][
+  I have dreamed about having an interface to modify the flow of animations as in Powerpoint or Keynote. This is the first attempt of how to do it, see the following example:
+  #block(columns(2, src-motion))
+]
+
+#slide[
+  The `#motion` function accepts a callback `s => [..]`
+  where `[..]` can be any content.
+
+  Inside the callback function, the variable `s` called the _status_ is read by the _named_ group of content indicated by their `#tag` function.  This function has the following anatomy:
+  ```
+  #tag(/* status */, /* ID */, /* body */)
+  ```
+  where `ID` means the name of the group. It should be a unique string that you call this group of content, and `body` is the content to be "tagged".
+]
+
+#slide[
+  Therefore, with the `#tag` function, the content has its own name. The sequence of displaying each content can be controlled precisely by specifying the `controls` argument of the `#motion` function using _their names_.
+
+  Just like moving around the control panel in Powerpoint.
+
+  Let's see the result and how to control the sequence of these contents.
+]
+
+#slide[
+  #utils.multicols((1fr, 3in))[
+
+    The `controls` argument must receive an array that specifies displaying sequence of showing the content, which can be
+    #set raw(lang: "typc")
+    - A single name, like `"A"`, to show the content once.
+    - An array of names, like `("A", "B")` in line 10, to show both `"A"` and `"B"` once.
+    - Name + `".start"` to _start_ showing the content, and
+    - Name + `".stop"` to _stop_ showing (hide) the content.
+  ][
+    #render-result(src-motion)
+    #uncover(5, [], update-pause: true)
+    #show: pause 
+    Note that, you can select your own `#hider` in each `#tag` or all in `#motion` function. See next:
+  ]
+]
+#let src-motion2 = ```
+#import "@preview/cetz:0.4.2": canvas, draw
+#motion(s => [
+  #canvas({ import draw: *; scale(3)
+    tag(s, "arc", arc((0, 0), start: 30deg, stop: 150deg, name: "R"))
+    tag(s, "line1", line("R.start", "R.origin"))
+    tag(s, "line2", line("R.end", "R.origin"))
+  })
+], hider: draw.hide.with(bounds: true), controls: (
+  "line2.start", "line1.start", "arc.start"
+))
+```
+#slide[
+  #src-motion2
+]
+
+#slide[
+  The result is shown here. In this example, the `#hider` used is native `#draw.hide` of CeTZ module, so the elements can be covered compatibly.
+
+  With the `controls` argument, *the content can be shown regardless of their definition order* in the source code, like drawing this fan shape.
+
+  #render-result(src-motion2)
 ]
 
 #slide[Rendering Stuffs][
@@ -818,6 +915,7 @@
 ```
 
 #slide[
+  #v(-0.5em)
   *Updating States*: In render function, the state variable `#s` is the sole information about the number of subslides needed to render all of the animations.
 
   #show: pause
@@ -830,8 +928,8 @@
 
   #step-item[
     - `#auto` is pushed to *increase the number of pauses by 1.*
-
-    - `1, 2, 3, ..` intergers are pushed to set the *current number of pauses*.
+    - `(rel: int)` relative index is pushed to *modify the number of pauses by `int`*.
+    - `1, 2, 3, ..` integers are pushed to set the *current number of pauses*.
     - `(1, 2,..)` array of integers are pushed to set the *minimum number of subslides*, _without_ updating pauses.
   ]
 ]
@@ -977,7 +1075,6 @@
 
   - `#focus-slide(body)` which is colored, vibrant slide for getting attention.
   The preview is on the next slide:
-
 ]
 
 #slide[
