@@ -1,6 +1,6 @@
-#import "@submit/presentate:0.2.0": * 
+#import "@local/presentate:0.2.3": * 
 
 // #include "example0.typ"
-#include "exampleMolecule.typ" 
-
-//#include "example2.typ"
+#include "example2.typ"
+// #include "exampleMotion.typ" 
+// #include "exampleAuto.typ"

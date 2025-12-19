@@ -218,3 +218,38 @@
     })
   }, s))
 ]
+
+#slide[
+  = Some Interesting Drawing
+  Hey 
+  #show: pause; 
+  Hello
+  #motion(start: auto, s => [
+    #set align(center + horizon)
+    #canvas({
+      import draw: * 
+      tag(s, "A", {
+        circle((0, 0))
+      })
+      tag(s, "A1", scope({
+        scale(2)
+        rect((-1, -1), (1, 1))
+      }))
+      tag(s, "A2", {
+        rect((-1, -1), (1, 1))
+      })
+    })
+  ], controls: (
+    "A", "A2", "A1.start", "A1.stop"
+  ), hider: draw.hide.with(bounds: true), update-pause: true)
+  #uncover((rel: -1), [H], update-pause: true)
+  #show: pause
+  Good 
+]
+
+
+#slide[
+  #uncover((rel: 1), [This is at subslide 1], update-pause: true)
+  #show: pause; 
+  Hey
+]

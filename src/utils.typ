@@ -11,5 +11,3 @@
 
 // This can be used to create multiple column layout.
 #let multicols(columns, ..kwargs) = grid(columns: columns, gutter: 1em, ..kwargs)
-
-
