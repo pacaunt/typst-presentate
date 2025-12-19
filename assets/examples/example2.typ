@@ -1,6 +1,6 @@
-#import "@submit/presentate:0.2.0": * 
+#import "@local/presentate:0.2.3": * 
 #set page(paper: "presentation-16-9")
-#set text(size: 25pt, font: "FiraCode Nerd Font Mono")
+#set text(size: 25pt, font: "JetBrainsMono NF")
 #set align(horizon)
 
 #slide[
@@ -24,4 +24,3 @@
   #show: pause 
   Also $pi != 22/7$.
 ]
-

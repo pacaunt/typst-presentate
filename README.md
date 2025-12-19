@@ -1,12 +1,12 @@
 # Presentate
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
-For usage, please refer to [demo.pdf](https://github.com/user-attachments/files/23690050/demo.pdf)
+For usage, please refer to [demo.pdf](./assets/docs/demo.pdf)
 
 
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.2.2": *
+#import "@preview/presentate:0.2.3": *
 ```
 and then, the functions are automatically available. 
 
@@ -32,12 +32,13 @@ You can style the slides as you would do with normal Typst document. For example
 
 ```typst
 #set page(paper: "presentation-16-9")
-#set text(size: 25pt, font: "FiraCode Nerd Font Mono")
+#set text(size: 25pt, font: "JetBrainsMono NF")
 #set align(horizon)
 
 #slide[
   = Welcome to Presentate! 
-  \ A lazy author \
+  \
+  A lazy author \
   #datetime.today().display()
 ]
 
@@ -55,33 +56,40 @@ You can style the slides as you would do with normal Typst document. For example
   #show: pause 
   Also $pi != 22/7$.
 ]
-
-
 ```
 
-<img alt="example2" src="https://github.com/user-attachments/assets/c071e008-a1eb-4c59-b693-fbeea9bf70aa" />
+<img alt="example2" src="./assets/examples/example2.png" />
 
 ### Relative Index Specification 
-You can use `none` and `auto` to specify the index as *with previous animation* or *after previous animation*. 
+You can use `none` and `auto`, or even `(rel: int)` to specify the index as *with previous animation*, *after previous animation*, or `int` subslides away from the current number of pauses.
 ```typ
+// Set the cover functions to see the effect better.
+#let grayed = text.with(fill: gray.transparentize(50%))
+
+#let pause = pause.with(hider: grayed)
+#let uncover = uncover.with(hider: grayed)
+
 #slide[
-  = Relative `auto` and `none` Indices
+  = Relative `auto`, `none`, and `(rel: int)` Indices
 
-  This is present first 
+  This is present first
 
-  #show: pause 
+  #show: pause
 
   #only(auto)[This came later, but *not* preserve space.]
- _This will shift._
+  _This will shift. $->$_
 
- #uncover(none)[This comes with current `pause`.]
+  #uncover(none)[This comes with current `pause`.]
 
- #show: pause 
- This is the next `pause`.
+  #pause[This is the second `pause`.]
+
+  #pause[This is the third `pause`]
+
+  #uncover((rel: -1), [But This come before.])
 ]
 ```
 
-<img alt="image" src="https://github.com/user-attachments/assets/ddc51c6b-a2f6-444a-aee9-2c31dc282b59" />
+<img alt="image" src="./assets/examples/exampleAuto.png" />
 
 ### Varying Timeline
 You can specify the `update-pause` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
@@ -122,7 +130,40 @@ One application is for showing contents in sync:
 <img alt="image" src="https://github.com/user-attachments/assets/cfff30c3-eae0-4d8c-bcec-3d891368d662" />
 
 
+### Motion Control
 
+You can have a precise control on what should be shown on each subslide relatively without worring about their order in definition code by using `#motion` function, and tag by a unique name for each contents in `#tag` function. For example, 
+
+```typst
+#import "@preview/cetz:0.4.2": canvas, draw
+
+#slide[
+  = Drawing A Fan
+  #set align(center + horizon)
+  #motion(
+    s => [
+      #canvas({
+        import draw: *
+        scale(3)
+        tag(s, "filled", hider: it => none, stroke(red + 5pt))
+        tag(s, "arc", arc((0, 0), start: 30deg, stop: 150deg, name: "R"))
+        tag(s, "line1", line("R.start", "R.origin"))
+        tag(s, "line2", line("R.end", "R.origin"))
+      })
+    ],
+    hider: draw.hide.with(bounds: true),
+    controls: (
+      "line2.start",
+      "line1.start",
+      "arc.start",
+      "filled.start"
+    ),
+  )
+]
+```
+<img alt="Motion Function Demonstration" src="./assets/examples/exampleMotion.png">
+
+In this example, featured with CeTZ package, each element is drawn normally, while its animation is shown differently. The precise animation control is done by specifying the tagged names in `controls` argument of `#motion` function. Note that the way of showing and hiding stuff can be modified using `hider` argument of each function.
 
 
 ### Package Integration 
@@ -202,6 +243,9 @@ which results in
 
 
 ## Versions
+### 0.2.3
+- Added `#motion` and `#tag` function for precise control of animation display order. 
+- Added relative index `(rel: int)` to animate elements earlier than the current number of pauses.  
 ### 0.2.2 
 - Added `hider` argument to `#step-item` function ([#8](https://github.com/pacaunt/typst-presentate/issues/8)).
 ### 0.2.1 
