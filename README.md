@@ -1,6 +1,6 @@
 # Presentate
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
-For usage, please refer to [demo.pdf](./assets/docs/demo.pdf)
+For usage, please refer to [demo.pdf](https://github.com/pacaunt/typst-presentate/blob/main/assets/docs/demo.pdf)
 
 
 ## Simple Usage 
@@ -58,7 +58,7 @@ You can style the slides as you would do with normal Typst document. For example
 ]
 ```
 
-<img alt="example2" src="./assets/examples/example2.png" />
+<img alt="example2" src="https://github.com/pacaunt/typst-presentate/blob/main/assets/examples/example2.png" />
 
 ### Relative Index Specification 
 You can use `none` and `auto`, or even `(rel: int)` to specify the index as *with previous animation*, *after previous animation*, or `int` subslides away from the current number of pauses.
