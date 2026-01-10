@@ -67,6 +67,19 @@ If you want an ultra-minimalist rendering, the `current` mode hides everything e
 )",
 progressive-outline(level-1-mode: "current", level-2-mode: "none"))
 
+== Deep nesting (Level 3)
+For complex structures, you can enable Level 3. Using `current-parent` will show siblings at the current depth.
+
+=== Deep Component A
+=== Deep navigation test
+
+#demo("Level 3 Siblings",
+"progressive-outline(
+  level-2-mode: 'all',
+  level-3-mode: 'current-parent'
+)",
+progressive-outline(level-2-mode: "all", level-3-mode: "current-parent"))
+
 = Style Customization
 The function allows you to modify the appearance of headings based on their state (active/inactive).
 
