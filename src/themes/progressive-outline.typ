@@ -116,11 +116,13 @@
   let outline-styles = (
     level-1: (
       active: (weight: "bold", fill: eastern, size: 30pt), 
-      inactive: (weight: "bold", fill: luma(180), size: 30pt)
+      completed: (weight: "bold", fill: luma(180), size: 30pt),
+      inactive: (weight: "bold", fill: black, size: 30pt)
     ),
     level-2: (
       active: (weight: "regular", fill: eastern, size: 22pt), 
-      inactive: (weight: "regular", fill: luma(200), size: 22pt)
+      completed: (weight: "regular", fill: luma(200), size: 22pt),
+      inactive: (weight: "regular", fill: luma(100), size: 22pt)
     ),
   )
 

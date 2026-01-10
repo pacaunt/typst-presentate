@@ -36,7 +36,7 @@ This section details all the parameters available for the `progressive-outline` 
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Effect & Expected Values*]),
   [`level-X-mode`], [string], [Defines the visibility of level X (1, 2, or 3). \ Values: `"all"`, `"current"`, `"current-parent"`, `"none"`.],
-  [`text-styles`], [dict], [Dictionary of Typst `text(...)` styles for each level. \ Structure: `(level-X: (active: (...), inactive: (...)))`.],
+  [`text-styles`], [dict], [Dictionary of Typst `text(...)` styles for each level. \ Structure: `(level-X: (active: (...), completed: (...), inactive: (...)))`.],
   [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`) and horizontal indentation (`indent-X`) between elements.],
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
@@ -81,7 +81,32 @@ For complex structures, you can enable Level 3. Using `current-parent` will show
 progressive-outline(level-2-mode: "all", level-3-mode: "current-parent"))
 
 = Style Customization
-The function allows you to modify the appearance of headings based on their state (active/inactive).
+The function allows you to modify the appearance of headings based on their state (*completed*, *active*, or *inactive*).
+
+== The 3-state system
+By default, headings can be in one of three states:
+- *completed*: The heading has already been passed.
+- *active*: This is the current heading.
+- *inactive*: The heading is yet to come.
+
+#demo("Past, Present, Future",
+"text-styles: (
+  level-1: (
+    active: (fill: eastern, weight: 'bold'),
+    completed: (fill: gray.lighten(50%)),
+    inactive: (fill: black)
+  )
+)",
+progressive-outline(
+  level-2-mode: "none",
+  text-styles: (
+    level-1: (
+      active: (fill: eastern, weight: "bold"),
+      completed: (fill: gray.lighten(50%)),
+      inactive: (fill: black)
+    )
+  )
+))
 
 == The anti-jitter mechanism
 Anti-jitter ensures that switching from a thin font to a bold one doesn't move the text. We use a ghost box to reserve the maximum space required.
