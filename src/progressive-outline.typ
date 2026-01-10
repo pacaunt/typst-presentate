@@ -1,32 +1,24 @@
-/// Helper to compare two locations
-#let is-after(loc-target, loc-reference) = {
-  if loc-target.page() > loc-reference.page() { return true }
-  if loc-target.page() == loc-reference.page() and loc-target.position().y > loc-reference.position().y { return true }
-  return false
+/// Global state to cache headings data
+#let progressive-outline-cache = state("progressive-outline-cache", ())
+
+/// Registers a heading into the cache. Returns the update content.
+#let register-heading(it) = {
+  if it.outlined {
+    progressive-outline-cache.update(cache => {
+      let loc = it.location()
+      if cache.any(h => h.location() == loc) { return cache }
+      cache.push(it)
+      cache
+    })
+  } else {
+    []
+  }
 }
 
-/// Calculates the current state of headings based on the current location.
-#let get-current-headings(loc) = {
-  let before-h1 = query(heading.where(outlined: true, level: 1).before(loc))
-  let before-h2 = query(heading.where(outlined: true, level: 2).before(loc))
-  let before-h3 = query(heading.where(outlined: true, level: 3).before(loc))
-
-  let cur-h1 = if before-h1.len() > 0 { before-h1.last() } else { none }
-  let cur-h2 = if before-h2.len() > 0 { before-h2.last() } else { none }
-  let cur-h3 = if before-h3.len() > 0 { before-h3.last() } else { none }
-
-  // Strict Parent-Child check
-  if cur-h1 != none and cur-h2 != none {
-    if not is-after(cur-h2.location(), cur-h1.location()) { cur-h2 = none }
-  }
-  if cur-h2 != none and cur-h3 != none {
-    if not is-after(cur-h3.location(), cur-h2.location()) { cur-h3 = none }
-  }
-  if cur-h1 != none and cur-h3 != none {
-    if not is-after(cur-h3.location(), cur-h1.location()) { cur-h3 = none }
-  }
-
-  (h1: cur-h1, h2: cur-h2, h3: cur-h3)
+/// Helper function to notify a heading occurrence to the state and return the heading
+#let notify-heading(it) = {
+  register-heading(it)
+  it
 }
 
 /// Renders an item with jitter prevention.
@@ -57,6 +49,26 @@
   })
 }
 
+/// Returns the active headings (h1, h2, h3) at a given location using the cache.
+#let get-active-headings(loc) = {
+  let all-headings = progressive-outline-cache.final()
+  let active-h1 = none
+  let active-h2 = none
+  let active-h3 = none
+  
+  for h in all-headings {
+    // Basic location comparison
+    if h.location().page() < loc.page() or (h.location().page() == loc.page() and h.location().position().y <= loc.position().y) {
+      if h.level == 1 { active-h1 = h; active-h2 = none; active-h3 = none }
+      else if h.level == 2 { active-h2 = h; active-h3 = none }
+      else if h.level == 3 { active-h3 = h }
+    } else {
+      break
+    }
+  }
+  (h1: active-h1, h2: active-h2, h3: active-h3)
+}
+
 #let progressive-outline(
   level-1-mode: "all", 
   level-2-mode: "current-parent",
@@ -75,12 +87,16 @@
   ),
   show-numbering: false,
   numbering-format: "1.1.1",
+  target-location: auto,
 ) = {
   context {
-    let loc = here()
-    let all-headings = query(heading.where(outlined: true))
-    let active-state = get-current-headings(loc)
-
+    let loc = if target-location == auto { here() } else { target-location }
+    let active-state = get-active-headings(loc)
+    let active-h1 = active-state.h1
+    let active-h2 = active-state.h2
+    let active-h3 = active-state.h3
+    
+    let all-headings = progressive-outline-cache.final()
     let items-to-render = ()
     let last-level = 0
 
@@ -90,32 +106,38 @@
       let h-loc = h.location()
 
       if h.level == 1 {
-        if active-state.h1 != none and h.location() == active-state.h1.location() { is-active = true }
+        if active-h1 != none and h-loc == active-h1.location() { is-active = true }
         if level-1-mode == "all" { should-render = true }
         else if level-1-mode == "current" and is-active { should-render = true }
       } else if h.level == 2 {
-        if active-state.h2 != none and h.location() == active-state.h2.location() { is-active = true }
-        let is-child-of-current-h1 = false
-        if active-state.h1 != none {
-            let prev-h1 = query(heading.where(level: 1).before(h-loc))
-            if prev-h1.len() > 0 and prev-h1.last().location() == active-state.h1.location() {
-              is-child-of-current-h1 = true
-            }
+        if active-h2 != none and h-loc == active-h2.location() { is-active = true }
+        
+        let is-child-of-active-h1 = false
+        if active-h1 != none {
+          let h2-count = counter(heading).at(h-loc)
+          let h1-count = counter(heading).at(active-h1.location())
+          if h2-count.at(0) == h1-count.at(0) {
+            is-child-of-active-h1 = true
+          }
         }
+        
         if level-2-mode == "all" { should-render = true }
-        else if level-2-mode == "current-parent" and is-child-of-current-h1 { should-render = true }
+        else if level-2-mode == "current-parent" and is-child-of-active-h1 { should-render = true }
         else if level-2-mode == "current" and is-active { should-render = true }
       } else if h.level == 3 {
-        if active-state.h3 != none and h.location() == active-state.h3.location() { is-active = true }
-        let is-child-of-current-h2 = false
-        if active-state.h2 != none {
-            let prev-h2 = query(heading.where(level: 2).before(h-loc))
-            if prev-h2.len() > 0 and prev-h2.last().location() == active-state.h2.location() {
-              is-child-of-current-h2 = true
-            }
+        if active-h3 != none and h-loc == active-h3.location() { is-active = true }
+        
+        let is-child-of-active-h2 = false
+        if active-h2 != none {
+          let h3-count = counter(heading).at(h-loc)
+          let h2-count = counter(heading).at(active-h2.location())
+          if h3-count.slice(0, 2) == h2-count.slice(0, 2) {
+            is-child-of-active-h2 = true
+          }
         }
+        
         if level-3-mode == "all" { should-render = true }
-        else if level-3-mode == "current-parent" and is-child-of-current-h2 { should-render = true }
+        else if level-3-mode == "current-parent" and is-child-of-active-h2 { should-render = true }
         else if level-3-mode == "current" and is-active { should-render = true }
       }
 
@@ -131,7 +153,7 @@
         let s-inactive = styles-lvl.at("inactive", default: (:))
         let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         
-        let idx = counter(heading).at(h.location())
+        let idx = counter(heading).at(h-loc)
         let trimmed-idx = idx.slice(0, h.level)
 
         items-to-render.push(block(

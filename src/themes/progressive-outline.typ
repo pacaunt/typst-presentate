@@ -1,38 +1,6 @@
 #import "../presentate.typ" as p
 #import "../store.typ": *
-#import "../progressive-outline.typ": progressive-outline
-
-#let save-headings = state("progressive-outline-headings", ())
-
-#let current-heading() = {
-  let hs = save-headings.get()
-  if hs != () and hs.last().level == 3 {
-    hs.last()
-  } else { none }
-}
-
-#let current-section-element() = {
-  let hs = query(heading.where(level: 1).before(here()))
-  if hs.len() > 0 { hs.last() } else { none }
-}
-
-#let current-subsection-element() = {
-  let h1 = current-section-element()
-  let h2s = query(heading.where(level: 2).before(here()))
-  
-  if h2s.len() > 0 {
-    let last-h2 = h2s.last()
-    if h1 != none {
-      if last-h2.location().page() > h1.location().page() or (last-h2.location().page() == h1.location().page() and last-h2.location().position().y > h1.location().position().y) {
-        return last-h2
-      } else {
-        return none
-      }
-    }
-    return last-h2
-  }
-  none
-}
+#import "../progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
 
 #let empty-slide(..args) = {
   set page(margin: 0pt, header: none, footer: none)
@@ -45,12 +13,12 @@
   let body
 
   let title-content = context {
-    let hs = save-headings.get()
+    let active = get-active-headings(here())
     let t = none
     
     if args.len() == 1 {
-      if hs != () and hs.last().level == 3 {
-        t = hs.last().body
+      if active.h3 != none {
+        t = active.h3.body
       }
     } else if args.at(0) == none {
       t = none
@@ -70,8 +38,6 @@
   } else {
     (_, body) = args
   }
-
-  context save-headings.update(query(selector.or(heading.where(level: 1, outlined: true), heading.where(level: 2, outlined: true), heading.where(level: 3, outlined: true)).before(here())))
 
   p.slide(
     ..kwargs,
@@ -99,11 +65,12 @@
   if header == auto {
     header = context {
       set text(size: 0.8em)
-      let h1 = current-section-element()
-      let h2 = current-subsection-element()
+      let active = get-active-headings(here())
+      let h1 = active.h1
+      let h2 = active.h2
       
       let format-h(h) = {
-        if h == none { return box[] }
+        if h == none or h.location() == none { return box[] }
         let num = if show-heading-numbering {
           let idx = counter(heading).at(h.location())
           numbering("1.1", ..idx.slice(0, h.level)) + " "
@@ -136,12 +103,15 @@
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
   set text(size: 20pt, font: "Lato")
   
+  // Rule to record EVERYTHING including what's handled by other rules
+  show heading: it => register-heading(it) + it
+  
   show heading: set text(size: 20pt, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
     if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
   })
   
-  show heading.where(level: 3): it => []
+  show heading.where(level: 3): it => register-heading(it)
 
   let outline-styles = (
     level-1: (
@@ -185,6 +155,7 @@
 
   // --- H1 Transition ---
   show heading.where(level: 1): h => {
+    register-heading(h)
     empty-slide({
       v(25%)
       pad(left: 15%)[
@@ -192,6 +163,7 @@
           level-1-mode: l1-mode, 
           level-2-mode: "current-parent",
           show-numbering: show-heading-numbering, numbering-format: "1.1 ",
+          target-location: h.location(),
           text-styles: (
             level-1: outline-styles.level-1,
             // Subsections are NORMAL (black) during chapter transition
@@ -208,6 +180,7 @@
 
   // --- H2 Transition ---
   show heading.where(level: 2): h => {
+    register-heading(h)
     empty-slide({
       v(25%)
       pad(left: 15%)[
@@ -215,6 +188,7 @@
           level-1-mode: l1-mode,
           level-2-mode: "current-parent",
           show-numbering: show-heading-numbering, numbering-format: "1.1 ",
+          target-location: h.location(),
           text-styles: outline-styles, // Normal logic (active is colored, others gray)
           spacing: outline-spacing,
         )
