@@ -2,8 +2,8 @@
 #import "../store.typ": *
 #import "../progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
 
-#let empty-slide(..args) = {
-  set page(margin: 0pt, header: none, footer: none)
+#let empty-slide(fill: none, ..args) = {
+  set page(margin: 0pt, header: none, footer: none, fill: fill)
   p.slide(..args)
 }
 
@@ -15,10 +15,17 @@
   let title-content = context {
     let active = get-active-headings(here())
     let t = none
+    let h-num = ""
     
     if args.len() == 1 {
       if active.h3 != none {
         t = active.h3.body
+        // Check if numbering should be displayed (based on heading numbering setting)
+        // Since we don't have direct access to show-heading-numbering here easily 
+        // without state, we check if the heading has a numbering defined.
+        if active.h3.numbering != none {
+          h-num = numbering(active.h3.numbering, ..active.h3.counter) + " "
+        }
       }
     } else if args.at(0) == none {
       t = none
@@ -28,7 +35,7 @@
     
     if t != none {
       block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-        #text(weight: "bold", size: 24pt, t)
+        #text(weight: "bold", size: 24pt, [#h-num#t])
       ]
     }
   }
@@ -59,9 +66,40 @@
   date: datetime.today().display(),
   aspect-ratio: "16-9",
   show-heading-numbering: true,
-  show-all-sections-in-transition: false,
+  on-section-change: auto,
+  on-subsection-change: auto,
+  on-subsubsection-change: none,
   ..options,
 ) = {
+  // Use the parameter to define local default transitions if auto
+  let on-section-change = if on-section-change == auto {
+    (h) => empty-slide({
+      v(25%)
+      pad(left: 15%)[
+        #progressive-outline(
+          level-1-mode: "current", 
+          level-2-mode: "current-parent",
+          show-numbering: show-heading-numbering,
+          target-location: h.location,
+        )
+      ]
+    })
+  } else { on-section-change }
+
+  let on-subsection-change = if on-subsection-change == auto {
+    (h) => empty-slide({
+      v(25%)
+      pad(left: 15%)[
+        #progressive-outline(
+          level-1-mode: "current",
+          level-2-mode: "current-parent",
+          show-numbering: show-heading-numbering,
+          target-location: h.location,
+        )
+      ]
+    })
+  } else { on-subsection-change }
+
   if header == auto {
     header = context {
       set text(size: 0.8em)
@@ -72,8 +110,7 @@
       let format-h(h) = {
         if h == none or h.location == none { return box[] }
         let num = if show-heading-numbering {
-          let idx = counter(heading).at(h.location)
-          numbering("1.1", ..idx.slice(0, h.level)) + " "
+          numbering("1.1", ..h.counter) + " "
         } else { "" }
         [#num#h.body]
       }
@@ -103,47 +140,43 @@
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
   set text(size: 20pt, font: "Lato")
   
-  // Rule to record EVERYTHING including what's handled by other rules
-  show heading: it => register-heading(it) + it
+  // Unified rule to handle registration and transitions
+  show heading: h => {
+    let update = register-heading(h)
+    if h.level == 1 and on-section-change != none {
+      update + on-section-change(h)
+    } else if h.level == 2 and on-subsection-change != none {
+      update + on-subsection-change(h)
+    } else if h.level == 3 {
+      update
+      if on-subsubsection-change != none {
+        on-subsubsection-change(h)
+      }
+    } else {
+      update + h
+    }
+  }
   
   show heading: set text(size: 20pt, weight: "regular")
-  set heading(outlined: true, numbering: (..nums) => {
-    if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
-  })
   
-  show heading.where(level: 3): it => register-heading(it)
-
-  let outline-styles = (
-    level-1: (
-      active: (weight: "bold", fill: eastern, size: 30pt), 
-      completed: (weight: "bold", fill: luma(180), size: 30pt),
-      inactive: (weight: "bold", fill: black, size: 30pt)
-    ),
-    level-2: (
-      active: (weight: "regular", fill: eastern, size: 22pt), 
-      completed: (weight: "regular", fill: luma(200), size: 22pt),
-      inactive: (weight: "regular", fill: luma(100), size: 22pt)
-    ),
-  )
-
-  let outline-spacing = (
-    indent-1: 0pt, indent-2: 1.5em,
-    v-between-1-1: 1.8em, 
-    v-between-1-2: 1.5em, 
-    v-between-2-1: 1.8em, 
-    v-between-2-2: 0.8em, 
-  )
+  // Apply numbering settings globally to all headings
+  set heading(outlined: true, numbering: if show-heading-numbering { "1.1" } else { none })
+  
+  show emph: set text(fill: eastern)
+  set-options(..options)
 
   // --- Title Slide ---
   empty-slide({
     set align(center + horizon)
     block(text(size: 40pt, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))
-    emph(subtitle)
-    linebreak()
+    if subtitle != none {
+      emph(subtitle)
+      linebreak()
+    }
     grid(columns: 2, author, grid.vline(), date, inset: (x: 0.5em))
   })
 
-  // --- Global Outline (Classic) ---
+  // --- Global Outline (Classic Summary) ---
   p.slide([
     #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
       #text(weight: "bold", size: 24pt, [Sommaire])
@@ -153,52 +186,5 @@
     #outline(title: none, indent: 2em, depth: 2)
   ])
 
-  let l1-mode = if show-all-sections-in-transition { "all" } else { "current" }
-
-  // --- H1 Transition ---
-  show heading.where(level: 1): h => {
-    register-heading(h)
-    empty-slide({
-      v(25%)
-      pad(left: 15%)[
-        #progressive-outline(
-          level-1-mode: l1-mode, 
-          level-2-mode: "current-parent",
-          show-numbering: show-heading-numbering, numbering-format: "1.1 ",
-          target-location: h.location(),
-          text-styles: (
-            level-1: outline-styles.level-1,
-            // Subsections are NORMAL (black) during chapter transition
-            level-2: (
-              active: (weight: "regular", fill: black, size: 22pt), 
-              inactive: (weight: "regular", fill: black, size: 22pt)
-            )
-          ),
-          spacing: outline-spacing,
-        )
-      ]
-    })
-  }
-
-  // --- H2 Transition ---
-  show heading.where(level: 2): h => {
-    register-heading(h)
-    empty-slide({
-      v(25%)
-      pad(left: 15%)[
-        #progressive-outline(
-          level-1-mode: l1-mode,
-          level-2-mode: "current-parent",
-          show-numbering: show-heading-numbering, numbering-format: "1.1 ",
-          target-location: h.location(),
-          text-styles: outline-styles, // Normal logic (active is colored, others gray)
-          spacing: outline-spacing,
-        )
-      ]
-    })
-  }
-
-  show emph: set text(fill: eastern)
-  set-options(..options)
   body
 }

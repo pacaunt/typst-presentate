@@ -4,30 +4,29 @@
 /// Registers a heading into the cache. Returns the update content.
 #let register-heading(it) = {
   if it.outlined {
-    progressive-outline-cache.update(cache => {
+    context {
       let loc = it.location()
-      if cache.any(h => h.location() == loc) { return cache }
-      cache.push(it)
-      cache
-    })
+      let count = counter(heading).at(loc)
+      progressive-outline-cache.update(cache => {
+        if cache.any(h => h.location == loc) { return cache }
+        let new-h = (
+          body: it.body,
+          level: it.level,
+          counter: count,
+          numbering: it.numbering,
+          location: loc,
+        )
+        cache.push(new-h)
+        cache
+      })
+    }
   } else {
     []
   }
 }
 
 /// Helper function to notify a heading occurrence to the state and return the heading
-#let notify-heading(it) = {
-  register-heading(it)
-  it
-}
-
-/// Helper to compare if loc1 is strictly before loc2
-#let is-before(loc1, loc2) = {
-  if loc1 == none or loc2 == none { return false }
-  if loc1.page() < loc2.page() { return true }
-  if loc1.page() == loc2.page() and loc1.position().y < loc2.position().y { return true }
-  return false
-}
+#let notify-heading(it) = register-heading(it) + it
 
 /// Returns the active headings (h1, h2, h3) at a given location using the cache.
 #let get-active-headings(loc) = {
@@ -37,9 +36,23 @@
   let active-h3 = none
   
   for h in all-headings {
-    // Basic location comparison (h.location() <= loc)
-    let h-loc = h.location()
-    if h-loc.page() < loc.page() or (h-loc.page() == loc.page() and h-loc.position().y <= loc.position().y) {
+    let h-loc = h.location
+    let is-match = (h-loc == loc)
+    let is-before = false
+    
+    if not is-match {
+      if h-loc.page() < loc.page() {
+        is-before = true
+      } else if h-loc.page() == loc.page() {
+        let h-pos = h-loc.position()
+        let loc-pos = loc.position()
+        if h-pos != none and loc-pos != none and h-pos.y <= loc-pos.y {
+          is-before = true
+        }
+      }
+    }
+
+    if is-match or is-before {
       if h.level == 1 { active-h1 = h; active-h2 = none; active-h3 = none }
       else if h.level == 2 { active-h2 = h; active-h3 = none }
       else if h.level == 3 { active-h3 = h }
@@ -81,11 +94,8 @@
     content-normal 
   }
 
-  // Use a block with 100% width to allow wrapping and correct height calculation
   block(width: 100%, {
-    // 1. Reserve space using the hidden active version (often the widest)
     hide(content-active)
-    // 2. Place the visible version on top
     place(top + left, target-content)
   })
 }
@@ -137,23 +147,29 @@
       let is-active = false
       let is-completed = false
       let should-render = false
-      let h-loc = h.location()
+      let h-loc = h.location
 
       if h.level == 1 {
-        if active-h1 != none and h-loc == active-h1.location() { is-active = true }
-        else if is-before(h-loc, if active-h1 != none { active-h1.location() } else { loc }) { is-completed = true }
+        if active-h1 != none and h-loc == active-h1.location { is-active = true }
+        else {
+           if active-h1 != none {
+             if h-loc.page() < active-h1.location.page() or (h-loc.page() == active-h1.location.page() and h-loc.position() != none and active-h1.location.position() != none and h-loc.position().y < active-h1.location.position().y) { is-completed = true }
+           }
+        }
         
         if level-1-mode == "all" { should-render = true }
         else if level-1-mode == "current" and is-active { should-render = true }
       } else if h.level == 2 {
-        if active-h2 != none and h-loc == active-h2.location() { is-active = true }
-        else if is-before(h-loc, if active-h2 != none { active-h2.location() } else { loc }) { is-completed = true }
+        if active-h2 != none and h-loc == active-h2.location { is-active = true }
+        else {
+           if active-h2 != none {
+             if h-loc.page() < active-h2.location.page() or (h-loc.page() == active-h2.location.page() and h-loc.position() != none and active-h2.location.position() != none and h-loc.position().y < active-h2.location.position().y) { is-completed = true }
+           }
+        }
         
         let is-child-of-active-h1 = false
         if active-h1 != none {
-          let h2-count = counter(heading).at(h-loc)
-          let h1-count = counter(heading).at(active-h1.location())
-          if h2-count.at(0) == h1-count.at(0) {
+          if h.counter.at(0) == active-h1.counter.at(0) {
             is-child-of-active-h1 = true
           }
         }
@@ -162,14 +178,16 @@
         else if level-2-mode == "current-parent" and is-child-of-active-h1 { should-render = true }
         else if level-2-mode == "current" and is-active { should-render = true }
       } else if h.level == 3 {
-        if active-h3 != none and h-loc == active-h3.location() { is-active = true }
-        else if is-before(h-loc, if active-h3 != none { active-h3.location() } else { loc }) { is-completed = true }
+        if active-h3 != none and h-loc == active-h3.location { is-active = true }
+        else {
+           if active-h3 != none {
+             if h-loc.page() < active-h3.location.page() or (h-loc.page() == active-h3.location.page() and h-loc.position() != none and active-h3.location.position() != none and h-loc.position().y < active-h3.location.position().y) { is-completed = true }
+           }
+        }
         
         let is-child-of-active-h2 = false
         if active-h2 != none {
-          let h3-count = counter(heading).at(h-loc)
-          let h2-count = counter(heading).at(active-h2.location())
-          if h3-count.slice(0, 2) == h2-count.slice(0, 2) {
+          if h.counter.slice(0, 2) == active-h2.counter.slice(0, 2) {
             is-child-of-active-h2 = true
           }
         }
@@ -192,8 +210,7 @@
         let s-completed = styles-lvl.at("completed", default: none)
         let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         
-        let idx = counter(heading).at(h-loc)
-        let trimmed-idx = idx.slice(0, h.level)
+        let trimmed-idx = h.counter.slice(0, h.level)
 
         items-to-render.push(block(
           inset: (top: spacing-top, left: indent),
