@@ -104,9 +104,10 @@ You can define the exact space between an H1 heading and an H2 heading, or betwe
 "spacing: (
   v-between-1-1: 2em,
   v-between-1-2: 1.2em,
-  v-between-2-2: 0.8em
+  v-between-2-2: 0.8em,
+  v-between-2-1: 1.5em
 )",
-progressive-outline(level-2-mode: "all", spacing: (v-between-1-1: 2em, v-between-1-2: 1.2em, v-between-2-2: 0.8em)))
+progressive-outline(level-2-mode: "all", spacing: (v-between-1-1: 2em, v-between-1-2: 1.2em, v-between-2-2: 0.8em, v-between-2-1: 1.5em)))
 
 == Horizontal indentation
 Indentation defines the offset to the right for each depth level.
