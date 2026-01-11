@@ -40,6 +40,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`) and horizontal indentation (`indent-X`) between elements.],
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
+  [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
 )
 
 #v(2em)
@@ -180,6 +181,17 @@ progressive-outline(
   show-numbering: true, 
   numbering-format: (..n) => "Chapter " + numbering("1", ..n) + " : "
 ))
+
+= Advanced Behavior
+
+== Page-based matching
+In contexts like sidebars, the outline is rendered in the page margin or background before the slide content. This can cause the active heading detection to fail because the content is technically "after" the sidebar in the document flow.
+
+Setting `match-page-only: true` solves this by considering any heading on the current page as "active", ignoring precise vertical positioning.
+
+#demo("Sidebar Logic",
+"match-page-only: true",
+progressive-outline(match-page-only: true, level-2-mode: "none"))
 
 = Additional information
 

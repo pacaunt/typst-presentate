@@ -29,7 +29,7 @@
 #let notify-heading(it) = register-heading(it) + it
 
 /// Returns the active headings (h1, h2, h3) at a given location using the cache.
-#let get-active-headings(loc) = {
+#let get-active-headings(loc, match-page-only: false) = {
   let all-headings = progressive-outline-cache.final()
   let active-h1 = none
   let active-h2 = none
@@ -44,10 +44,14 @@
       if h-loc.page() < loc.page() {
         is-before = true
       } else if h-loc.page() == loc.page() {
-        let h-pos = h-loc.position()
-        let loc-pos = loc.position()
-        if h-pos != none and loc-pos != none and h-pos.y <= loc-pos.y {
+        if match-page-only {
           is-before = true
+        } else {
+          let h-pos = h-loc.position()
+          let loc-pos = loc.position()
+          if h-pos != none and loc-pos != none and h-pos.y <= loc-pos.y {
+            is-before = true
+          }
         }
       }
     }
@@ -131,10 +135,11 @@
   show-numbering: false,
   numbering-format: "1.1.1",
   target-location: auto,
+  match-page-only: false,
 ) = {
   context {
     let loc = if target-location == auto { here() } else { target-location }
-    let active-state = get-active-headings(loc)
+    let active-state = get-active-headings(loc, match-page-only: match-page-only)
     let active-h1 = active-state.h1
     let active-h2 = active-state.h2
     let active-h3 = active-state.h3
@@ -210,7 +215,11 @@
         let s-completed = styles-lvl.at("completed", default: none)
         let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         
-        let trimmed-idx = h.counter.slice(0, h.level)
+        let trimmed-idx = if h.counter.len() >= h.level {
+          h.counter.slice(0, h.level)
+        } else {
+          h.counter
+        }
 
         items-to-render.push(block(
           inset: (top: spacing-top, left: indent),

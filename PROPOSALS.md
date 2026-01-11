@@ -35,50 +35,17 @@ Limite la profondeur du sommaire sans avoir à désactiver manuellement chaque n
 - **Usage** : `#progressive-outline(depth: 2)` (ignore le niveau 3 même s'il est dans le cache).
 
 ### D. Filtrage Avancé (`filter`)
-Permet d'exclure certains titres basés sur leur contenu ou des tags.
-- **Paramètre** : `filter: (heading) => bool`
-- **Usage** : `#progressive-outline(filter: h => h.body != [Annexes])`
+Permet d'exclure certains titres basés sur leur contenu, leur hiérarchie ou leurs étiquettes (labels).
+- **Paramètre** : `filter: (heading) => bool` (défaut: `none`)
+- **Fonctionnement** : Pour chaque entrée du cache, la fonction `progressive-outline` appelle ce prédicat. Si celui-ci renvoie `false`, le titre est ignoré.
+- **Exemples d'usage** : 
+  - **Par contenu** : `filter: h => h.body != [Annexes]`
+  - **Par étiquette (Label)** : `filter: h => h.label != <no-outline>` (nécessite le stockage du champ `label` dans le cache).
+  - **Par logique complexe** : `filter: h => h.level < 3 or h.counter.at(0) == 2` (n'affiche les niveaux 3 que pour la deuxième section).
 
 ---
 
-## 2. Nouveau Thème : "Custom Transitions"
-
-Ce thème permettrait à l'utilisateur de définir lui-même le "look" de ses diapositives de changement de section.
-
-### Interface proposée pour le `template` :
-L'utilisateur peut passer des fonctions de rappel (callbacks) qui reçoivent le titre en cours et renvoient le contenu de la slide.
-
-```typ
-#import themes.progressive-outline: template
-
-#show: template.with(
-  // Personnalisation de la slide de Section (H1)
-  on-section-change: (h) => {
-    set align(center + horizon)
-    grid(
-      columns: (1fr, 1fr),
-      image("section-hero.png"),
-      [
-        #text(size: 2em, weight: "bold", h.body)
-        #v(1em)
-        #progressive-outline(level-1-mode: "current")
-      ]
-    )
-  },
-  
-  // Désactivation des slides de transition pour les sous-sections (H2)
-  on-subsection-change: none, 
-)
-```
-
-### Avantages :
-1. **Flexibilité totale** : On sort du modèle rigide "Sommaire au milieu".
-2. **Modularité** : On peut n'activer les transitions que pour le niveau 1.
-3. **Identité visuelle** : Facilite la création de présentations avec une charte graphique forte.
-
----
-
-## 3. Barre de navigation (Mini-frames)
+## 2. Barre de navigation (Mini-frames)
 
 Une fonctionnalité de thème qui utilise le cache pour dessiner des indicateurs de progression.
 
