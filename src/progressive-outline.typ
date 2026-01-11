@@ -15,6 +15,7 @@
           counter: count,
           numbering: it.numbering,
           location: loc,
+          label: if it.has("label") { it.label } else { none },
         )
         cache.push(new-h)
         cache
@@ -136,6 +137,8 @@
   numbering-format: "1.1.1",
   target-location: auto,
   match-page-only: false,
+  filter: none,
+  headings: auto,
 ) = {
   context {
     let loc = if target-location == auto { here() } else { target-location }
@@ -144,11 +147,32 @@
     let active-h2 = active-state.h2
     let active-h3 = active-state.h3
     
-    let all-headings = progressive-outline-cache.final()
+    let all-headings = if headings == auto { progressive-outline-cache.final() } else { headings }
     let items-to-render = ()
     let last-level = 0
 
+    let current-h1 = none
+    let current-h2 = none
+    let is-h1-filtered = false
+    let is-h2-filtered = false
+
     for h in all-headings {
+      if h.level == 1 { 
+        current-h1 = h; current-h2 = none
+        is-h1-filtered = false; is-h2-filtered = false
+      } else if h.level == 2 { 
+        current-h2 = h; is-h2-filtered = false 
+      }
+
+      let explicitly-filtered = (filter != none and not filter(h + (parent-h1: current-h1, parent-h2: current-h2)))
+      let implicitly-filtered = (h.level > 1 and is-h1-filtered) or (h.level > 2 and is-h2-filtered)
+
+      if explicitly-filtered or implicitly-filtered { 
+        if h.level == 1 { is-h1-filtered = true }
+        else if h.level == 2 { is-h2-filtered = true }
+        continue 
+      }
+
       let is-active = false
       let is-completed = false
       let should-render = false
@@ -157,7 +181,7 @@
       if h.level == 1 {
         if active-h1 != none and h-loc == active-h1.location { is-active = true }
         else {
-           if active-h1 != none {
+           if active-h1 != none and h-loc != none {
              if h-loc.page() < active-h1.location.page() or (h-loc.page() == active-h1.location.page() and h-loc.position() != none and active-h1.location.position() != none and h-loc.position().y < active-h1.location.position().y) { is-completed = true }
            }
         }
@@ -167,7 +191,7 @@
       } else if h.level == 2 {
         if active-h2 != none and h-loc == active-h2.location { is-active = true }
         else {
-           if active-h2 != none {
+           if active-h2 != none and h-loc != none {
              if h-loc.page() < active-h2.location.page() or (h-loc.page() == active-h2.location.page() and h-loc.position() != none and active-h2.location.position() != none and h-loc.position().y < active-h2.location.position().y) { is-completed = true }
            }
         }
@@ -185,7 +209,7 @@
       } else if h.level == 3 {
         if active-h3 != none and h-loc == active-h3.location { is-active = true }
         else {
-           if active-h3 != none {
+           if active-h3 != none and h-loc != none {
              if h-loc.page() < active-h3.location.page() or (h-loc.page() == active-h3.location.page() and h-loc.position() != none and active-h3.location.position() != none and h-loc.position().y < active-h3.location.position().y) { is-completed = true }
            }
         }

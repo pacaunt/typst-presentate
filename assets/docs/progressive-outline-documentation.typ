@@ -182,6 +182,70 @@ progressive-outline(
   numbering-format: (..n) => "Chapter " + numbering("1", ..n) + " : "
 ))
 
+= Filtering Content <hidden>
+The `filter` parameter allows you to programmatically include or exclude headings from the outline. It expects a callback function `(heading) => boolean`.
+
+The `heading` object passed to the filter contains standard properties (`level`, `body`, `label`, `counter`) as well as context properties: `parent-h1` and `parent-h2`.
+
+== Label-based filtering
+In this document, the current section "Filtering Content" has been tagged with the label `<hidden>`.
+
+#demo("Standard Outline (No Filter)",
+"progressive-outline(level-2-mode: 'none')",
+progressive-outline(level-2-mode: "none"))
+
+#demo("Filtered Outline (Label)",
+"progressive-outline(
+  level-2-mode: 'none',
+  filter: h => h.label != <hidden>
+)",
+progressive-outline(
+  level-2-mode: "none",
+  filter: h => h.label != <hidden>
+))
+
+== Logic-based filtering
+You can also filter based on any heading property.
+Here, we filter the list to *keep only* the section named "Visibility".
+
+#demo("Filtered Outline (Content)",
+"progressive-outline(
+  level-2-mode: 'none',
+  // Keep only the heading named 'Visibility'
+  filter: h => h.body == [Visibility]
+)",
+progressive-outline(
+  level-2-mode: "none",
+  filter: h => h.body == [Visibility]
+))
+
+Here, we create a custom rule: show all Level 1 headings, but show Level 2 headings *only* if they belong to the "Visibility" section.
+
+#demo("Conditional Depth",
+"progressive-outline(
+  level-2-mode: 'all',
+  filter: h => h.level == 1 or 
+    (h.level == 2 and h.parent-h1.body == [Visibility])
+)",
+progressive-outline(
+  level-2-mode: "all",
+  filter: h => h.level == 1 or (h.level == 2 and h.parent-h1 != none and h.parent-h1.body == [Visibility])
+))
+
+== Recursive filtering
+The filtering logic is recursive: if a parent heading (e.g., a Section) is excluded by the filter, all its children (Subsections and Sub-subsections) are automatically hidden as well, even if they would have passed the filter individually.
+
+#demo("Recursive Hiding",
+"// Hiding a parent automatically hides its children
+progressive-outline(
+  level-2-mode: 'all',
+  filter: h => h.label != <hidden>
+)",
+progressive-outline(
+  level-2-mode: "all",
+  filter: h => h.label != <hidden>
+))
+
 = Advanced Behavior
 
 == Page-based matching
