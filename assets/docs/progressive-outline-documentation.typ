@@ -42,9 +42,25 @@ This section details all the parameters available for the `progressive-outline` 
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
   [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
   [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
+  [`clickable`], [bool], [Enables clickable links on headings. Defaults to `true`.],
 )
 
 #v(2em)
+
+= Navigation & Interactivity
+By default, the outline is interactive: clicking on a section title navigates directly to the corresponding slide in the PDF.
+
+#demo("Non-clickable Outline",
+"progressive-outline()",
+progressive-outline())
+
+In some print-focused or strict layout scenarios, you might want to disable this interactivity.
+
+#demo("Non-clickable Outline",
+"progressive-outline(
+  clickable: false
+)",
+progressive-outline(clickable: false, level-2-mode: "none"))
 
 = Visibility
 This section covers the `level-X-mode` parameters.

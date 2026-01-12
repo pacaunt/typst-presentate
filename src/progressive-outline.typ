@@ -78,6 +78,8 @@
   completed-text-style: none,
   numbering-format: none,
   index: none,
+  clickable: false,
+  dest: none,
 ) = {
   let base-style = text-style
   let active-style = active-text-style
@@ -87,9 +89,17 @@
     numbering(numbering-format, ..index) + " "
   } else { "" }
 
-  let content-normal = text(..base-style)[#fmt-num#body]
-  let content-active = text(..active-style)[#fmt-num#body]
-  let content-completed = text(..completed-style)[#fmt-num#body]
+  let wrap-link(content) = {
+    if clickable and dest != none {
+      link(dest, content)
+    } else {
+      content
+    }
+  }
+
+  let content-normal = wrap-link(text(..base-style)[#fmt-num#body])
+  let content-active = wrap-link(text(..active-style)[#fmt-num#body])
+  let content-completed = wrap-link(text(..completed-style)[#fmt-num#body])
 
   let target-content = if is-active { 
     content-active 
@@ -139,6 +149,7 @@
   match-page-only: false,
   filter: none,
   headings: auto,
+  clickable: true,
 ) = {
   context {
     let loc = if target-location == auto { here() } else { target-location }
@@ -256,6 +267,8 @@
             completed-text-style: s-completed,
             numbering-format: if show-numbering { numbering-format } else { none },
             index: trimmed-idx,
+            clickable: clickable,
+            dest: h-loc,
           )
         ))
         last-level = h.level
