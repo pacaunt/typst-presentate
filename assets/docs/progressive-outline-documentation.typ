@@ -41,6 +41,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
   [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
+  [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
 )
 
 #v(2em)
