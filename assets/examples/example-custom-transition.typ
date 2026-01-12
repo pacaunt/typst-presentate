@@ -96,9 +96,10 @@
 
 === Hook parameters
 #slide[
-  The `template` accepts two main hooks:
+  The `template` accepts three main hooks:
   - `on-section-change`: Triggers on Level 1 headings.
   - `on-subsection-change`: Triggers on Level 2 headings.
+  - `on-subsubsection-change`: Triggers on Level 3 headings.
 ]
 
 == Creating a Transition
