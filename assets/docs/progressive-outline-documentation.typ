@@ -42,6 +42,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
   [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
   [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
+  [`marker`], [content | dict | func], [Content displayed before the item. Can be static, a dict by state, or a function `(state, level) => content`.],
   [`clickable`], [bool], [Enables clickable links on headings. Defaults to `true`.],
 )
 
@@ -174,7 +175,82 @@ progressive-outline(
   )
 ))
 
-== The anti-jitter mechanism
+
+= Customizable Markers
+You can add visual indicators (icons, arrows, etc.) before each item using the `marker` parameter.
+
+== Static Marker
+The simplest usage is to pass a single content element (like a symbol) that will be used for all items.
+
+#demo("Static Symbol",
+"progressive-outline(
+  marker: sym.triangle.filled.small
+)",
+progressive-outline(
+  level-2-mode: "none",
+  marker: sym.triangle.filled.small
+))
+
+== State-based Markers (Dictionary)
+You can define different markers for `active`, `inactive`, and `completed` states using a dictionary.
+
+#demo("State Indicators",
+"progressive-outline(
+  marker: (
+    active: sym.arrow.r,
+    completed: sym.checkmark,
+    inactive: sym.circle.small
+  )
+)",
+progressive-outline(
+  level-2-mode: "none",
+  marker: (
+    active: sym.arrow.r,
+    completed: sym.checkmark,
+    inactive: sym.circle.small
+  )
+))
+
+== Dynamic Markers (Function)
+For total control, pass a function `(state, level) => content`. This allows you to vary markers based on depth level and status.
+
+#demo("Advanced Logic",
+"progressive-outline(
+  marker: (state, level) => {
+    if level == 1 { sym.star.filled }
+    else if state == 'active' { sym.arrow.r }
+    else { sym.circle.filled.tiny }
+  }
+)",
+progressive-outline(
+  level-2-mode: "all",
+  marker: (state, level) => {
+    if level == 1 { sym.star.filled }
+    else if state == "active" { sym.arrow.r }
+    else { sym.circle.filled.tiny }
+  }
+))
+
+== Marker Alignment
+Use the `spacing` parameter to fine-tune layout:
+- `marker-gap`: Space between marker and text (default `0.5em`).
+- `marker-width`: Fixed width for the marker container (useful for alignment).
+
+#demo("Aligned Markers",
+"progressive-outline(
+  marker: (active: sym.arrow.r),
+  spacing: (
+    marker-gap: 1em,
+    marker-width: 1.5em
+  )
+)",
+progressive-outline(
+  level-2-mode: "none",
+  marker: (active: sym.arrow.r),
+  spacing: (marker-gap: 1em, marker-width: 1.5em)
+))
+
+= The anti-jitter mechanism
 Anti-jitter ensures that switching from a thin font to a bold one doesn't move the text. We use a ghost box to reserve the maximum space required.
 
 #demo("Stability Test H1",

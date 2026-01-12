@@ -156,6 +156,90 @@
   }
 }
 
+/// Helper to resolve marker content based on state
+#let resolve-marker(marker-setting, state, level) = {
+  if marker-setting == none { 
+    none 
+  } else if type(marker-setting) == dictionary {
+    marker-setting.at(state, default: none)
+  } else if type(marker-setting) == function {
+    marker-setting(state, level)
+  } else {
+    // Treat as static content (content, symbol, string, etc.)
+    marker-setting
+  }
+}
+
+/// Renders an item with jitter prevention.
+#let render-item(
+  body, 
+  is-active: false, 
+  is-completed: false,
+  text-style: (:), 
+  active-text-style: (:),
+  completed-text-style: none,
+  numbering-format: none,
+  index: none,
+  clickable: false,
+  dest: none,
+  markers: (:), 
+  marker-spacing: (:),
+) = {
+  let base-style = text-style
+  let active-style = active-text-style
+  let completed-style = if completed-text-style != none { completed-text-style } else { text-style }
+
+  let fmt-num = if numbering-format != none and index != none {
+    numbering(numbering-format, ..index) + " "
+  } else { "" }
+
+  let wrap-link(content) = {
+    if clickable and dest != none {
+      link(dest, content)
+    } else {
+      content
+    }
+  }
+
+  // Helper to construct the full line: [Marker] [Num] [Body]
+  let build-line(style, state-marker) = {
+    let parts = ()
+    if state-marker != none {
+      let m-width = marker-spacing.at("width", default: auto)
+      let m-gap = marker-spacing.at("gap", default: 0.5em)
+      
+      let m-box = if m-width != auto {
+        box(width: m-width, state-marker)
+      } else {
+        state-marker
+      }
+      parts.push(m-box)
+      parts.push(h(m-gap))
+    }
+    parts.push(fmt-num)
+    parts.push(body)
+    
+    wrap-link(text(..style, parts.join()))
+  }
+
+  let content-normal = build-line(base-style, markers.at("inactive", default: none))
+  let content-active = build-line(active-style, markers.at("active", default: none))
+  let content-completed = build-line(completed-style, markers.at("completed", default: none))
+
+  let target-content = if is-active { 
+    content-active 
+  } else if is-completed {
+    content-completed
+  } else { 
+    content-normal 
+  }
+
+  block(width: 100%, {
+    hide(content-active)
+    place(top + left, target-content)
+  })
+}
+
 #let progressive-outline(
   level-1-mode: "all", 
   level-2-mode: "current-parent",
@@ -191,6 +275,7 @@
   filter: none,
   headings: auto,
   clickable: true,
+  marker: none,
 ) = {
   context {
     let loc = if target-location == auto { here() } else { target-location }
@@ -250,7 +335,9 @@
         
         let is-child-of-active-h1 = false
         if active-h1 != none {
-          if h.counter.at(0) == active-h1.counter.at(0) {
+          let c1 = h.counter
+          let c2 = active-h1.counter
+          if c1.len() >= 1 and c2.len() >= 1 and c1.at(0) == c2.at(0) {
             is-child-of-active-h1 = true
           }
         }
@@ -268,7 +355,9 @@
         
         let is-child-of-active-h2 = false
         if active-h2 != none {
-          if h.counter.slice(0, 2) == active-h2.counter.slice(0, 2) {
+          let c1 = h.counter
+          let c2 = active-h2.counter
+          if c1.len() >= 2 and c2.len() >= 2 and c1.slice(0, 2) == c2.slice(0, 2) {
             is-child-of-active-h2 = true
           }
         }
@@ -297,6 +386,15 @@
         
         let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         
+        // Resolve markers
+        let m-active = resolve-marker(marker, "active", h.level)
+        let m-inactive = resolve-marker(marker, "inactive", h.level)
+        let m-completed = resolve-marker(marker, "completed", h.level)
+        let m-spacing = (
+          gap: spacing.at("marker-gap", default: 0.5em),
+          width: spacing.at("marker-width", default: auto)
+        )
+        
         let trimmed-idx = if h.counter.len() >= h.level {
           h.counter.slice(0, h.level)
         } else {
@@ -316,6 +414,8 @@
             index: trimmed-idx,
             clickable: clickable,
             dest: h-loc,
+            markers: (active: m-active, inactive: m-inactive, completed: m-completed),
+            marker-spacing: m-spacing,
           )
         ))
         last-level = h.level
