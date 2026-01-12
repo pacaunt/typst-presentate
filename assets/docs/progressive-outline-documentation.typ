@@ -36,7 +36,7 @@ This section details all the parameters available for the `progressive-outline` 
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Effect & Expected Values*]),
   [`level-X-mode`], [string], [Defines the visibility of level X (1, 2, or 3). \ Values: `"all"`, `"current"`, `"current-parent"`, `"none"`.],
-  [`text-styles`], [dict], [Dictionary of Typst `text(...)` styles for each level. \ Structure: `(level-X: (active: (...), completed: (...), inactive: (...)))`.],
+  [`text-styles`], [dict], [Styles passed to `#text` (fill, weight, etc.). You can also use a float (e.g., `0.5`) as a shortcut to inherit the active style with that opacity.],
   [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`) and horizontal indentation (`indent-X`) between elements.],
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
   [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`.],
@@ -122,6 +122,54 @@ progressive-outline(
       active: (fill: eastern, weight: "bold"),
       completed: (fill: gray.lighten(50%)),
       inactive: (fill: black)
+    )
+  )
+))
+
+== Advanced Opacity & Inheritance
+Instead of redefining the full style for `inactive` or `completed` states, you can use smart inheritance to adapt the `active` style.
+
+=== The Float Shortcut (Clone & Fade)
+Pass a number (0.0 to 1.0) to automatically clone the active style and apply transparency. `0.2` means 20% opacity (very faint), `1.0` means fully opaque.
+
+#demo("Auto-Fade Shortcut",
+"text-styles: (
+  level-1: (
+    active: (fill: red, weight: 'black'),
+    inactive: 0.2,   // Future: very faint (20%)
+    completed: 0.5   // Past: semi-transparent (50%)
+  )
+)",
+progressive-outline(
+  level-2-mode: "none",
+  text-styles: (
+    level-1: (
+      active: (fill: red, weight: "black"),
+      inactive: 0.2,
+      completed: 0.5
+    )
+  )
+))
+
+=== Partial Inheritance (Mix & Match)
+You can also use a dictionary with an `opacity` key. This allows you to inherit the active color (faded) while overriding other properties (like weight).
+
+#demo("Fade + Weight Change",
+"text-styles: (
+  level-1: (
+    active: (fill: blue, weight: 'black'),
+    inactive: (
+      opacity: 0.5,      // 50% of active color
+      weight: 'regular'  // But force regular weight
+    )
+  )
+)",
+progressive-outline(
+  level-2-mode: "none",
+  text-styles: (
+    level-1: (
+      active: (fill: blue, weight: "black"),
+      inactive: (opacity: 0.5, weight: "regular")
     )
   )
 ))

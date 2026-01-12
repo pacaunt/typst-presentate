@@ -115,6 +115,47 @@
   })
 }
 
+/// Helper to resolve styles with opacity/inheritance logic
+#let resolve-state-style(active-style, target-style) = {
+  if type(target-style) == float or type(target-style) == int {
+    // Case 1: Float shortcut -> Clone active style + apply opacity
+    let new-style = active-style
+    let c = new-style.at("fill", default: black)
+    // opacity 0.3 means 70% transparency
+    new-style.insert("fill", c.transparentize((1.0 - float(target-style)) * 100%))
+    new-style
+  } else if type(target-style) == dictionary {
+    // Case 2: Dictionary -> Check for 'opacity' key
+    if "opacity" in target-style {
+      let new-style = (:)
+      let alpha = 1.0
+      // Copy properties except 'opacity'
+      for (k, v) in target-style {
+        if k == "opacity" {
+          alpha = float(v)
+        } else {
+          new-style.insert(k, v)
+        }
+      }
+      
+      // Resolve color: Target fill > Active fill > Black
+      let base-color = if "fill" in new-style {
+        new-style.fill
+      } else {
+        active-style.at("fill", default: black)
+      }
+      
+      new-style.insert("fill", base-color.transparentize((1.0 - alpha) * 100%))
+      new-style
+    } else {
+      // Case 3: Standard dictionary without opacity
+      target-style
+    }
+  } else {
+    target-style
+  }
+}
+
 #let progressive-outline(
   level-1-mode: "all", 
   level-2-mode: "current-parent",
@@ -245,9 +286,15 @@
         }
 
         let styles-lvl = text-styles.at("level-" + str(h.level), default: (:))
-        let s-active = styles-lvl.at("active", default: (:))
-        let s-inactive = styles-lvl.at("inactive", default: (:))
-        let s-completed = styles-lvl.at("completed", default: none)
+        let raw-active = styles-lvl.at("active", default: (:))
+        let raw-inactive = styles-lvl.at("inactive", default: (:))
+        let raw-completed = styles-lvl.at("completed", default: none)
+        
+        // Resolve intelligent styles
+        let s-active = raw-active
+        let s-inactive = resolve-state-style(s-active, raw-inactive)
+        let s-completed = resolve-state-style(s-active, raw-completed)
+        
         let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         
         let trimmed-idx = if h.counter.len() >= h.level {
