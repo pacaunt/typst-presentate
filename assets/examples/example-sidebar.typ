@@ -35,7 +35,7 @@
   Simply import the theme and apply it to your document:
   
   ```typ
-  #import "@preview/presentate:0.4.0": *
+  #import "@preview/presentate:0.2.3": *
   #import themes.sidebar: template
   
   #show: doc => template(doc, 
