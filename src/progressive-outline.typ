@@ -315,6 +315,11 @@
       let should-render = false
       let h-loc = h.location
 
+      // Parent-child logic based on document order in the cache
+      // (current-h1 is already tracked in the loop)
+      let is-child-of-active-h1 = (active-h1 != none and current-h1 != none and h.level > 1 and current-h1.location == active-h1.location)
+      let is-child-of-active-h2 = (active-h2 != none and current-h2 != none and h.level > 2 and current-h2.location == active-h2.location)
+
       if h.level == 1 {
         if active-h1 != none and h-loc == active-h1.location { is-active = true }
         else {
@@ -333,15 +338,6 @@
            }
         }
         
-        let is-child-of-active-h1 = false
-        if active-h1 != none {
-          let c1 = h.counter
-          let c2 = active-h1.counter
-          if c1.len() >= 1 and c2.len() >= 1 and c1.at(0) == c2.at(0) {
-            is-child-of-active-h1 = true
-          }
-        }
-        
         if level-2-mode == "all" { should-render = true }
         else if level-2-mode == "current-parent" and is-child-of-active-h1 { should-render = true }
         else if level-2-mode == "current" and is-active { should-render = true }
@@ -351,15 +347,6 @@
            if active-h3 != none and h-loc != none {
              if h-loc.page() < active-h3.location.page() or (h-loc.page() == active-h3.location.page() and h-loc.position() != none and active-h3.location.position() != none and h-loc.position().y < active-h3.location.position().y) { is-completed = true }
            }
-        }
-        
-        let is-child-of-active-h2 = false
-        if active-h2 != none {
-          let c1 = h.counter
-          let c2 = active-h2.counter
-          if c1.len() >= 2 and c2.len() >= 2 and c1.slice(0, 2) == c2.slice(0, 2) {
-            is-child-of-active-h2 = true
-          }
         }
         
         if level-3-mode == "all" { should-render = true }
