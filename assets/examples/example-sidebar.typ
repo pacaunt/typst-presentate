@@ -89,6 +89,17 @@
   - `active-color`: Color for the current item.
 ]
 
+#slide("Font Configuration")[
+  Change the presentation's typography easily:
+  
+  ```typ
+  text-font: "Roboto",
+  text-size: 22pt
+  ```
+  
+  The sidebar text size is relative (0.7em) and will scale automatically.
+]
+
 #slide("Numbering")[
   Enable or disable section numbering globally.
   

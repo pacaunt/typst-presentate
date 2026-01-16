@@ -8,6 +8,7 @@
   navigation-style: "all", // Change to "current" for a minimalist look
   primary: rgb("#003366"),
   secondary: rgb("#336699"),
+  text-size: 22pt,         // Global text size
   transitions: (enabled: false), 
 )
 
@@ -37,6 +38,28 @@
 ]
 
 = Features
+
+== Font Configuration
+#slide("Font Configuration")[
+  You can easily change the global font and size. Headers and footers scale automatically.
+  
+  ```typ
+  #show: doc => template(doc,
+    text-font: "Roboto", // Default is "Lato"
+    text-size: 22pt,     // Default is 20pt
+    ...
+  )
+  ```
+  
+  In this presentation, we are using `22pt`.
+]
+
+== Auto-scaling UI
+#slide("Auto-scaling UI")[
+  The header and footer sizes are defined using relative units (`em`).
+  
+  This means they automatically scale when you change the `text-size` in the template configuration, maintaining a consistent visual balance without manual adjustment.
+]
 
 == Visual Layout
 #slide("Visual Layout")[

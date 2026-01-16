@@ -5,8 +5,11 @@
 // State to share configuration
 #let config-state = state("split-config", none)
 
-#let empty-slide(fill: white, ..args) = {
+#let empty-slide(fill: white, ..args) = context {
+  let config = config-state.get()
+  let ts = if config != none and "text-size" in config { config.text-size } else { 20pt }
   set page(margin: 0pt, header: none, footer: none, fill: fill)
+  set text(size: ts)
   p.slide(..args)
 }
 
@@ -23,8 +26,8 @@
   let subsec-align = config.subsection-align
   let show-num = config.show-heading-numbering
   
-  let header-size = 9pt
-  let footer-size = 8pt
+  let header-size = 0.45em
+  let footer-size = 0.4em
   
   // Header Logic using table for equal height columns
   let header = block(width: 100%, table(
@@ -84,7 +87,7 @@
 
   // Title Logic
   let slide-title = if title != none {
-    block(width: 100%, inset: (x: 1.5em, top: 0.8em), text(weight: "bold", size: 22pt, title))
+    block(width: 100%, inset: (x: 1.5em, top: 0.8em), text(weight: "bold", size: 1.2em, title))
   } else { none }
 
   // Assemble the slide
@@ -119,6 +122,8 @@
   date: datetime.today().display(),
   primary: rgb("#202060"),
   secondary: rgb("#404090"),
+  text-font: "Lato",
+  text-size: 20pt,
   navigation-style: "all", // "all" or "current"
   header-columns: (1fr, 1fr),
   header-inset: (x: 1.5em, y: 0.8em),
@@ -144,15 +149,16 @@
     show-heading-numbering: show-heading-numbering,
     title: title,
     author: author,
+    text-size: text-size,
   ))
 
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
-  set text(size: 20pt, font: "Lato")
+  set text(size: text-size, font: text-font)
 
   // Rule to record EVERYTHING including what's handled by other rules
   show heading: it => register-heading(it) + it
   
-  show heading: set text(size: 20pt, weight: "regular")
+  show heading: set text(size: 1em, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
     if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
   })
@@ -161,14 +167,14 @@
 
   let outline-styles = (
     level-1: (
-      active: (weight: "bold", fill: white, size: 30pt), 
-      completed: (weight: "bold", fill: white.transparentize(50%), size: 30pt),
-      inactive: (weight: "bold", fill: white.transparentize(50%), size: 30pt)
+      active: (weight: "bold", fill: white, size: 1.1em), 
+      completed: (weight: "bold", fill: white.transparentize(50%), size: 1.1em),
+      inactive: (weight: "bold", fill: white.transparentize(50%), size: 1.1em)
     ),
     level-2: (
-      active: (weight: "regular", fill: white, size: 22pt), 
-      completed: (weight: "regular", fill: white.transparentize(50%), size: 22pt),
-      inactive: (weight: "regular", fill: white.transparentize(50%), size: 22pt)
+      active: (weight: "regular", fill: white, size: 1.1em), 
+      completed: (weight: "regular", fill: white.transparentize(50%), size: 1.1em),
+      inactive: (weight: "regular", fill: white.transparentize(50%), size: 1.1em)
     ),
   )
 
@@ -199,8 +205,8 @@
               level-1: outline-styles.level-1,
               // Subsections are NORMAL (white) during chapter transition
               level-2: (
-                active: (weight: "regular", fill: white, size: 22pt), 
-                inactive: (weight: "regular", fill: white, size: 22pt)
+                active: (weight: "regular", fill: white, size: 1.1em), 
+                inactive: (weight: "regular", fill: white, size: 1.1em)
               )
             ),
             spacing: outline-spacing,
@@ -235,7 +241,7 @@
   empty-slide(fill: primary, {
     set std.align(center + horizon)
     set text(fill: white)
-    block(text(size: 40pt, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + white.transparentize(50%)))
+    block(text(size: 2em, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + white.transparentize(50%)))
     emph(subtitle)
     linebreak()
     grid(columns: 2, author, grid.vline(), date, inset: (x: 0.5em))

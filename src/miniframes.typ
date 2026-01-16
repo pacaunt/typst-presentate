@@ -33,6 +33,9 @@
     if h.level == 1 {
       current-section = (
         title: h.body,
+        numbering: h.numbering,
+        counter: counter(heading).at(h.location()),
+        level: h.level,
         loc: h.location(),
         subsections: ()
       )
@@ -43,6 +46,9 @@
         // Subsection without section? Create a dummy section.
         current-section = (
           title: none,
+          numbering: none,
+          counter: (),
+          level: 1,
           loc: h.location(),
           subsections: ()
         )
@@ -50,6 +56,9 @@
       }
       current-subsection = (
         title: h.body,
+        numbering: h.numbering,
+        counter: counter(heading).at(h.location()),
+        level: h.level,
         loc: h.location(),
         slides: ()
       )
@@ -131,6 +140,7 @@
   dots-align: "left",
   show-section-titles: true,
   show-subsection-titles: true,
+  show-numbering: false,
   gap: 1.5em,
   line-spacing: 4pt,
   inset: (x: 1em, y: 0.5em),
@@ -162,6 +172,19 @@
       })
     )
   }
+  
+  let fmt-title(item) = {
+    let t = item.title
+    if t == none { return none }
+    if show-numbering and item.at("numbering", default: none) != none {
+      // For miniframe bar, we usually want short numbering "1" or "1.1"
+      // If the heading level is 1, use just "1". If 2, "1.1".
+      let fmt = if item.at("level", default: 1) == 1 { "1" } else { "1.1" }
+      let num = numbering(fmt, ..item.counter)
+      t = [#num #t]
+    }
+    t
+  }
 
   let content = {
     set text(fill: text-color, size: text-size)
@@ -176,7 +199,8 @@
         dir: ttb,
         spacing: line-spacing,
         if show-section-titles and section.title != none {
-          let title-text = if is-section-active { strong(section.title) } else { section.title }
+          let t = fmt-title(section)
+          let title-text = if is-section-active { strong(t) } else { t }
           let title-link = if section.loc != none { link(section.loc, title-text) } else { title-text }
           align(eval(dots-align), title-link)
         },
@@ -192,7 +216,7 @@
               column-gutter: 0.8em,
               row-gutter: line-spacing * 0.7,
               ..section.subsections.map(sub => (
-                align(horizon, text(size: text-size * 0.85, if sub.title != none { sub.title } else { [] })),
+                align(horizon, text(size: text-size * 0.85, fmt-title(sub))),
                 align(horizon, render-dots(sub.slides))
               )).flatten()
             )

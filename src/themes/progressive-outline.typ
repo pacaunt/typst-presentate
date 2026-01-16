@@ -2,8 +2,13 @@
 #import "../store.typ": *
 #import "../progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
 
-#let empty-slide(..args) = {
+#let config-state = state("progressive-outline-config", none)
+
+#let empty-slide(..args) = context {
+  let config = config-state.get()
+  let ts = if config != none and "text-size" in config { config.text-size } else { 20pt }
   set page(margin: 0pt, header: none, footer: none)
+  set text(size: ts)
   p.slide(..args)
 }
 
@@ -28,7 +33,7 @@
     
     if t != none {
       block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-        #text(weight: "bold", size: 24pt, t)
+        #text(weight: "bold", size: 1.2em, t)
       ]
     }
   }
@@ -58,10 +63,18 @@
   subtitle: [Some description of the presentation.],
   date: datetime.today().display(),
   aspect-ratio: "16-9",
+  text-font: "Lato",
+  text-size: 20pt,
   show-heading-numbering: true,
   show-all-sections-in-transition: false,
   ..options,
 ) = {
+  let trans-opts = (enabled: true, level: 1) // default unused but good practice
+  
+  config-state.update((
+    text-size: text-size
+  ))
+
   if header == auto {
     header = context {
       set text(size: 0.8em)
@@ -101,12 +114,12 @@
   }
 
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
-  set text(size: 20pt, font: "Lato")
+  set text(size: text-size, font: text-font)
   
   // Rule to record EVERYTHING including what's handled by other rules
   show heading: it => register-heading(it) + it
   
-  show heading: set text(size: 20pt, weight: "regular")
+  show heading: set text(size: 1em, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
     if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
   })
@@ -115,14 +128,14 @@
 
   let outline-styles = (
     level-1: (
-      active: (weight: "bold", fill: eastern, size: 30pt), 
-      completed: (weight: "bold", fill: luma(180), size: 30pt),
-      inactive: (weight: "bold", fill: black, size: 30pt)
+      active: (weight: "bold", fill: eastern, size: 1.1em), 
+      completed: (weight: "bold", fill: luma(180), size: 1.1em),
+      inactive: (weight: "bold", fill: black, size: 1.1em)
     ),
     level-2: (
-      active: (weight: "regular", fill: eastern, size: 22pt), 
-      completed: (weight: "regular", fill: luma(200), size: 22pt),
-      inactive: (weight: "regular", fill: luma(100), size: 22pt)
+      active: (weight: "regular", fill: eastern, size: 1.1em), 
+      completed: (weight: "regular", fill: luma(200), size: 1.1em),
+      inactive: (weight: "regular", fill: luma(100), size: 1.1em)
     ),
   )
 
@@ -137,7 +150,7 @@
   // --- Title Slide ---
   empty-slide({
     set align(center + horizon)
-    block(text(size: 40pt, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))
+    block(text(size: 2em, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))
     emph(subtitle)
     linebreak()
     grid(columns: 2, author, grid.vline(), date, inset: (x: 0.5em))
@@ -146,10 +159,10 @@
   // --- Global Outline (Classic) ---
   p.slide([
     #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-      #text(weight: "bold", size: 24pt, [Sommaire])
+      #text(weight: "bold", size: 1.2em, [Sommaire])
     ]
     #v(1em)
-    #set text(size: 18pt)
+    #set text(size: 0.9em)
     #outline(title: none, indent: 2em, depth: 2)
   ])
 
@@ -170,8 +183,8 @@
             level-1: outline-styles.level-1,
             // Subsections are NORMAL (black) during chapter transition
             level-2: (
-              active: (weight: "regular", fill: black, size: 22pt), 
-              inactive: (weight: "regular", fill: black, size: 22pt)
+              active: (weight: "regular", fill: black, size: 1.1em), 
+              inactive: (weight: "regular", fill: black, size: 1.1em)
             )
           ),
           spacing: outline-spacing,

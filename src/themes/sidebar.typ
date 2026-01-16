@@ -49,6 +49,8 @@
   title-color: rgb("#2c3e50"),
   logo: none,
   logo-position: "top",
+  text-font: "Lato",
+  text-size: 20pt,
   numbering: "1.1",
   outline-options: (:),
   ..options
@@ -87,7 +89,7 @@
 
   // The content of the sidebar
   let sidebar-content = context {
-    set text(font: "Lato", size: 14pt)
+    set text(font: text-font, size: 0.7em)
     
     place(
       if side == "left" { left } else { right },
@@ -135,7 +137,7 @@
     }
   )
 
-  set text(size: 20pt, font: "Lato", fill: black)
+  set text(size: text-size, font: text-font, fill: black)
   show heading: set text(fill: title-color)
   show heading: it => register-heading(it) + it
   set heading(outlined: true, numbering: numbering)

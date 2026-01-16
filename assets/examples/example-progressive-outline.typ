@@ -11,6 +11,18 @@
 
 = Introduction to Physics
 
+== Font Config
+#slide[
+  You can customize the font and size globally:
+  
+  ```typ
+  #show: template.with(
+    text-font: "Roboto",
+    text-size: 22pt
+  )
+  ```
+]
+
 == Classical Mechanics
 #slide[
   Welcome to Classical Mechanics. This is the first slide.

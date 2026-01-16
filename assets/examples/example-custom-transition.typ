@@ -10,7 +10,7 @@
   let part-num = counter(heading).at(h.location()).at(0)
   text(size: 1.2em, white.transparentize(30%), smallcaps[Part #part-num])
   v(0.5em)
-  text(size: 3em, weight: "bold", h.body)
+  text(size: 1.8em, weight: "bold", h.body)
   v(1em)
   line(length: 40%, stroke: 0.5pt + white)
 })
@@ -147,4 +147,21 @@
 #slide[
   This subsection has no Level 3 headings. 
   The transition slide will show an empty "Section Structure" column.
+]
+
+= Styling
+
+== Font Configuration
+#slide[
+  You can control the global font settings via the template arguments:
+  
+  ```typ
+  #show: template.with(
+    text-font: "Roboto", // Default "Lato"
+    text-size: 22pt,     // Default 20pt
+    ...
+  )
+  ```
+  
+  This automatically scales headers, footers, and other UI elements.
 ]

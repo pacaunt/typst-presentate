@@ -39,12 +39,34 @@
 = Layout & Zones
 
 == The 3-Zone System
-#slide[
+#slide("Slide Zones")[
   The theme splits every slide into three vertical zones:
   
   1.  *Navigation Zone*: Contains the miniframes bar.
   2.  *Content Zone*: Contains the slide title and body.
   3.  *Metadata Zone*: Contains the footer (author, title, page numbering).
+]
+
+== Slide Titles
+#slide("Optional Titles")[
+  Slide titles are now optional and strictly manual. 
+  
+  Unlike previous versions, the theme no longer automatically uses the subsection title as the slide title.
+  
+  - `#slide[...]`: No title block shown.
+  - `#slide("My Title")[...]`: Displays "My Title" at the top.
+]
+
+== Font Configuration
+#slide[
+  The theme supports global font customization:
+  
+  ```typ
+  text-font: "Roboto",
+  text-size: 22pt
+  ```
+  
+  The navigation bar (dots), titles, and footer will scale proportionally to the chosen text size.
 ]
 
 == Navigation Position
@@ -77,6 +99,17 @@
   ```
 ]
 
+== Heading Numbering
+#slide[
+  You can toggle section numbering:
+  
+  ```typ
+  show-heading-numbering: false
+  ```
+  
+  This affects the slide titles, the navigation outlines, and the transition slides.
+]
+
 == Marker Customization
 #slide[
   You can change the shape and size of the progress dots:
@@ -107,7 +140,7 @@
 = Animations
 
 == Dots & Pauses
-#slide[
+#slide("Stable Navigation")[
   Even when using animations like `pause`, the navigation bar remains stable.
   
   #pause[
@@ -121,10 +154,10 @@
 = Conclusion
 
 == Getting Started
-#slide[
+#slide("Summary")[
   Simply import the theme and start using standard headings:
   
   - `=` for Sections (H1)
   - `==` for Subsections (H2)
-  - `#slide[...]` for your content.
+  - `#slide("Title")[...]` for your content.
 ]

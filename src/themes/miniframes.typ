@@ -8,7 +8,7 @@
 #let config-state = state("miniframes-config", none)
 
 // Layout standard avec barre et footer
-#let apply-layout(body) = context {
+#let apply-layout(title: none, body) = context {
   let config = config-state.get()
   if config == none { return body }
   
@@ -19,14 +19,18 @@
   let margin-x = config.margin-x
   let gap-zone = config.gap-zone
   let footer-content = config.footer-content
+  let show-num = config.show-heading-numbering
   
-  let base-size = 20pt
-  let footer-size = 15pt
+  let footer-size = 0.75em
 
-  // Récupération automatique du titre de la slide (H2 actuel)
-  let active = get-active-headings(here())
-  let slide-title = if active.h2 != none {
-    block(width: 100%, inset: (bottom: 0.8em), text(weight: "bold", size: 24pt, active.h2.body))
+  // Gestion du titre manuel
+  let slide-title = if title != none {
+    // Si un titre est fourni, on regarde si on doit ajouter le numéro de la sous-section courante ?
+    // Généralement non, si le titre est manuel, c'est un titre custom.
+    // MAIS dans les autres thèmes, on affiche le titre.
+    // L'utilisateur peut vouloir la numérotation automatique.
+    // Si on veut être strict "pas de reprise de sous-section", on affiche juste le titre manuel.
+    block(width: 100%, inset: (bottom: 0.8em), text(weight: "bold", size: 1.2em, title))
   } else { none }
 
   let bar = if struct != none {
@@ -46,6 +50,7 @@
       dots-align: nav-opts.dots-align,
       show-section-titles: nav-opts.show-section-titles,
       show-subsection-titles: nav-opts.show-subsection-titles,
+      show-numbering: show-num,
       gap: nav-opts.gap,
       line-spacing: nav-opts.line-spacing,
       inset: nav-opts.inset,
@@ -58,7 +63,7 @@
   }
 
   // Style global de la slide
-  set text(size: base-size, font: "Lato", weight: "regular", fill: black)
+  set text(weight: "regular", fill: black)
 
   block(width: 100%, height: 100%, fill: white, {
     // Marqueur pour indiquer que cette slide doit produire un dot
@@ -98,16 +103,24 @@
 #let plain-layout(body) = context {
   let config = config-state.get()
   let color = config.at("color", default: black)
-  let margin-x = config.at("margin-x", default: 2.5em)
+  let text-size = config.at("text-size", default: 20pt)
   
-  block(width: 100%, height: 100%, fill: color, inset: (x: margin-x, y: 0pt), {
-    set text(fill: white, font: "Lato", size: 20pt, weight: "regular")
+  block(width: 100%, height: 100%, fill: color, inset: 0pt, {
+    set text(fill: white, size: text-size, weight: "regular")
     set align(center + horizon)
     body
   })
 }
 
-#let slide(body, ..args) = p.slide(..args, apply-layout(body))
+#let slide(..args) = {
+  let pos = args.pos()
+  let named = args.named()
+  if pos.len() == 1 {
+    p.slide(..named, apply-layout(pos.at(0)))
+  } else {
+    p.slide(..named, apply-layout(title: pos.at(0), pos.at(1)))
+  }
+}
 
 #let template(
   body,
@@ -117,13 +130,16 @@
   date: datetime.today().display(),
   color: rgb("#1a5fb4"),
   aspect-ratio: "16-9",
+  text-font: "Lato",
+  text-size: 20pt,
+  show-heading-numbering: true,
   navigation: (),
   transitions: (),
   show-all-sections-in-transition: false,
   ..options,
 ) = {
   let nav-opts = (
-    position: "top", fill: color, text-color: white, text-size: 9pt,
+    position: "top", fill: color, text-color: white, text-size: 0.6em,
     font: none, active-color: white, inactive-color: white.transparentize(60%),
     marker-shape: "circle", marker-size: 4pt, style: "compact",
     align-mode: "left", dots-align: "left", show-section-titles: true,
@@ -150,17 +166,21 @@
       align(right, counter(page).display("1 / 1", both: true))
     ), 
     color: color,
+    text-size: text-size,
+    show-heading-numbering: show-heading-numbering,
   ))
 
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
-  set text(size: 20pt, font: "Lato")
+  set text(size: text-size, font: text-font)
 
   // Rule to record EVERYTHING including what's handled by other rules
   // This ensures headings are registered in the cache and their counters advance
   show heading: it => register-heading(it) + it
   
-  show heading: set text(size: 20pt, weight: "regular")
-  set heading(outlined: true)
+  show heading: set text(size: 1em, weight: "regular")
+  set heading(outlined: true, numbering: (..nums) => {
+    if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
+  })
   
   // Level 3 headings are registered but typically not rendered to avoid slide clutter
   show heading.where(level: 3): it => register-heading(it)
@@ -203,14 +223,14 @@
 
   let outline-styles = (
     level-1: (
-      active: (weight: "bold", fill: white, size: 30pt), 
-      completed: (weight: "bold", fill: white.transparentize(50%), size: 30pt),
-      inactive: (weight: "bold", fill: white.transparentize(50%), size: 30pt)
+      active: (weight: "bold", fill: white, size: 1.5em), 
+      completed: (weight: "bold", fill: white.transparentize(50%), size: 1.5em),
+      inactive: (weight: "bold", fill: white.transparentize(50%), size: 1.5em)
     ),
     level-2: (
-      active: (weight: "regular", fill: white, size: 22pt), 
-      completed: (weight: "regular", fill: white.transparentize(50%), size: 22pt),
-      inactive: (weight: "regular", fill: white.transparentize(50%), size: 22pt)
+      active: (weight: "regular", fill: white, size: 1.2em), 
+      completed: (weight: "regular", fill: white.transparentize(50%), size: 1.2em),
+      inactive: (weight: "regular", fill: white.transparentize(50%), size: 1.2em)
     ),
   )
 
@@ -227,25 +247,26 @@
     let reg = register-heading(h)
     if trans-opts.enabled {
       reg + p.slide(plain-layout({
-        place(hide(h)) // Render hiddenly to advance counter and register in tree
+        set align(top + left)
         v(25%)
         pad(left: 15%)[
           #progressive-outline(
             level-1-mode: l1-mode, 
             level-2-mode: "current-parent",
-            show-numbering: false,
+            show-numbering: show-heading-numbering, numbering-format: "1.1 ",
             target-location: h.location(),
             text-styles: (
               level-1: outline-styles.level-1,
               // Subsections are NORMAL (white) during chapter transition
               level-2: (
-                active: (weight: "regular", fill: white, size: 22pt), 
-                inactive: (weight: "regular", fill: white, size: 22pt)
+                active: (weight: "regular", fill: white, size: 1.2em), 
+                inactive: (weight: "regular", fill: white, size: 1.2em)
               )
             ),
             spacing: outline-spacing,
           )
         ]
+        place(hide(h)) // Render hiddenly to advance counter and register in tree
       }))
     } else {
       reg + place(hide(h))
@@ -257,18 +278,19 @@
     let reg = register-heading(h)
     if trans-opts.enabled and trans-opts.level >= 2 {
       reg + p.slide(plain-layout({
-        place(hide(h)) // Render hiddenly to advance counter and register in tree
+        set align(top + left)
         v(25%)
         pad(left: 15%)[
           #progressive-outline(
             level-1-mode: l1-mode,
             level-2-mode: "current-parent",
-            show-numbering: false,
+            show-numbering: show-heading-numbering, numbering-format: "1.1 ",
             target-location: h.location(),
             text-styles: outline-styles,
             spacing: outline-spacing,
           )
         ]
+        place(hide(h)) // Render hiddenly to advance counter and register in tree
       }))
     } else {
       reg + place(hide(h))

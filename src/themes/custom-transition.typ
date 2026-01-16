@@ -35,7 +35,7 @@
     
     if t != none {
       block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-        #text(weight: "bold", size: 24pt, [#h-num#t])
+        #text(weight: "bold", size: 1.2em, [#h-num#t])
       ]
     }
   }
@@ -65,6 +65,8 @@
   subtitle: [Some description of the presentation.],
   date: datetime.today().display(),
   aspect-ratio: "16-9",
+  text-font: "Lato",
+  text-size: 20pt,
   show-heading-numbering: true,
   on-section-change: auto,
   on-subsection-change: auto,
@@ -138,7 +140,7 @@
   }
 
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
-  set text(size: 20pt, font: "Lato")
+  set text(size: text-size, font: text-font)
   
   // Unified rule to handle registration and transitions
   show heading: h => {
@@ -157,7 +159,7 @@
     }
   }
   
-  show heading: set text(size: 20pt, weight: "regular")
+  show heading: set text(size: 1em, weight: "regular")
   
   // Apply numbering settings globally to all headings
   set heading(outlined: true, numbering: if show-heading-numbering { "1.1" } else { none })
@@ -168,7 +170,7 @@
   // --- Title Slide ---
   empty-slide({
     set align(center + horizon)
-    block(text(size: 40pt, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))
+    block(text(size: 2em, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))
     if subtitle != none {
       emph(subtitle)
       linebreak()
@@ -179,10 +181,10 @@
   // --- Global Outline (Classic Summary) ---
   p.slide([
     #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-      #text(weight: "bold", size: 24pt, [Sommaire])
+      #text(weight: "bold", size: 1.2em, [Sommaire])
     ]
     #v(1em)
-    #set text(size: 18pt)
+    #set text(size: 0.9em)
     #outline(title: none, indent: 2em, depth: 2)
   ])
 
