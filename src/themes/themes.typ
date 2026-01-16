@@ -4,3 +4,4 @@
 #import "custom-transition.typ": template as custom-transition
 #import "sidebar.typ": template as sidebar
 #import "miniframes.typ": template as miniframes
+#import "split.typ": template as split

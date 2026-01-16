@@ -109,7 +109,7 @@
     content-normal 
   }
 
-  block(width: 100%, {
+  block(width: auto, {
     hide(content-active)
     place(top + left, target-content)
   })
@@ -234,7 +234,7 @@
     content-normal 
   }
 
-  block(width: 100%, {
+  block(width: auto, {
     hide(content-active)
     place(top + left, target-content)
   })
@@ -410,7 +410,7 @@
     }
 
     if items-to-render.len() > 0 {
-      grid(columns: 1, ..items-to-render)
+      grid(columns: (auto,), ..items-to-render)
     }
   }
 }
