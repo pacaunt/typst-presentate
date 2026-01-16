@@ -1,4 +1,4 @@
-#import "../../src/progressive-outline.typ": progressive-outline, register-heading
+#import "../../src/components/progressive-outline.typ": progressive-outline, register-heading
 #show heading: it => { register-heading(it); it }
 
 #set page(paper: "a4", margin: 1.5cm)

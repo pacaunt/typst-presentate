@@ -1,5 +1,5 @@
 #import "../../src/presentate.typ": *
-#import "../../src/progressive-outline.typ": progressive-outline, register-heading
+#import "../../src/components/progressive-outline.typ": progressive-outline, register-heading
 
 #show heading: it => {
   register-heading(it)

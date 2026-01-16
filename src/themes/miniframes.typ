@@ -1,7 +1,7 @@
 #import "../presentate.typ" as p
 #import "../store.typ": states, set-options
-#import "../miniframes.typ": get-structure, get-current-logical-slide-number, render-miniframes
-#import "../progressive-outline.typ": progressive-outline, register-heading, get-active-headings
+#import "../components/miniframes.typ": get-structure, get-current-logical-slide-number, render-miniframes
+#import "../components/progressive-outline.typ": progressive-outline, register-heading, get-active-headings
 
 // États pour partager la config entre le template et les fonctions slide
 #let structure-cache = state("miniframes-structure-cache", none)

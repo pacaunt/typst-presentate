@@ -1,5 +1,6 @@
+#import "../store.typ"
 /// Global state to cache headings data
-#let progressive-outline-cache = state("progressive-outline-cache", ())
+#let progressive-outline-cache = state(store.prefix + "progressive-outline-cache", ())
 
 /// Registers a heading into the cache. Returns the update content.
 #let register-heading(it) = {

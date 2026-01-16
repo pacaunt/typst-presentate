@@ -1,5 +1,5 @@
 #import "presentate.typ": slide
-#import "progressive-outline.typ": progressive-outline, register-heading, get-active-headings
+#import "components/components.typ"
 #import "animation.typ" 
 #import "indices.typ"
 #import "render.typ": pause, only, uncover, fragments, transform, render, alert, step-item, motion, tag

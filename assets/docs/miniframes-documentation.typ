@@ -1,4 +1,4 @@
-#import "../../src/miniframes.typ": render-miniframes
+#import "../../src/components/miniframes.typ": render-miniframes
 #import "../../src/utils.typ"
 
 #set page(paper: "a4", margin: 1.5cm)

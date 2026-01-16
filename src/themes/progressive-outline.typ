@@ -1,6 +1,6 @@
 #import "../presentate.typ" as p
 #import "../store.typ": *
-#import "../progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
+#import "../components/progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
 
 #let config-state = state("progressive-outline-config", none)
 

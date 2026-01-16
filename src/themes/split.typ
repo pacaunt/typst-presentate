@@ -1,6 +1,6 @@
 #import "../presentate.typ" as p
 #import "../store.typ": states, set-options
-#import "../progressive-outline.typ": progressive-outline, register-heading, get-active-headings
+#import "../components/progressive-outline.typ": progressive-outline, register-heading, get-active-headings
 
 // State to share configuration
 #let config-state = state("split-config", none)

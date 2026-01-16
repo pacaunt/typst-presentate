@@ -1,4 +1,4 @@
-#import "store.typ"
+#import "../store.typ"
 
 /// Extraction of the presentation structure.
 /// Returns a dictionary with sections, each containing subsections, each containing logical slides.

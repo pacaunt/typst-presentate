@@ -1,5 +1,6 @@
 #import "../../src/export.typ": *
 #import "../../src/themes/custom-transition.typ": slide, template, empty-slide
+#import components: get-active-headings, progressive-outline
 
 // --- TRANSITION HELPERS ---
 

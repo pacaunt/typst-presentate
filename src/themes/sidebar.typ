@@ -1,5 +1,5 @@
 #import "../presentate.typ" as p
-#import "../progressive-outline.typ": progressive-outline, register-heading
+#import "../components/progressive-outline.typ": progressive-outline, register-heading
 
 /// Slide without sidebar and margins
 #let empty-slide(..args) = {
