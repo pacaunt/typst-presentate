@@ -57,7 +57,6 @@
 }
 
 #let template(
-  body,
   header: auto,
   footer: auto,
   author: [Author Name],
@@ -71,6 +70,7 @@
   on-section-change: auto,
   on-subsection-change: auto,
   on-subsubsection-change: none,
+  body,
   ..options,
 ) = {
   // Use the parameter to define local default transitions if auto
@@ -82,7 +82,7 @@
           level-1-mode: "current", 
           level-2-mode: "current-parent",
           show-numbering: show-heading-numbering,
-          target-location: h.location,
+          target-location: h.location(),
         )
       ]
     })
@@ -96,7 +96,7 @@
           level-1-mode: "current",
           level-2-mode: "current-parent",
           show-numbering: show-heading-numbering,
-          target-location: h.location,
+          target-location: h.location(),
         )
       ]
     })

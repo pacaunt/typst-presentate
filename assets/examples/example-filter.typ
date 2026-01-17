@@ -1,8 +1,7 @@
 #import "../../src/presentate.typ": *
 #import "../../src/themes/sidebar.typ": template, slide
 
-#show: doc => template(
-  doc, 
+#show: template.with(
   title: [Filtering Demo],
   subtitle: [Hiding sections from the outline],
   author: [David Hajage],

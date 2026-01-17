@@ -115,7 +115,6 @@
 }
 
 #let template(
-  body,
   title: none,
   subtitle: none,
   author: none,
@@ -133,6 +132,7 @@
   show-all-sections-in-transition: false,
   transitions: (),
   aspect-ratio: "16-9",
+  body,
   ..options,
 ) = {
   let trans-opts = (enabled: true, level: 1)

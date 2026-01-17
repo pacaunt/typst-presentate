@@ -123,7 +123,6 @@
 }
 
 #let template(
-  body,
   title: none,
   subtitle: none,
   author: none,
@@ -136,6 +135,7 @@
   navigation: (),
   transitions: (),
   show-all-sections-in-transition: false,
+  body,
   ..options,
 ) = {
   let nav-opts = (

@@ -34,7 +34,6 @@
 
 /// A sidebar-based template inspired by Beamer's Hannover/Marburg themes.
 #let template(
-  body,
   title: [Title of Presentation],
   subtitle: none,
   author: none,
@@ -53,6 +52,7 @@
   text-size: 20pt,
   numbering: "1.1",
   outline-options: (:),
+  body,
   ..options
 ) = {
   

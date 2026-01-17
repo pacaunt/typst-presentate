@@ -55,7 +55,6 @@
 }
 
 #let template(
-  body,
   header: auto,
   footer: auto,
   author: [Author Name],
@@ -67,6 +66,7 @@
   text-size: 20pt,
   show-heading-numbering: true,
   show-all-sections-in-transition: false,
+  body,
   ..options,
 ) = {
   let trans-opts = (enabled: true, level: 1) // default unused but good practice

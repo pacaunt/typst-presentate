@@ -2,7 +2,7 @@
 #import "../../src/themes/miniframes.typ": *
 #import "../../src/render.typ": pause
 
-#show: doc => template(doc,
+#show: template.with(
   title: [The Miniframes Theme],
   subtitle: [Navigation bar with progress tracking],
   author: [David Hajage],

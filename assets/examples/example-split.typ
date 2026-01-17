@@ -1,7 +1,7 @@
 #import "../../src/presentate.typ": *
 #import "../../src/themes/split.typ": *
 
-#show: doc => template(doc,
+#show: template.with(
   title: [The Split Theme],
   subtitle: [Inspired by Copenhagen & Cambridge],
   author: [David Hajage],
