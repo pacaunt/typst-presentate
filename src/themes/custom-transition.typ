@@ -1,55 +1,35 @@
 #import "../presentate.typ" as p
 #import "../store.typ": *
 #import "../components/progressive-outline.typ": progressive-outline, register-heading, progressive-outline-cache, get-active-headings
+#import "../components/title.typ": slide-title
+#import "../structure.typ": structure-config, resolve-slide-title, is-role
 
-#let empty-slide(fill: none, ..args) = {
+#let empty-slide(fill: none, body) = {
   set page(margin: 0pt, header: none, footer: none, fill: fill)
-  p.slide(..args)
+  p.slide(context {
+    let ts = structure-config.get().at("text-size", default: 20pt)
+    set text(size: ts)
+    body
+  })
 }
 
 #let slide(..args, align: top) = {
   let kwargs = args.named()
   let args = args.pos()
-  let body
-
-  let title-content = context {
-    let active = get-active-headings(here())
-    let t = none
-    let h-num = ""
-    
-    if args.len() == 1 {
-      if active.h3 != none {
-        t = active.h3.body
-        // Check if numbering should be displayed (based on heading numbering setting)
-        // Since we don't have direct access to show-heading-numbering here easily 
-        // without state, we check if the heading has a numbering defined.
-        if active.h3.numbering != none {
-          h-num = numbering(active.h3.numbering, ..active.h3.counter) + " "
-        }
-      }
-    } else if args.at(0) == none {
-      t = none
-    } else if args.len() == 2 {
-      t = args.at(0)
-    }
-    
-    if t != none {
-      block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-        #text(weight: "bold", size: 1.2em, [#h-num#t])
-      ]
-    }
-  }
+  let manual-title = none
+  let body = none
 
   if args.len() == 1 {
-    (body,) = args
+    body = args.at(0)
   } else {
-    (_, body) = args
+    manual-title = args.at(0)
+    body = args.at(1)
   }
 
   p.slide(
     ..kwargs,
     [
-      #title-content
+      #slide-title(resolve-slide-title(manual-title))
       #set std.align(align)
       #body
     ],
@@ -67,38 +47,75 @@
   text-font: "Lato",
   text-size: 20pt,
   show-heading-numbering: true,
+  mapping: (section: 1, subsection: 2),
+  auto-title: false,
+  on-part-change: none,
   on-section-change: auto,
   on-subsection-change: auto,
   on-subsubsection-change: none,
+  show-all-sections-in-transition: false,
   body,
   ..options,
 ) = {
-  // Use the parameter to define local default transitions if auto
+  
+  structure-config.update(conf => (
+    mapping: mapping,
+    auto-title: auto-title,
+    text-size: text-size,
+  ))
+
+  let l1-mode = if show-all-sections-in-transition { "all" } else { "current" }
+  let l2-mode = if show-all-sections-in-transition { "all" } else { "current-parent" }
+  let l3-mode = if show-all-sections-in-transition { "all" } else { "current-parent" }
+
+  // Default transition logic
   let on-section-change = if on-section-change == auto {
     (h) => empty-slide({
+      set align(top + left)
       v(25%)
+      
+      let get-mode(lvl) = {
+        if is-role(mapping, lvl, "part") { l1-mode }
+        else if is-role(mapping, lvl, "section") { l2-mode }
+        else if is-role(mapping, lvl, "subsection") { l3-mode }
+        else { "none" }
+      }
+
       pad(left: 15%)[
         #progressive-outline(
-          level-1-mode: "current", 
-          level-2-mode: "current-parent",
+          level-1-mode: get-mode(1), 
+          level-2-mode: get-mode(2),
+          level-3-mode: get-mode(3),
           show-numbering: show-heading-numbering,
           target-location: h.location(),
         )
       ]
+      place(hide(h))
     })
   } else { on-section-change }
 
   let on-subsection-change = if on-subsection-change == auto {
     (h) => empty-slide({
+      set align(top + left)
       v(25%)
+
+      let get-mode(lvl) = {
+        if is-role(mapping, lvl, "part") { l1-mode }
+        else if is-role(mapping, lvl, "section") { l2-mode }
+        else if is-role(mapping, lvl, "subsection") { l3-mode }
+        else { "none" }
+      }
+
       pad(left: 15%)[
         #progressive-outline(
-          level-1-mode: "current",
-          level-2-mode: "current-parent",
+          level-1-mode: get-mode(1),
+          level-2-mode: get-mode(2),
+          level-3-mode: get-mode(3),
           show-numbering: show-heading-numbering,
           target-location: h.location(),
         )
       ]
+      place(hide(h))
     })
   } else { on-subsection-change }
 
@@ -106,10 +123,12 @@
     header = context {
       set text(size: 0.8em)
       let active = get-active-headings(here())
-      let h1 = active.h1
-      let h2 = active.h2
+      let mapping = structure-config.get().mapping
       
-      let format-h(h) = {
+      let format-h(lvl-key) = {
+        let lvl = mapping.at(lvl-key, default: none)
+        if lvl == none { return box[] }
+        let h = active.at("h" + str(lvl), default: none)
         if h == none or h.location == none { return box[] }
         let num = if show-heading-numbering {
           numbering("1.1", ..h.counter) + " "
@@ -117,8 +136,8 @@
         [#num#h.body]
       }
       
-      let h1-c = format-h(h1)
-      let h2-c = format-h(h2)
+      let h1-c = format-h("section")
+      let h2-c = format-h("subsection")
       
       let final = ()
       if h1-c != box[] { final.push(text(fill: gray, weight: "bold", h1-c)) }
@@ -142,20 +161,17 @@
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
   set text(size: text-size, font: text-font)
   
-  // Unified rule to handle registration and transitions
+  // Unified Transition Rule
   show heading: h => {
-    let update = register-heading(h)
-    if h.level == 1 and on-section-change != none {
-      update + on-section-change(h)
-    } else if h.level == 2 and on-subsection-change != none {
-      update + on-subsection-change(h)
-    } else if h.level == 3 {
-      update
-      if on-subsubsection-change != none {
-        on-subsubsection-change(h)
-      }
+    register-heading(h)
+    if is-role(mapping, h.level, "part") {
+      if on-part-change != none { on-part-change(h) } else { place(hide(h)) }
+    } else if is-role(mapping, h.level, "section") {
+      if on-section-change != none { on-section-change(h) } else { place(hide(h)) }
+    } else if is-role(mapping, h.level, "subsection") {
+      if on-subsection-change != none { on-subsection-change(h) } else { place(hide(h)) }
     } else {
-      update + h
+      h
     }
   }
   

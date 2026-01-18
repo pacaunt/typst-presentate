@@ -351,7 +351,11 @@
         }
         
         if level-3-mode == "all" { should-render = true }
-        else if level-3-mode == "current-parent" and is-child-of-active-h2 { should-render = true }
+        else if level-3-mode == "current-parent" {
+           if is-child-of-active-h2 { should-render = true }
+           // Fallback for skipped levels (L1 -> L3): show if child of active L1 and no L2 exists
+           else if active-h2 == none and is-child-of-active-h1 { should-render = true }
+        }
         else if level-3-mode == "current" and is-active { should-render = true }
       }
 

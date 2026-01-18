@@ -1,7 +1,8 @@
 #import "../presentate.typ" as p
 #import "../store.typ": states, set-options
-#import "../components/miniframes.typ": get-structure, get-current-logical-slide-number, render-miniframes
-#import "../components/progressive-outline.typ": progressive-outline, register-heading, get-active-headings
+#import "../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, register-heading, get-active-headings
+#import "../components/title.typ": slide-title
+#import "../structure.typ": structure-config, resolve-slide-title, is-role
 
 // États pour partager la config entre le template et les fonctions slide
 #let structure-cache = state("miniframes-structure-cache", none)
@@ -23,15 +24,8 @@
   
   let footer-size = 0.75em
 
-  // Gestion du titre manuel
-  let slide-title = if title != none {
-    // Si un titre est fourni, on regarde si on doit ajouter le numéro de la sous-section courante ?
-    // Généralement non, si le titre est manuel, c'est un titre custom.
-    // MAIS dans les autres thèmes, on affiche le titre.
-    // L'utilisateur peut vouloir la numérotation automatique.
-    // Si on veut être strict "pas de reprise de sous-section", on affiche juste le titre manuel.
-    block(width: 100%, inset: (bottom: 0.8em), text(weight: "bold", size: 1.2em, title))
-  } else { none }
+  // Gestion du titre manuel / auto
+  let st = slide-title(resolve-slide-title(title), size: 1.2em, weight: "bold", inset: (bottom: 0.8em))
 
   let bar = if struct != none {
     render-miniframes(
@@ -48,8 +42,8 @@
       style: nav-opts.style,
       align-mode: nav-opts.align-mode,
       dots-align: nav-opts.dots-align,
-      show-section-titles: nav-opts.show-section-titles,
-      show-subsection-titles: nav-opts.show-subsection-titles,
+      show-level1-titles: nav-opts.show-level1-titles,
+      show-level2-titles: nav-opts.show-level2-titles,
       show-numbering: show-num,
       gap: nav-opts.gap,
       line-spacing: nav-opts.line-spacing,
@@ -77,7 +71,7 @@
       
       // 2. Zone Milieu: TITRE + CORPS
       block(width: 100%, inset: (x: margin-x), {
-        slide-title
+        st
         // On cache les titres éventuellement présents dans body pour éviter les doublons
         show heading: none
         body
@@ -132,6 +126,13 @@
   text-font: "Lato",
   text-size: 20pt,
   show-heading-numbering: true,
+  show-level1-titles: true,
+  show-level2-titles: true,
+  mapping: (section: 1, subsection: 2),
+  auto-title: false,
+  on-part-change: none,
+  on-section-change: none,
+  on-subsection-change: none,
   navigation: (),
   transitions: (),
   show-all-sections-in-transition: false,
@@ -142,8 +143,10 @@
     position: "top", fill: color, text-color: white, text-size: 0.6em,
     font: none, active-color: white, inactive-color: white.transparentize(60%),
     marker-shape: "circle", marker-size: 4pt, style: "compact",
-    align-mode: "left", dots-align: "left", show-section-titles: true,
-    show-subsection-titles: true, gap: 2em, line-spacing: 0.8em,
+    align-mode: "left", dots-align: "left", 
+    show-level1-titles: show-level1-titles,
+    show-level2-titles: show-level2-titles,
+    gap: 2em, line-spacing: 0.8em,
     inset: (x: 1.5em, y: 1.2em), radius: 0pt, width: 100%, outset-x: 0pt,
   )
   if type(navigation) == dictionary { 
@@ -156,6 +159,12 @@
 
   let trans-opts = (enabled: true, level: 2)
   if type(transitions) == dictionary { trans-opts = p.utils.merge-dicts(base: trans-opts, transitions) }
+
+  structure-config.update(conf => (
+    mapping: mapping,
+    auto-title: auto-title,
+    text-size: text-size,
+  ))
 
   config-state.update((
     nav-opts: nav-opts, margin-x: 2.5em, gap-zone: 1.5em,
@@ -182,8 +191,11 @@
     if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
   })
   
-  // Level 3 headings are registered but typically not rendered to avoid slide clutter
-  show heading.where(level: 3): it => register-heading(it)
+  // Level 3 headings are registered but typically not rendered to avoid slide clutter IF mapped
+  let mapped-levels = mapping.values()
+  if 3 in mapped-levels {
+    show heading.where(level: 3): it => register-heading(it)
+  }
 
   show: doc => { context structure-cache.update(get-structure()); doc }
   
@@ -220,6 +232,8 @@
 
   // Styles for white-on-dark transitions (adapted from progressive-outline)
   let l1-mode = if show-all-sections-in-transition { "all" } else { "current" }
+  let l2-mode = if show-all-sections-in-transition { "all" } else { "current-parent" }
+  let l3-mode = if show-all-sections-in-transition { "all" } else { "current-parent" }
 
   let outline-styles = (
     level-1: (
@@ -232,68 +246,73 @@
       completed: (weight: "regular", fill: white.transparentize(50%), size: 1.2em),
       inactive: (weight: "regular", fill: white.transparentize(50%), size: 1.2em)
     ),
+    level-3: (
+      active: (weight: "regular", fill: white, size: 1.1em), 
+      completed: (weight: "regular", fill: white.transparentize(50%), size: 1.1em),
+      inactive: (weight: "regular", fill: white.transparentize(50%), size: 1.1em)
+    ),
   )
 
   let outline-spacing = (
-    indent-1: 0pt, indent-2: 1.5em,
+    indent-1: 0pt, indent-2: 1.5em, indent-3: 3em,
     v-between-1-1: 1.8em, 
     v-between-1-2: 1.5em, 
     v-between-2-1: 1.8em, 
     v-between-2-2: 0.8em, 
+    v-between-2-3: 0.6em,
+    v-between-3-3: 0.4em,
   )
 
-  // Transitions H1
-  show heading.where(level: 1): h => {
-    let reg = register-heading(h)
-    if trans-opts.enabled {
-      reg + p.slide(plain-layout({
-        set align(top + left)
-        v(25%)
-        pad(left: 15%)[
-          #progressive-outline(
-            level-1-mode: l1-mode, 
-            level-2-mode: "current-parent",
-            show-numbering: show-heading-numbering, numbering-format: "1.1 ",
-            target-location: h.location(),
-            text-styles: (
-              level-1: outline-styles.level-1,
-              // Subsections are NORMAL (white) during chapter transition
-              level-2: (
-                active: (weight: "regular", fill: white, size: 1.2em), 
-                inactive: (weight: "regular", fill: white, size: 1.2em)
-              )
-            ),
-            spacing: outline-spacing,
-          )
-        ]
-        place(hide(h)) // Render hiddenly to advance counter and register in tree
-      }))
-    } else {
-      reg + place(hide(h))
+  // Standard Transition Slide logic
+  let default-transition(h, role) = p.slide(plain-layout({
+    set align(top + left)
+    v(25%)
+    
+    let get-mode(lvl) = {
+      if is-role(mapping, lvl, "part") { l1-mode }
+      else if role == "part" { "none" }
+      else if role == "section" {
+        if is-role(mapping, lvl, "section") { l2-mode }
+        else if is-role(mapping, lvl, "subsection") { l3-mode }
+        else { "none" }
+      } else if role == "subsection" {
+        if is-role(mapping, lvl, "section") { l2-mode }
+        else if is-role(mapping, lvl, "subsection") { l3-mode }
+        else { "none" }
+      } else { "none" }
     }
-  }
 
-  // Transitions H2
-  show heading.where(level: 2): h => {
-    let reg = register-heading(h)
-    if trans-opts.enabled and trans-opts.level >= 2 {
-      reg + p.slide(plain-layout({
-        set align(top + left)
-        v(25%)
-        pad(left: 15%)[
-          #progressive-outline(
-            level-1-mode: l1-mode,
-            level-2-mode: "current-parent",
-            show-numbering: show-heading-numbering, numbering-format: "1.1 ",
-            target-location: h.location(),
-            text-styles: outline-styles,
-            spacing: outline-spacing,
-          )
-        ]
-        place(hide(h)) // Render hiddenly to advance counter and register in tree
-      }))
+    pad(left: 15%)[
+      #progressive-outline(
+        level-1-mode: get-mode(1),
+        level-2-mode: get-mode(2),
+        level-3-mode: get-mode(3),
+        show-numbering: show-heading-numbering, numbering-format: "1.1 ",
+        target-location: h.location(),
+        text-styles: outline-styles,
+        spacing: outline-spacing,
+      )
+    ]
+    place(hide(h))
+  }))
+
+  // Unified Transition Rule
+  show heading: h => {
+    register-heading(h)
+    if is-role(mapping, h.level, "part") {
+      if on-part-change != none { on-part-change(h) }
+      else if trans-opts.enabled { default-transition(h, "part") }
+      else { place(hide(h)) }
+    } else if is-role(mapping, h.level, "section") {
+      if on-section-change != none { on-section-change(h) }
+      else if trans-opts.enabled { default-transition(h, "section") }
+      else { place(hide(h)) }
+    } else if is-role(mapping, h.level, "subsection") {
+      if on-subsection-change != none { on-subsection-change(h) }
+      else if trans-opts.enabled and trans-opts.level >= 2 { default-transition(h, "subsection") }
+      else { place(hide(h)) }
     } else {
-      reg + place(hide(h))
+      h
     }
   }
 

@@ -1,0 +1,3285 @@
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_A01_flat.pdf <<<
+Test A01_flat: Structure Plate (0 Niveaux)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+
+
+
+Gemini Agent   2
+CONTEXTE DU TEST
+
+Scénario : Structure Plate (0 Niveaux)
+Description : Aucun titre (=). Uniquement des slides brutes.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Barre de navigation vide (ou titre doc). Sidebar vide. Pas de transition.
+
+
+
+
+Gemini Agent                                                                  3
+Slide 1
+
+Contenu Slide 1
+
+
+
+
+Gemini Agent      4
+Slide 2
+
+Contenu Slide 2
+
+
+
+
+Gemini Agent      5
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_A01_flat.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_A02_orphan_start.pdf <<<
+Test A02_orphan_start: Slide Orpheline (Avant
+                   H1)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Slide Orpheline (Avant H1)
+Description : Une slide placée AVANT le premier titre de niveau 1.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide 1: Nav vide/neutre. Slide 2: Nav active sur Section A.
+
+
+
+
+Gemini Agent                                                         3
+Orpheline
+
+Je suis avant la Section A
+
+
+
+
+Gemini Agent                 4
+1 Section A
+1 Section A
+
+Slide A
+
+Dans Section A
+
+
+
+
+Gemini Agent     6
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_A02_orphan_start.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_B01_L1_only.pdf <<<
+Test B01_L1_only: Niveau 1 Uniquement
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+2 Section B . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Niveau 1 Uniquement
+Description : Plusieurs sections, aucune sous-section.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Navigation simple. Pas de sous-menus déroulants/points secondaires.
+
+
+
+
+Gemini Agent                                                            3
+1 Section A
+1 Section A
+
+Section A
+
+Slide A
+
+
+
+
+Gemini Agent   5
+2 Section B
+2 Section B
+
+Section B
+
+Slide B
+
+
+
+
+Gemini Agent   7
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_B01_L1_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_B02_L2_only.pdf <<<
+Test B02_L2_only: Niveau 2 Uniquement
+         (Démarrage Profond)
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+    0.1 Subsection 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    0.2 Subsection 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                  2
+CONTEXTE DU TEST
+
+Scénario : Niveau 2 Uniquement (Démarrage Profond)
+Description : Document commençant directement par == Titre.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Fonctionnel. La nav peut afficher ‘…’ ou vide pour le parent manquant.
+
+
+
+
+Gemini Agent                                                               3
+0.1 Subsection 1
+
+Subsection 1
+
+Slide 1
+
+
+
+
+Gemini Agent       5
+0.2 Subsection 2
+
+Subsection 2
+
+Slide 2
+
+
+
+
+Gemini Agent       7
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_B02_L2_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_B03_Standard_L1_L2.pdf <<<
+Test B03_Standard_L1_L2: Standard (L1 + L2)
+                 Stress Test Automatisé
+              Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Sub A.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+2 Section B . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠8
+    2.1 Sub B.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠9
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Standard (L1 + L2)
+Description : Hiérarchie classique Section -> Subsection.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Comportement nominal du thème.
+
+
+
+
+Gemini Agent                                                3
+1 Section A
+   1.1 Sub A.1
+1 Section A
+
+Section A
+
+Slide A
+
+
+
+
+Gemini Agent   5
+1 Section A
+   1.1 Sub A.1
+1 Section A / 1.1 Sub A.1
+
+Sub A.1
+
+Slide A.1
+
+
+
+
+Gemini Agent                7
+2 Section B
+   2.1 Sub B.1
+2 Section B
+   2.1 Sub B.1
+2 Section B / 2.1 Sub B.1
+
+Sub B.1
+
+Slide B.1
+
+
+
+
+Gemini Agent                10
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_B03_Standard_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_C01_sandwich_L1_L2.pdf <<<
+Test C01_sandwich_L1_L2: Sandwich L1 ->
+              Slide -> L2
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection A.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Sandwich L1 -> Slide -> L2
+Description : Une slide insérée APRES L1 mais AVANT le premier L2.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide Sandwich: Nav indique Section A, pas de sous-section active.
+
+
+
+
+Gemini Agent                                                           3
+1 Section A
+   1.1 Subsection A.1
+1 Section A
+
+Sandwich
+
+Cette slide appartient à Section A, mais n’a pas de sous-section.
+
+
+
+
+Gemini Agent                                                        5
+1 Section A
+   1.1 Subsection A.1
+1 Section A / 1.1 Subsection A.1
+
+Normal
+
+Dans A.1
+
+
+
+
+Gemini Agent                       7
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_C01_sandwich_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_C02_sandwich_mixed.pdf <<<
+Test C02_sandwich_mixed: Sandwich
+            Complexe
+             Stress Test Automatisé
+          Gemini Agent   2026-01-18
+Sommaire
+
+1 Part I . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                                      2
+CONTEXTE DU TEST
+
+Scénario : Sandwich Complexe
+Description : Slides placées à tous les niveaux d’interstice.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Chaque slide doit hériter du titre de son parent direct le plus proche.
+
+
+
+
+Gemini Agent                                                                3
+Part I
+
+Slide Niveau 1
+
+
+
+
+Gemini Agent     4
+1 Part I
+   1.1 Section A
+       1.1.1 Subsection a
+1.1 Section A
+
+Section A
+
+Slide Niveau 2
+
+
+
+
+Gemini Agent     6
+1 Part I
+   1.1 Section A
+       1.1.1 Subsection a
+1.1 Section A / 1.1.1 Subsection a
+
+Subsection a
+
+Slide Niveau 3
+
+
+
+
+Gemini Agent                         8
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_C02_sandwich_mixed.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_D01_skip_L1_to_L3.pdf <<<
+Test D01_skip_L1_to_L3: Saut L1 -> L3 (Pas de
+                    L2)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Part I . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+
+
+
+
+Gemini Agent                                                                                                                                                                                      2
+CONTEXTE DU TEST
+
+Scénario : Saut L1 -> L3 (Pas de L2)
+Description : On passe de = Part à === Subsection directement.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Pas de crash. Numérotation type 1.0.1. Nav indique Part I et Sub.
+
+
+
+
+Gemini Agent                                                          3
+Gemini Agent   4
+1 Part I
+       1.0.1 Subsection Directe (1.0.1)
+1.0.1 Subsection Directe (1.0.1)
+
+Subsection Directe (1.0.1)
+
+Slide Deep
+
+
+
+
+Gemini Agent                       6
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_D01_skip_L1_to_L3.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_D02_mixed_mapping_overflow.pdf <<<
+Test D02_mixed_mapping_overflow: Mapping
+          vs Contenu (Overflow)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+1 Section 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection 1.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                                 2
+CONTEXTE DU TEST
+
+Scénario : Mapping vs Contenu (Overflow)
+Description : Contenu L3 présent, mais Mapping configuré pour L1/L2 uniquement.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  L3 est ignoré par la nav. Titre slide = ‘Subsection 1.1’. Pas ‘Detail’.
+
+
+
+
+Gemini Agent                                                                      3
+1 Section 1
+   1.1 Subsection 1.1
+1 Section 1
+   1.1 Subsection 1.1
+1 Section 1 / 1.1 Subsection 1.1
+1.1.1 Detail 1.1.1 (Non mappé)
+Subsection 1.1
+
+Slide Profonde
+
+
+
+
+Gemini Agent                       6
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_D02_mixed_mapping_overflow.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_D03_auto_title_logic.pdf <<<
+Test D03_auto_title_logic: Test Auto-Title vs
+                 Manual
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Section Auto . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Sub Auto . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠7
+
+
+
+
+Gemini Agent                                                                                                                                                                            2
+CONTEXTE DU TEST
+
+Scénario : Test Auto-Title vs Manual
+Description : Mélange de slides avec titre manuel et titre auto.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Priorité : Titre Manuel > Titre Auto (Niveau le plus bas mappé).
+
+
+
+
+Gemini Agent                                                         3
+1 Section Auto
+   1.1 Sub Auto
+1 Section Auto
+
+Section Auto
+
+Doit avoir titre ‘Section Auto’
+
+
+
+
+Gemini Agent                      5
+1 Section Auto
+
+Manuel
+
+Doit avoir titre ‘Manuel’
+
+
+
+
+Gemini Agent                6
+1 Section Auto
+   1.1 Sub Auto
+1 Section Auto / 1.1 Sub Auto
+
+Sub Auto
+
+Doit avoir titre ‘Sub Auto’
+
+
+
+
+Gemini Agent                    8
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_D03_auto_title_logic.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_E01_headings_inside_slide.pdf <<<
+Test E01_headings_inside_slide: Titres
+        INTERNES à la Slide
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+1 Section Externe (Navigation) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+2 Titre H1 Interne (Ne doit pas casser la nav) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+    2.1 Titre H2 Interne . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠8
+
+
+
+
+Gemini Agent                                                                                                                                                                2
+CONTEXTE DU TEST
+
+Scénario : Titres INTERNES à la Slide
+Description : Utilisation de =, ==, === DANS le contenu d’une slide.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Les titres internes doivent être stylisés MAIS ignorés par la navigation et ne pas créer de
+  nouvelles sections.
+
+
+
+
+Gemini Agent                                                                                    3
+1 Section Externe (Navigation)
+1 Section Externe (Navigation)
+
+Test Isolation
+
+Ceci est du texte normal.
+
+
+
+
+Gemini Agent                     5
+2 Titre H1 Interne (Ne doit pas casser la nav)
+   2.1 Titre H2 Interne
+2 Titre H1 Interne (Ne doit pas casser la nav)
+Texte sous H1.
+
+
+
+
+Gemini Agent                                     7
+2 Titre H1 Interne (Ne doit pas casser la nav)
+   2.1 Titre H2 Interne
+2 Titre H1 Interne (Ne doit pas casser la nav) / 2.1 Titre H2 Interne
+Texte sous H2.
+
+
+
+
+Gemini Agent                                                            9
+2 Titre H1 Interne (Ne doit pas casser la nav) / 2.1 Titre H2 Interne
+
+Check
+
+Slide de vérification après le chaos.
+
+
+
+
+Gemini Agent                                                            10
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_E01_headings_inside_slide.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_custom-transition_F01_deep_structure_L4.pdf <<<
+Test F01_deep_structure_L4: Structure
+        Profonde (Niveau 4+)
+              Stress Test Automatisé
+           Gemini Agent   2026-01-18
+Sommaire
+
+1 Section 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection 1.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                                 2
+CONTEXTE DU TEST
+
+Scénario : Structure Profonde (Niveau 4+)
+Description : Utilisation de ==== et ===== à l’extérieur des slides.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Pas de crash. Les niveaux > 3 sont ignorés par la nav mais le contenu s’affiche. Titre slide
+  hérité de L2 ou L3 selon mapping.
+
+
+
+
+Gemini Agent                                                                                     3
+1 Section 1
+   1.1 Subsection 1.1
+1 Section 1
+   1.1 Subsection 1.1
+1 Section 1 / 1.1 Subsection 1.1
+1.1.1 Sub-sub (L3)
+
+1.1.1.1 Deep Level (L4)
+Subsection 1.1
+
+Slide Profonde L4
+
+
+
+
+Gemini Agent                       6
+1 Section 1 / 1.1 Subsection 1.1
+1.1.1.1.1 Very Deep (L5)
+Subsection 1.1
+
+Slide Profonde L5
+
+
+
+
+Gemini Agent                       7
+>>> END_FILE: assets/tests/structure_stress_test/test_custom-transition_F01_deep_structure_L4.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_A01_flat.pdf <<<
+   Test A01_flat: Structure Plate
+           (0 Niveaux)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+ CONTEXTE DU TEST
+
+ Scénario : Structure Plate (0 Niveaux)
+ Description : Aucun titre (=). Uniquement des slides brutes.
+ Mapping Actif : (section: 1, subsection: 2)
+ Comportement Attendu :
+
+    Barre de navigation vide (ou titre doc). Sidebar vide. Pas de transition.
+
+
+
+
+Gemini Agent                         Test A01_flat: Structure Plate (0          2/4
+                                                Niveaux)
+ Slide 1
+
+ Contenu Slide 1
+
+
+
+
+Gemini Agent       Test A01_flat: Structure Plate (0   3/4
+                              Niveaux)
+ Slide 2
+
+ Contenu Slide 2
+
+
+
+
+Gemini Agent       Test A01_flat: Structure Plate (0   4/4
+                              Niveaux)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_A01_flat.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_A02_orphan_start.pdf <<<
+   Test A02_orphan_start: Slide
+      Orpheline (Avant H1)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section A
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Slide Orpheline (Avant H1)
+   Description : Une slide placée AVANT le premier titre de niveau 1.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+      Slide 1: Nav vide/neutre. Slide 2: Nav active sur Section A.
+
+
+
+
+ Gemini Agent                           Test A02_orphan_start: Slide    2/5
+                                           Orpheline (Avant H1)
+1 Section A
+
+
+
+
+   Orpheline
+
+   Je suis avant la Section A
+
+
+
+
+ Gemini Agent                   Test A02_orphan_start: Slide   3/5
+                                   Orpheline (Avant H1)
+1 Section A
+1 Section A
+
+
+
+
+   Slide A
+
+   Dans Section A
+
+
+
+
+ Gemini Agent       Test A02_orphan_start: Slide   5/5
+                       Orpheline (Avant H1)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_A02_orphan_start.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_B01_L1_only.pdf <<<
+    Test B01_L1_only: Niveau 1
+           Uniquement
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section A   2 Section B
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Niveau 1 Uniquement
+   Description : Plusieurs sections, aucune sous-section.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+      Navigation simple. Pas de sous-menus déroulants/points secondaires.
+
+
+
+
+ Gemini Agent                         Test B01_L1_only: Niveau 1            2/6
+                                             Uniquement
+1 Section A
+1 Section A   2 Section B
+
+
+
+
+   Section A
+
+   Slide A
+
+
+
+
+ Gemini Agent               Test B01_L1_only: Niveau 1   4/6
+                                   Uniquement
+2 Section B
+1 Section A   2 Section B
+
+
+
+
+   Section B
+
+   Slide B
+
+
+
+
+ Gemini Agent               Test B01_L1_only: Niveau 1   6/6
+                                   Uniquement
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_B01_L1_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_B02_L2_only.pdf <<<
+    Test B02_L2_only: Niveau 2
+     Uniquement (Démarrage
+             Profond)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+ CONTEXTE DU TEST
+
+ Scénario : Niveau 2 Uniquement (Démarrage Profond)
+ Description : Document commençant directement par == Titre.
+ Mapping Actif : (section: 1, subsection: 2)
+ Comportement Attendu :
+
+    Fonctionnel. La nav peut afficher ‘…’ ou vide pour le parent manquant.
+
+
+
+
+Gemini Agent                        Test B02_L2_only: Niveau 2               2/6
+                                  Uniquement (Démarrage Profond)
+ Subsection 1
+
+ Slide 1
+
+
+
+
+Gemini Agent      Test B02_L2_only: Niveau 2     4/6
+                Uniquement (Démarrage Profond)
+ Subsection 2
+
+ Slide 2
+
+
+
+
+Gemini Agent      Test B02_L2_only: Niveau 2     6/6
+                Uniquement (Démarrage Profond)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_B02_L2_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_B03_Standard_L1_L2.pdf <<<
+     Test B03_Standard_L1_L2:
+         Standard (L1 + L2)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section A   2 Section B
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Standard (L1 + L2)
+   Description : Hiérarchie classique Section -> Subsection.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+      Comportement nominal du thème.
+
+
+
+
+ Gemini Agent                      Test B03_Standard_L1_L2: Standard   2/9
+                                               (L1 + L2)
+1 Section A
+  1.1 Sub A.1
+1 Section A   2 Section B
+
+
+
+
+   Section A
+
+   Slide A
+
+
+
+
+ Gemini Agent               Test B03_Standard_L1_L2: Standard   4/9
+                                        (L1 + L2)
+1 Section A
+  1.1 Sub A.1
+1 Section A   2 Section B
+
+
+
+
+   Sub A.1
+
+   Slide A.1
+
+
+
+
+ Gemini Agent               Test B03_Standard_L1_L2: Standard   6/9
+                                        (L1 + L2)
+2 Section B
+  2.1 Sub B.1
+2 Section B
+  2.1 Sub B.1
+1 Section A   2 Section B
+
+
+
+
+   Sub B.1
+
+   Slide B.1
+
+
+
+
+ Gemini Agent               Test B03_Standard_L1_L2: Standard   9/9
+                                        (L1 + L2)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_B03_Standard_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_C01_sandwich_L1_L2.pdf <<<
+     Test C01_sandwich_L1_L2:
+     Sandwich L1 -> Slide -> L2
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section A
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Sandwich L1 -> Slide -> L2
+   Description : Une slide insérée APRES L1 mais AVANT le premier L2.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+      Slide Sandwich: Nav indique Section A, pas de sous-section active.
+
+
+
+
+ Gemini Agent                      Test C01_sandwich_L1_L2: Sandwich       2/6
+                                            L1 -> Slide -> L2
+1 Section A
+  1.1 Subsection A.1
+1 Section A
+
+
+
+
+   Sandwich
+
+   Cette slide appartient à Section A, mais n’a pas de sous-section.
+
+
+
+
+ Gemini Agent                   Test C01_sandwich_L1_L2: Sandwich      4/6
+                                         L1 -> Slide -> L2
+1 Section A
+  1.1 Subsection A.1
+1 Section A
+
+
+
+
+   Normal
+
+   Dans A.1
+
+
+
+
+ Gemini Agent   Test C01_sandwich_L1_L2: Sandwich   6/6
+                         L1 -> Slide -> L2
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_C01_sandwich_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_C02_sandwich_mixed.pdf <<<
+     Test C02_sandwich_mixed:
+        Sandwich Complexe
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Part I
+
+
+
+
+    CONTEXTE DU TEST
+
+    Scénario : Sandwich Complexe
+    Description : Slides placées à tous les niveaux d’interstice.
+    Mapping Actif : (part: 1, section: 2, subsection: 3)
+    Comportement Attendu :
+
+       Chaque slide doit hériter du titre de son parent direct le plus proche.
+
+
+
+
+ Gemini Agent                        Test C02_sandwich_mixed: Sandwich           2/8
+                                                 Complexe
+1 Part I
+1 Part I
+
+
+
+
+    Part I
+
+    Slide Niveau 1
+
+
+
+
+ Gemini Agent        Test C02_sandwich_mixed: Sandwich   4/8
+                                 Complexe
+1 Part I
+  1.1 Section A
+    1.1.1 Subsection a
+1 Part I
+
+
+
+
+    Section A
+
+    Slide Niveau 2
+
+
+
+
+ Gemini Agent        Test C02_sandwich_mixed: Sandwich   6/8
+                                 Complexe
+1 Part I
+  1.1 Section A
+    1.1.1 Subsection a
+1 Part I
+
+
+
+
+    Subsection a
+
+    Slide Niveau 3
+
+
+
+
+ Gemini Agent        Test C02_sandwich_mixed: Sandwich   8/8
+                                 Complexe
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_C02_sandwich_mixed.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_D01_skip_L1_to_L3.pdf <<<
+  Test D01_skip_L1_to_L3: Saut
+       L1 -> L3 (Pas de L2)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Part I
+
+
+
+
+    CONTEXTE DU TEST
+
+    Scénario : Saut L1 -> L3 (Pas de L2)
+    Description : On passe de = Part à === Subsection directement.
+    Mapping Actif : (part: 1, section: 2, subsection: 3)
+    Comportement Attendu :
+
+       Pas de crash. Numérotation type 1.0.1. Nav indique Part I et Sub.
+
+
+
+
+ Gemini Agent                      Test D01_skip_L1_to_L3: Saut L1 -> L3   2/5
+                                                (Pas de L2)
+1 Part I
+1 Part I
+    1.0.1 Subsection Directe (1.0.1)
+1 Part I
+
+
+
+
+    Subsection Directe (1.0.1)
+
+    Slide Deep
+
+
+
+
+ Gemini Agent              Test D01_skip_L1_to_L3: Saut L1 -> L3   5/5
+                                        (Pas de L2)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_D01_skip_L1_to_L3.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_D02_mixed_mapping_overflow.pdf <<<
+           Test
+D02_mixed_mapping_overflow:
+    Mapping vs Contenu
+        (Overflow)
+
+        Stress Test Automatisé
+Gemini Agent   2026-01-18
+1 Section 1
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Mapping vs Contenu (Overflow)
+   Description : Contenu L3 présent, mais Mapping configuré pour L1/L2 uniquement.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+       L3 est ignoré par la nav. Titre slide = ‘Subsection 1.1’. Pas ‘Detail’.
+
+
+
+
+ Gemini Agent                          Test D02_mixed_mapping_overflow:              3/7
+                                         Mapping vs Contenu (Overflow)
+1 Section 1
+  1.1 Subsection 1.1
+1 Section 1
+  1.1 Subsection 1.1
+Detail 1.1.1 (Non mappé)
+
+  1 Section 1
+
+
+
+
+     Subsection 1.1
+
+     Slide Profonde
+
+
+
+
+   Gemini Agent            Test D02_mixed_mapping_overflow:   6/7
+                             Mapping vs Contenu (Overflow)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_D02_mixed_mapping_overflow.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_D03_auto_title_logic.pdf <<<
+      Test D03_auto_title_logic:
+      Test Auto-Title vs Manual
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section Auto
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Test Auto-Title vs Manual
+   Description : Mélange de slides avec titre manuel et titre auto.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+      Priorité : Titre Manuel > Titre Auto (Niveau le plus bas mappé).
+
+
+
+
+ Gemini Agent                       Test D03_auto_title_logic: Test Auto-   2/7
+                                             Title vs Manual
+1 Section Auto
+  1.1 Sub Auto
+1 Section Auto
+
+
+
+
+   Section Auto
+
+   Doit avoir titre ‘Section Auto’
+
+
+
+
+ Gemini Agent                    Test D03_auto_title_logic: Test Auto-   4/7
+                                          Title vs Manual
+1 Section Auto
+
+
+
+
+   Manuel
+
+   Doit avoir titre ‘Manuel’
+
+
+
+
+ Gemini Agent                  Test D03_auto_title_logic: Test Auto-   5/7
+                                        Title vs Manual
+1 Section Auto
+  1.1 Sub Auto
+1 Section Auto
+
+
+
+
+   Sub Auto
+
+   Doit avoir titre ‘Sub Auto’
+
+
+
+
+ Gemini Agent                    Test D03_auto_title_logic: Test Auto-   7/7
+                                          Title vs Manual
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_D03_auto_title_logic.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_E01_headings_inside_slide.pdf <<<
+                Test
+     E01_headings_inside_slide:
+     Titres INTERNES à la Slide
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section Externe (Navigation)   2 Titre H1 Interne (Ne doit pas casser la nav)
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Titres INTERNES à la Slide
+   Description : Utilisation de =, ==, === DANS le contenu d’une slide.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+       Les titres internes doivent être stylisés MAIS ignorés par la navigation et ne pas créer de
+       nouvelles sections.
+
+
+
+ Gemini Agent                                    Test E01_headings_inside_slide: Titres              2/5
+                                                         INTERNES à la Slide
+1 Section Externe (Navigation)
+1 Section Externe (Navigation)   2 Titre H1 Interne (Ne doit pas casser la nav)
+
+
+
+
+   Test Isolation
+
+   Ceci est du texte normal. Texte sous H1. Texte sous H2.
+
+
+
+
+ Gemini Agent                                    Test E01_headings_inside_slide: Titres   4/5
+                                                         INTERNES à la Slide
+1 Section Externe (Navigation)   2 Titre H1 Interne (Ne doit pas casser la nav)
+
+
+
+
+   Check
+
+   Slide de vérification après le chaos.
+
+
+
+
+ Gemini Agent                                    Test E01_headings_inside_slide: Titres   5/5
+                                                         INTERNES à la Slide
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_E01_headings_inside_slide.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_miniframes_F01_deep_structure_L4.pdf <<<
+   Test F01_deep_structure_L4:
+    Structure Profonde (Niveau
+                4+)
+
+               Stress Test Automatisé
+
+
+
+Gemini Agent                            2026-01-18
+1 Section 1
+
+
+
+
+   CONTEXTE DU TEST
+
+   Scénario : Structure Profonde (Niveau 4+)
+   Description : Utilisation de ==== et ===== à l’extérieur des slides.
+   Mapping Actif : (section: 1, subsection: 2)
+   Comportement Attendu :
+
+       Pas de crash. Les niveaux > 3 sont ignorés par la nav mais le contenu s’affiche. Titre slide
+       hérité de L2 ou L3 selon mapping.
+
+
+
+
+ Gemini Agent                        Test F01_deep_structure_L4: Structure                            2/8
+                                             Profonde (Niveau 4+)
+1 Section 1
+  1.1 Subsection 1.1
+1 Section 1
+  1.1 Subsection 1.1
+Deep Level (L4)
+
+  1 Section 1
+
+
+
+
+     Subsection 1.1
+
+     Slide Profonde L4
+
+
+
+
+   Gemini Agent          Test F01_deep_structure_L4: Structure   5/8
+                                 Profonde (Niveau 4+)
+Very Deep (L5)
+
+  1 Section 1
+
+
+
+
+     Subsection 1.1
+
+     Slide Profonde L5
+
+
+
+
+   Gemini Agent          Test F01_deep_structure_L4: Structure   7/8
+                                 Profonde (Niveau 4+)
+>>> END_FILE: assets/tests/structure_stress_test/test_miniframes_F01_deep_structure_L4.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_A01_flat.pdf <<<
+Test A01_flat: Structure Plate (0 Niveaux)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+
+
+
+Gemini Agent   2
+CONTEXTE DU TEST
+
+Scénario : Structure Plate (0 Niveaux)
+Description : Aucun titre (=). Uniquement des slides brutes.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Barre de navigation vide (ou titre doc). Sidebar vide. Pas de transition.
+
+
+
+
+Gemini Agent                                                                  3
+Slide 1
+
+Contenu Slide 1
+
+
+
+
+Gemini Agent      4
+Slide 2
+
+Contenu Slide 2
+
+
+
+
+Gemini Agent      5
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_A01_flat.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_A02_orphan_start.pdf <<<
+Test A02_orphan_start: Slide Orpheline (Avant
+                   H1)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Slide Orpheline (Avant H1)
+Description : Une slide placée AVANT le premier titre de niveau 1.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide 1: Nav vide/neutre. Slide 2: Nav active sur Section A.
+
+
+
+
+Gemini Agent                                                         3
+Orpheline
+
+Je suis avant la Section A
+
+
+
+
+Gemini Agent                 4
+1 Section A
+1 Section A
+
+Slide A
+
+Dans Section A
+
+
+
+
+Gemini Agent     6
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_A02_orphan_start.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_B01_L1_only.pdf <<<
+Test B01_L1_only: Niveau 1 Uniquement
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+2 Section B . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Niveau 1 Uniquement
+Description : Plusieurs sections, aucune sous-section.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Navigation simple. Pas de sous-menus déroulants/points secondaires.
+
+
+
+
+Gemini Agent                                                            3
+1 Section A
+1 Section A
+
+Section A
+
+Slide A
+
+
+
+
+Gemini Agent   5
+2 Section B
+2 Section B
+
+Section B
+
+Slide B
+
+
+
+
+Gemini Agent   7
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_B01_L1_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_B02_L2_only.pdf <<<
+Test B02_L2_only: Niveau 2 Uniquement
+         (Démarrage Profond)
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+    0.1 Subsection 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    0.2 Subsection 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                  2
+CONTEXTE DU TEST
+
+Scénario : Niveau 2 Uniquement (Démarrage Profond)
+Description : Document commençant directement par == Titre.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Fonctionnel. La nav peut afficher ‘…’ ou vide pour le parent manquant.
+
+
+
+
+Gemini Agent                                                               3
+0.1 Subsection 1
+
+Subsection 1
+
+Slide 1
+
+
+
+
+Gemini Agent       5
+0.2 Subsection 2
+
+Subsection 2
+
+Slide 2
+
+
+
+
+Gemini Agent       7
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_B02_L2_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_B03_Standard_L1_L2.pdf <<<
+Test B03_Standard_L1_L2: Standard (L1 + L2)
+                 Stress Test Automatisé
+              Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Sub A.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+2 Section B . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠8
+    2.1 Sub B.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠9
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Standard (L1 + L2)
+Description : Hiérarchie classique Section -> Subsection.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Comportement nominal du thème.
+
+
+
+
+Gemini Agent                                                3
+1 Section A
+
+  1.1 Sub A.1
+1 Section A
+
+Section A
+
+Slide A
+
+
+
+
+Gemini Agent   5
+1 Section A
+
+  1.1 Sub A.1
+1 Section A / 1.1 Sub A.1
+
+Sub A.1
+
+Slide A.1
+
+
+
+
+Gemini Agent                7
+2 Section B
+
+  2.1 Sub B.1
+2 Section B
+
+  2.1 Sub B.1
+2 Section B / 2.1 Sub B.1
+
+Sub B.1
+
+Slide B.1
+
+
+
+
+Gemini Agent                10
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_B03_Standard_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_C01_sandwich_L1_L2.pdf <<<
+Test C01_sandwich_L1_L2: Sandwich L1 ->
+              Slide -> L2
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection A.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                               2
+CONTEXTE DU TEST
+
+Scénario : Sandwich L1 -> Slide -> L2
+Description : Une slide insérée APRES L1 mais AVANT le premier L2.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide Sandwich: Nav indique Section A, pas de sous-section active.
+
+
+
+
+Gemini Agent                                                           3
+1 Section A
+
+  1.1 Subsection A.1
+1 Section A
+
+Sandwich
+
+Cette slide appartient à Section A, mais n’a pas de sous-section.
+
+
+
+
+Gemini Agent                                                        5
+1 Section A
+
+  1.1 Subsection A.1
+1 Section A / 1.1 Subsection A.1
+
+Normal
+
+Dans A.1
+
+
+
+
+Gemini Agent                       7
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_C01_sandwich_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_C02_sandwich_mixed.pdf <<<
+Test C02_sandwich_mixed: Sandwich
+            Complexe
+             Stress Test Automatisé
+          Gemini Agent   2026-01-18
+Sommaire
+
+1 Part I . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Section A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+
+
+
+
+Gemini Agent                                                                                                                                                                                      2
+CONTEXTE DU TEST
+
+Scénario : Sandwich Complexe
+Description : Slides placées à tous les niveaux d’interstice.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Chaque slide doit hériter du titre de son parent direct le plus proche.
+
+
+
+
+Gemini Agent                                                                3
+1 Part I
+Part I
+
+Slide Niveau 1
+
+
+
+
+Gemini Agent     5
+1 Part I
+
+   1.1 Section A
+      1.1.1 Subsection a
+1.1 Section A
+
+Section A
+
+Slide Niveau 2
+
+
+
+
+Gemini Agent     7
+1 Part I
+
+   1.1 Section A
+      1.1.1 Subsection a
+1.1 Section A / 1.1.1 Subsection a
+
+Subsection a
+
+Slide Niveau 3
+
+
+
+
+Gemini Agent                         9
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_C02_sandwich_mixed.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_D01_skip_L1_to_L3.pdf <<<
+Test D01_skip_L1_to_L3: Saut L1 -> L3 (Pas de
+                    L2)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Part I . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+
+
+
+
+Gemini Agent                                                                                                                                                                                      2
+CONTEXTE DU TEST
+
+Scénario : Saut L1 -> L3 (Pas de L2)
+Description : On passe de = Part à === Subsection directement.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Pas de crash. Numérotation type 1.0.1. Nav indique Part I et Sub.
+
+
+
+
+Gemini Agent                                                          3
+1 Part I
+1 Part I
+     1.0.1 Subsection Directe (1.0.1)
+1.0.1 Subsection Directe (1.0.1)
+
+Subsection Directe (1.0.1)
+
+Slide Deep
+
+
+
+
+Gemini Agent                       6
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_D01_skip_L1_to_L3.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_D02_mixed_mapping_overflow.pdf <<<
+Test D02_mixed_mapping_overflow: Mapping
+          vs Contenu (Overflow)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+Sommaire
+
+1 Section 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection 1.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                                 2
+CONTEXTE DU TEST
+
+Scénario : Mapping vs Contenu (Overflow)
+Description : Contenu L3 présent, mais Mapping configuré pour L1/L2 uniquement.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  L3 est ignoré par la nav. Titre slide = ‘Subsection 1.1’. Pas ‘Detail’.
+
+
+
+
+Gemini Agent                                                                      3
+1 Section 1
+
+  1.1 Subsection 1.1
+1 Section 1
+
+  1.1 Subsection 1.1
+1 Section 1 / 1.1 Subsection 1.1
+Detail 1.1.1 (Non mappé)
+Subsection 1.1
+
+Slide Profonde
+
+
+
+
+Gemini Agent                       6
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_D02_mixed_mapping_overflow.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_D03_auto_title_logic.pdf <<<
+Test D03_auto_title_logic: Test Auto-Title vs
+                 Manual
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+Sommaire
+
+1 Section Auto . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Sub Auto . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠7
+
+
+
+
+Gemini Agent                                                                                                                                                                            2
+CONTEXTE DU TEST
+
+Scénario : Test Auto-Title vs Manual
+Description : Mélange de slides avec titre manuel et titre auto.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Priorité : Titre Manuel > Titre Auto (Niveau le plus bas mappé).
+
+
+
+
+Gemini Agent                                                         3
+1 Section Auto
+
+  1.1 Sub Auto
+1 Section Auto
+
+Section Auto
+
+Doit avoir titre ‘Section Auto’
+
+
+
+
+Gemini Agent                      5
+1 Section Auto
+
+Manuel
+
+Doit avoir titre ‘Manuel’
+
+
+
+
+Gemini Agent                6
+1 Section Auto
+
+  1.1 Sub Auto
+1 Section Auto / 1.1 Sub Auto
+
+Sub Auto
+
+Doit avoir titre ‘Sub Auto’
+
+
+
+
+Gemini Agent                    8
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_D03_auto_title_logic.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_E01_headings_inside_slide.pdf <<<
+Test E01_headings_inside_slide: Titres
+        INTERNES à la Slide
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+Sommaire
+
+1 Section Externe (Navigation) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+2 Titre H1 Interne (Ne doit pas casser la nav) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠6
+    2.1 Titre H2 Interne . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠8
+
+
+
+
+Gemini Agent                                                                                                                                                                2
+CONTEXTE DU TEST
+
+Scénario : Titres INTERNES à la Slide
+Description : Utilisation de =, ==, === DANS le contenu d’une slide.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Les titres internes doivent être stylisés MAIS ignorés par la navigation et ne pas créer de
+  nouvelles sections.
+
+
+
+
+Gemini Agent                                                                                    3
+1 Section Externe (Navigation)
+1 Section Externe (Navigation)
+
+Test Isolation
+
+Ceci est du texte normal.
+
+
+
+
+Gemini Agent                     5
+2 Titre H1 Interne (Ne doit pas casser la nav)
+
+   2.1 Titre H2 Interne
+2 Titre H1 Interne (Ne doit pas casser la nav)
+Texte sous H1.
+
+
+
+
+Gemini Agent                                     7
+2 Titre H1 Interne (Ne doit pas casser la nav)
+
+   2.1 Titre H2 Interne
+2 Titre H1 Interne (Ne doit pas casser la nav) / 2.1 Titre H2 Interne
+Texte sous H2.
+
+
+
+
+Gemini Agent                                                            9
+2 Titre H1 Interne (Ne doit pas casser la nav) / 2.1 Titre H2 Interne
+
+Check
+
+Slide de vérification après le chaos.
+
+
+
+
+Gemini Agent                                                            10
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_E01_headings_inside_slide.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_progressive-outline_F01_deep_structure_L4.pdf <<<
+Test F01_deep_structure_L4: Structure
+        Profonde (Niveau 4+)
+              Stress Test Automatisé
+           Gemini Agent   2026-01-18
+Sommaire
+
+1 Section 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠4
+    1.1 Subsection 1.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ⁠5
+
+
+
+
+Gemini Agent                                                                                                                                                                                 2
+CONTEXTE DU TEST
+
+Scénario : Structure Profonde (Niveau 4+)
+Description : Utilisation de ==== et ===== à l’extérieur des slides.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Pas de crash. Les niveaux > 3 sont ignorés par la nav mais le contenu s’affiche. Titre slide
+  hérité de L2 ou L3 selon mapping.
+
+
+
+
+Gemini Agent                                                                                     3
+1 Section 1
+
+  1.1 Subsection 1.1
+1 Section 1
+
+  1.1 Subsection 1.1
+1 Section 1 / 1.1 Subsection 1.1
+Deep Level (L4)
+Subsection 1.1
+
+Slide Profonde L4
+
+
+
+
+Gemini Agent                       6
+1 Section 1 / 1.1 Subsection 1.1
+Very Deep (L5)
+Subsection 1.1
+
+Slide Profonde L5
+
+
+
+
+Gemini Agent                       7
+>>> END_FILE: assets/tests/structure_stress_test/test_progressive-outline_F01_deep_structure_L4.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_A01_flat.pdf <<<
+Test A01_flat: Structure Plate (0
+           Niveaux)
+           Stress Test Automatisé
+
+
+                Gemini Agent
+CONTEXTE DU TEST
+
+Scénario : Structure Plate (0 Niveaux)
+Description : Aucun titre (=). Uniquement des slides brutes.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Barre de navigation vide (ou titre doc). Sidebar vide. Pas de transition.
+
+
+
+
+                                                                              2/4
+Slide 1
+
+Contenu Slide 1
+
+
+
+
+                  3/4
+Slide 2
+
+Contenu Slide 2
+
+
+
+
+                  4/4
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_A01_flat.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_A02_orphan_start.pdf <<<
+Test A02_orphan_start: Slide
+   Orpheline (Avant H1)
+         Stress Test Automatisé
+
+
+              Gemini Agent
+              CONTEXTE DU TEST
+
+              Scénario : Slide Orpheline (Avant H1)
+              Description : Une slide placée AVANT le premier titre de niveau 1.
+              Mapping Actif : (section: 1, subsection: 2)
+              Comportement Attendu :
+
+1 Section A     Slide 1: Nav vide/neutre. Slide 2: Nav active sur Section A.
+
+
+
+
+                                                                                   2/5
+              Orpheline
+
+              Je suis avant la Section A
+
+
+
+
+1 Section A
+
+
+
+
+                                           3/5
+1 Section A
+              Slide A
+
+              Dans Section A
+
+
+
+
+1 Section A
+
+
+
+
+                               5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_A02_orphan_start.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_B01_L1_only.pdf <<<
+Test B01_L1_only: Niveau 1
+       Uniquement
+        Stress Test Automatisé
+
+
+             Gemini Agent
+              CONTEXTE DU TEST
+
+              Scénario : Niveau 1 Uniquement
+              Description : Plusieurs sections, aucune sous-section.
+              Mapping Actif : (section: 1, subsection: 2)
+              Comportement Attendu :
+
+1 Section A
+                Navigation simple. Pas de sous-menus déroulants/points secondaires.
+2 Section B
+
+
+
+
+                                                                                      2/6
+1 Section A
+              Section A
+
+              Slide A
+
+
+
+
+1 Section A
+2 Section B
+
+
+
+
+                          4/6
+2 Section B
+              Section B
+
+              Slide B
+
+
+
+
+1 Section A
+2 Section B
+
+
+
+
+                          6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_B01_L1_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_B02_L2_only.pdf <<<
+  Test B02_L2_only: Niveau 2
+Uniquement (Démarrage Profond)
+          Stress Test Automatisé
+
+
+               Gemini Agent
+                   CONTEXTE DU TEST
+
+                   Scénario : Niveau 2 Uniquement (Démarrage Profond)
+                   Description : Document commençant directement par == Titre.
+                   Mapping Actif : (section: 1, subsection: 2)
+                   Comportement Attendu :
+
+0.1 Subsection 1
+0.2 Subsection 2
+                     Fonctionnel. La nav peut afficher ‘…’ ou vide pour le parent manquant.
+
+
+
+
+                                                                                              2/6
+                   Subsection 1
+
+                   Slide 1
+
+
+
+
+0.1 Subsection 1
+0.2 Subsection 2
+
+
+
+
+                                  4/6
+                   Subsection 2
+
+                   Slide 2
+
+
+
+
+0.1 Subsection 1
+0.2 Subsection 2
+
+
+
+
+                                  6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_B02_L2_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_B03_Standard_L1_L2.pdf <<<
+Test B03_Standard_L1_L2: Standard
+             (L1 + L2)
+           Stress Test Automatisé
+
+
+                Gemini Agent
+                CONTEXTE DU TEST
+
+                Scénario : Standard (L1 + L2)
+                Description : Hiérarchie classique Section -> Subsection.
+                Mapping Actif : (section: 1, subsection: 2)
+                Comportement Attendu :
+1 Section A
+  1.1 Sub A.1
+                  Comportement nominal du thème.
+2 Section B
+  2.1 Sub B.1
+
+
+
+
+                                                                            2/9
+1 Section A
+  1.1 Sub A.1
+                Section A
+
+                Slide A
+
+
+
+
+1 Section A
+  1.1 Sub A.1
+
+2 Section B
+  2.1 Sub B.1
+
+
+
+
+                            4/9
+1 Section A
+  1.1 Sub A.1
+                Sub A.1
+
+                Slide A.1
+
+
+
+
+1 Section A
+  1.1 Sub A.1
+
+2 Section B
+  2.1 Sub B.1
+
+
+
+
+                            6/9
+2 Section B
+  2.1 Sub B.1
+2 Section B
+  2.1 Sub B.1
+                Sub B.1
+
+                Slide B.1
+
+
+
+
+1 Section A
+  1.1 Sub A.1
+
+2 Section B
+  2.1 Sub B.1
+
+
+
+
+                            9/9
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_B03_Standard_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_C01_sandwich_L1_L2.pdf <<<
+Test C01_sandwich_L1_L2: Sandwich
+          L1 -> Slide -> L2
+            Stress Test Automatisé
+
+
+                 Gemini Agent
+                       CONTEXTE DU TEST
+
+                       Scénario : Sandwich L1 -> Slide -> L2
+                       Description : Une slide insérée APRES L1 mais AVANT le premier L2.
+                       Mapping Actif : (section: 1, subsection: 2)
+                       Comportement Attendu :
+
+1 Section A
+                         Slide Sandwich: Nav indique Section A, pas de sous-section active.
+  1.1 Subsection A.1
+
+
+
+
+                                                                                              2/6
+1 Section A
+  1.1 Subsection A.1
+                       Sandwich
+
+                       Cette slide appartient à Section A, mais n’a pas de sous-section.
+
+
+
+
+1 Section A
+  1.1 Subsection A.1
+
+
+
+
+                                                                                           4/6
+1 Section A
+  1.1 Subsection A.1
+                       Normal
+
+                       Dans A.1
+
+
+
+
+1 Section A
+  1.1 Subsection A.1
+
+
+
+
+                                  6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_C01_sandwich_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_C02_sandwich_mixed.pdf <<<
+Test C02_sandwich_mixed: Sandwich
+            Complexe
+            Stress Test Automatisé
+
+
+                 Gemini Agent
+                           CONTEXTE DU TEST
+
+                           Scénario : Sandwich Complexe
+                           Description : Slides placées à tous les niveaux d’interstice.
+                           Mapping Actif : (part: 1, section: 2, subsection: 3)
+                           Comportement Attendu :
+
+1 Part I
+   1.1 Section A             Chaque slide doit hériter du titre de son parent direct le plus proche.
+      1.1.1 Subsection a
+
+
+
+
+                                                                                                       2/8
+1 Part I
+                          Part I
+
+                          Slide Niveau 1
+
+
+
+
+1 Part I
+  1.1 Section A
+     1.1.1 Subsection a
+
+
+
+
+                                           4/8
+1 Part I
+  1.1 Section A
+    1.1.1 Subsection a
+                          Section A
+
+                          Slide Niveau 2
+
+
+
+
+1 Part I
+  1.1 Section A
+     1.1.1 Subsection a
+
+
+
+
+                                           6/8
+1 Part I
+  1.1 Section A
+    1.1.1 Subsection a
+                          Subsection a
+
+                          Slide Niveau 3
+
+
+
+
+1 Part I
+  1.1 Section A
+     1.1.1 Subsection a
+
+
+
+
+                                           8/8
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_C02_sandwich_mixed.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_D01_skip_L1_to_L3.pdf <<<
+Test D01_skip_L1_to_L3: Saut L1 ->
+          L3 (Pas de L2)
+            Stress Test Automatisé
+
+
+                 Gemini Agent
+                                 CONTEXTE DU TEST
+
+                                 Scénario : Saut L1 -> L3 (Pas de L2)
+                                 Description : On passe de = Part à === Subsection directement.
+                                 Mapping Actif : (part: 1, section: 2, subsection: 3)
+                                 Comportement Attendu :
+
+1 Part I
+      1.0.1 Subsection Directe     Pas de crash. Numérotation type 1.0.1. Nav indique Part I et Sub.
+      (1.0.1)
+
+
+
+
+                                                                                                       2/5
+1 Part I
+1 Part I
+    1.0.1 Subsection Directe (1.0.1)
+                                Subsection Directe (1.0.1)
+
+                                Slide Deep
+
+
+
+
+1 Part I
+     1.0.1 Subsection Directe
+     (1.0.1)
+
+
+
+
+                                                             5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_D01_skip_L1_to_L3.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_D02_mixed_mapping_overflow.pdf <<<
+Test D02_mixed_mapping_overflow:
+  Mapping vs Contenu (Overflow)
+           Stress Test Automatisé
+
+
+                Gemini Agent
+                       CONTEXTE DU TEST
+
+                       Scénario : Mapping vs Contenu (Overflow)
+                       Description : Contenu L3 présent, mais Mapping configuré pour L1/L2
+                       uniquement.
+                       Mapping Actif : (section: 1, subsection: 2)
+                       Comportement Attendu :
+1 Section 1
+  1.1 Subsection 1.1
+                         L3 est ignoré par la nav. Titre slide = ‘Subsection 1.1’. Pas ‘Detail’.
+
+
+
+
+                                                                                                   2/5
+1 Section 1
+  1.1 Subsection 1.1
+1 Section 1
+  1.1 Subsection 1.1
+                       1.1.1 Detail 1.1.1 (Non mappé)
+                       Subsection 1.1
+
+                       Slide Profonde
+
+
+
+
+1 Section 1
+  1.1 Subsection 1.1
+
+
+
+
+                                                        5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_D02_mixed_mapping_overflow.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_D03_auto_title_logic.pdf <<<
+Test D03_auto_title_logic: Test Auto-
+         Title vs Manual
+             Stress Test Automatisé
+
+
+                  Gemini Agent
+                 CONTEXTE DU TEST
+
+                 Scénario : Test Auto-Title vs Manual
+                 Description : Mélange de slides avec titre manuel et titre auto.
+                 Mapping Actif : (section: 1, subsection: 2)
+                 Comportement Attendu :
+
+1 Section Auto
+                   Priorité : Titre Manuel > Titre Auto (Niveau le plus bas mappé).
+  1.1 Sub Auto
+
+
+
+
+                                                                                      2/7
+1 Section Auto
+  1.1 Sub Auto
+                 Section Auto
+
+                 Doit avoir titre ‘Section Auto’
+
+
+
+
+1 Section Auto
+  1.1 Sub Auto
+
+
+
+
+                                                   4/7
+                 Manuel
+
+                 Doit avoir titre ‘Manuel’
+
+
+
+
+1 Section Auto
+  1.1 Sub Auto
+
+
+
+
+                                             5/7
+1 Section Auto
+  1.1 Sub Auto
+                 Sub Auto
+
+                 Doit avoir titre ‘Sub Auto’
+
+
+
+
+1 Section Auto
+  1.1 Sub Auto
+
+
+
+
+                                               7/7
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_D03_auto_title_logic.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_E01_headings_inside_slide.pdf <<<
+Test E01_headings_inside_slide:
+  Titres INTERNES à la Slide
+          Stress Test Automatisé
+
+
+               Gemini Agent
+                          CONTEXTE DU TEST
+
+                          Scénario : Titres INTERNES à la Slide
+                          Description : Utilisation de =, ==, === DANS le contenu d’une slide.
+                          Mapping Actif : (section: 1, subsection: 2)
+                          Comportement Attendu :
+1 Section Externe
+(Navigation)
+2 Titre H1 Interne (Ne      Les titres internes doivent être stylisés MAIS ignorés par la navigation
+doit pas casser la nav)     et ne pas créer de nouvelles sections.
+  2.1 Titre H2 Interne
+
+
+
+
+                                                                                                       2/9
+1 Section Externe (Navigation)
+                          Test Isolation
+
+                          Ceci est du texte normal.
+
+
+
+
+1 Section Externe
+(Navigation)
+2 Titre H1 Interne (Ne
+doit pas casser la nav)
+  2.1 Titre H2 Interne
+
+
+
+
+                                                      4/9
+2 Titre H1 Interne (Ne doit pas casser la nav)
+  2.1 Titre H2 Interne
+                          Texte sous H1.
+
+
+
+
+1 Section Externe
+(Navigation)
+2 Titre H1 Interne (Ne
+doit pas casser la nav)
+  2.1 Titre H2 Interne
+
+
+
+
+                                           6/9
+2 Titre H1 Interne (Ne doit pas casser la nav)
+  2.1 Titre H2 Interne
+                          Texte sous H2.
+
+
+
+
+1 Section Externe
+(Navigation)
+2 Titre H1 Interne (Ne
+doit pas casser la nav)
+  2.1 Titre H2 Interne
+
+
+
+
+                                           8/9
+                          Check
+
+                          Slide de vérification après le chaos.
+
+
+
+
+1 Section Externe
+(Navigation)
+2 Titre H1 Interne (Ne
+doit pas casser la nav)
+  2.1 Titre H2 Interne
+
+
+
+
+                                                                  9/9
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_E01_headings_inside_slide.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_sidebar_F01_deep_structure_L4.pdf <<<
+ Test F01_deep_structure_L4:
+Structure Profonde (Niveau 4+)
+          Stress Test Automatisé
+
+
+               Gemini Agent
+                       CONTEXTE DU TEST
+
+                       Scénario : Structure Profonde (Niveau 4+)
+                       Description : Utilisation de ==== et ===== à l’extérieur des slides.
+                       Mapping Actif : (section: 1, subsection: 2)
+                       Comportement Attendu :
+
+1 Section 1
+                         Pas de crash. Les niveaux > 3 sont ignorés par la nav mais le contenu
+  1.1 Subsection 1.1
+                         s’affiche. Titre slide hérité de L2 ou L3 selon mapping.
+
+
+
+
+                                                                                                 2/6
+1 Section 1
+  1.1 Subsection 1.1
+1 Section 1
+  1.1 Subsection 1.1
+                       1.1.1 Sub-sub (L3)
+
+                       1.1.1.1 Deep Level (L4)
+                       Subsection 1.1
+
+                       Slide Profonde L4
+
+
+1 Section 1
+  1.1 Subsection 1.1
+
+
+
+
+                                                 5/6
+                       1.1.1.1.1 Very Deep (L5)
+                       Subsection 1.1
+
+                       Slide Profonde L5
+
+
+
+
+1 Section 1
+  1.1 Subsection 1.1
+
+
+
+
+                                                  6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_sidebar_F01_deep_structure_L4.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_A01_flat.pdf <<<
+Test A01_flat: Structure Plate (0 Niveaux)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+CONTEXTE DU TEST
+Scénario : Structure Plate (0 Niveaux)
+Description : Aucun titre (=). Uniquement des slides brutes.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Barre de navigation vide (ou titre doc). Sidebar vide. Pas de transition.
+
+
+
+
+           Gemini Agent                   Test A01_flat: Structure Plate (0 Niveaux)   2/4
+Slide 1
+Contenu Slide 1
+
+
+
+
+          Gemini Agent   Test A01_flat: Structure Plate (0 Niveaux)   3/4
+Slide 2
+Contenu Slide 2
+
+
+
+
+          Gemini Agent   Test A01_flat: Structure Plate (0 Niveaux)   4/4
+>>> END_FILE: assets/tests/structure_stress_test/test_split_A01_flat.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_A02_orphan_start.pdf <<<
+Test A02_orphan_start: Slide Orpheline (Avant
+                   H1)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+                                           1 Section A
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Slide Orpheline (Avant H1)
+Description : Une slide placée AVANT le premier titre de niveau 1.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide 1: Nav vide/neutre. Slide 2: Nav active sur Section A.
+
+
+
+
+           Gemini Agent                 Test A02_orphan_start: Slide Orpheline (Avant H1)   2/5
+                                1 Section A
+
+
+
+
+Orpheline
+Je suis avant la Section A
+
+
+
+
+          Gemini Agent       Test A02_orphan_start: Slide Orpheline (Avant H1)   3/5
+1 Section A
+                            1 Section A
+
+
+
+
+Slide A
+Dans Section A
+
+
+
+
+          Gemini Agent   Test A02_orphan_start: Slide Orpheline (Avant H1)   5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_split_A02_orphan_start.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_B01_L1_only.pdf <<<
+Test B01_L1_only: Niveau 1 Uniquement
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+                                        1 Section A
+                                        2 Section B
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Niveau 1 Uniquement
+Description : Plusieurs sections, aucune sous-section.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Navigation simple. Pas de sous-menus déroulants/points secondaires.
+
+
+
+
+           Gemini Agent                  Test B01_L1_only: Niveau 1 Uniquement   2/6
+1 Section A
+                         1 Section A
+                         2 Section B
+
+
+
+
+Section A
+Slide A
+
+
+
+
+          Gemini Agent    Test B01_L1_only: Niveau 1 Uniquement   4/6
+2 Section B
+                         1 Section A
+                         2 Section B
+
+
+
+
+Section B
+Slide B
+
+
+
+
+          Gemini Agent    Test B01_L1_only: Niveau 1 Uniquement   6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_split_B01_L1_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_B02_L2_only.pdf <<<
+Test B02_L2_only: Niveau 2 Uniquement
+         (Démarrage Profond)
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+CONTEXTE DU TEST
+Scénario : Niveau 2 Uniquement (Démarrage Profond)
+Description : Document commençant directement par == Titre.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Fonctionnel. La nav peut afficher ‘…’ ou vide pour le parent manquant.
+
+
+
+
+          Gemini Agent             Test B02_L2_only: Niveau 2 Uniquement (Démarrage Profond)   2/4
+Subsection 1
+Slide 1
+
+
+
+
+          Gemini Agent   Test B02_L2_only: Niveau 2 Uniquement (Démarrage Profond)   3/4
+Subsection 2
+Slide 2
+
+
+
+
+          Gemini Agent   Test B02_L2_only: Niveau 2 Uniquement (Démarrage Profond)   4/4
+>>> END_FILE: assets/tests/structure_stress_test/test_split_B02_L2_only.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_B03_Standard_L1_L2.pdf <<<
+Test B03_Standard_L1_L2: Standard (L1 + L2)
+                 Stress Test Automatisé
+              Gemini Agent   2026-01-18
+                                        1 Section A
+                                        2 Section B
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Standard (L1 + L2)
+Description : Hiérarchie classique Section -> Subsection.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Comportement nominal du thème.
+
+
+
+
+           Gemini Agent                Test B03_Standard_L1_L2: Standard (L1 + L2)   2/7
+1 Section A
+
+  1.1 Sub A.1
+                         1 Section A
+                                                      1.1 Sub A.1
+                         2 Section B
+
+
+
+
+Section A
+Slide A
+
+
+
+
+          Gemini Agent   Test B03_Standard_L1_L2: Standard (L1 + L2)   4/7
+                           1 Section A
+                                                        1.1 Sub A.1
+                           2 Section B
+
+
+
+
+Sub A.1
+Slide A.1
+
+
+
+
+            Gemini Agent   Test B03_Standard_L1_L2: Standard (L1 + L2)   5/7
+2 Section B
+
+  2.1 Sub B.1
+                           1 Section A
+                                                        2.1 Sub B.1
+                           2 Section B
+
+
+
+
+Sub B.1
+Slide B.1
+
+
+
+
+            Gemini Agent   Test B03_Standard_L1_L2: Standard (L1 + L2)   7/7
+>>> END_FILE: assets/tests/structure_stress_test/test_split_B03_Standard_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_C01_sandwich_L1_L2.pdf <<<
+Test C01_sandwich_L1_L2: Sandwich L1 ->
+              Slide -> L2
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+                                             1 Section A
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Sandwich L1 -> Slide -> L2
+Description : Une slide insérée APRES L1 mais AVANT le premier L2.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Slide Sandwich: Nav indique Section A, pas de sous-section active.
+
+
+
+
+          Gemini Agent                  Test C01_sandwich_L1_L2: Sandwich L1 -> Slide -> L2   2/5
+1 Section A
+
+  1.1 Subsection A.1
+                                       1 Section A                 1.1 Subsection A.1
+
+
+
+
+Sandwich
+Cette slide appartient à Section A, mais n’a pas de sous-section.
+
+
+
+
+          Gemini Agent            Test C01_sandwich_L1_L2: Sandwich L1 -> Slide -> L2   4/5
+                               1 Section A                 1.1 Subsection A.1
+
+
+
+
+Normal
+Dans A.1
+
+
+
+
+           Gemini Agent   Test C01_sandwich_L1_L2: Sandwich L1 -> Slide -> L2   5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_split_C01_sandwich_L1_L2.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_C02_sandwich_mixed.pdf <<<
+Test C02_sandwich_mixed: Sandwich
+            Complexe
+             Stress Test Automatisé
+          Gemini Agent   2026-01-18
+                          1 Part I
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Sandwich Complexe
+Description : Slides placées à tous les niveaux d’interstice.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Chaque slide doit hériter du titre de son parent direct le plus proche.
+
+
+
+
+           Gemini Agent                  Test C02_sandwich_mixed: Sandwich Complexe   2/7
+1 Part I
+                        1 Part I                 1.1 Section A                  1.1.1 Subsection a
+
+
+
+
+Part I
+Slide Niveau 1
+
+
+
+
+         Gemini Agent              Test C02_sandwich_mixed: Sandwich Complexe                        4/7
+1 Part I
+
+   1.1 Section A
+      1.1.1 Subsection a
+                        1 Part I                 1.1 Section A                  1.1.1 Subsection a
+
+
+
+
+Section A
+Slide Niveau 2
+
+
+
+
+         Gemini Agent              Test C02_sandwich_mixed: Sandwich Complexe                        6/7
+                        1 Part I                 1.1 Section A                  1.1.1 Subsection a
+
+
+
+
+Subsection a
+Slide Niveau 3
+
+
+
+
+         Gemini Agent              Test C02_sandwich_mixed: Sandwich Complexe                        7/7
+>>> END_FILE: assets/tests/structure_stress_test/test_split_C02_sandwich_mixed.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_D01_skip_L1_to_L3.pdf <<<
+Test D01_skip_L1_to_L3: Saut L1 -> L3 (Pas de
+                    L2)
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+                          1 Part I
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Saut L1 -> L3 (Pas de L2)
+Description : On passe de = Part à === Subsection directement.
+Mapping Actif : (part: 1, section: 2, subsection: 3)
+Comportement Attendu :
+
+  Pas de crash. Numérotation type 1.0.1. Nav indique Part I et Sub.
+
+
+
+
+           Gemini Agent                Test D01_skip_L1_to_L3: Saut L1 -> L3 (Pas de L2)   2/4
+1 Part I
+                        1 Part I                                                       1.0.1 Subsection Directe (1.0.1)
+
+
+
+
+Subsection Directe (1.0.1)
+Slide Deep
+
+
+
+
+         Gemini Agent              Test D01_skip_L1_to_L3: Saut L1 -> L3 (Pas de L2)                             4/4
+>>> END_FILE: assets/tests/structure_stress_test/test_split_D01_skip_L1_to_L3.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_D02_mixed_mapping_overflow.pdf <<<
+Test D02_mixed_mapping_overflow: Mapping
+          vs Contenu (Overflow)
+                Stress Test Automatisé
+             Gemini Agent   2026-01-18
+                                                1 Section 1
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Mapping vs Contenu (Overflow)
+Description : Contenu L3 présent, mais Mapping configuré pour L1/L2 uniquement.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  L3 est ignoré par la nav. Titre slide = ‘Subsection 1.1’. Pas ‘Detail’.
+
+
+
+
+           Gemini Agent              Test D02_mixed_mapping_overflow: Mapping vs Contenu (Overflow)   2/4
+1 Section 1
+
+  1.1 Subsection 1.1
+Detail 1.1.1 (Non mappé)
+                                      1 Section 1                1.1 Subsection 1.1
+
+
+
+
+  Subsection 1.1
+  Slide Profonde
+
+
+
+
+            Gemini Agent   Test D02_mixed_mapping_overflow: Mapping vs Contenu (Overflow)   4/4
+>>> END_FILE: assets/tests/structure_stress_test/test_split_D02_mixed_mapping_overflow.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_D03_auto_title_logic.pdf <<<
+Test D03_auto_title_logic: Test Auto-Title vs
+                 Manual
+                  Stress Test Automatisé
+               Gemini Agent   2026-01-18
+                                       1 Section Auto
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Test Auto-Title vs Manual
+Description : Mélange de slides avec titre manuel et titre auto.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Priorité : Titre Manuel > Titre Auto (Niveau le plus bas mappé).
+
+
+
+
+           Gemini Agent                Test D03_auto_title_logic: Test Auto-Title vs Manual   2/6
+1 Section Auto
+
+  1.1 Sub Auto
+                                  1 Section Auto                    1.1 Sub Auto
+
+
+
+
+Section Auto
+Doit avoir titre ‘Section Auto’
+
+
+
+
+          Gemini Agent            Test D03_auto_title_logic: Test Auto-Title vs Manual   4/6
+                            1 Section Auto                    1.1 Sub Auto
+
+
+
+
+Manuel
+Doit avoir titre ‘Manuel’
+
+
+
+
+          Gemini Agent      Test D03_auto_title_logic: Test Auto-Title vs Manual   5/6
+                              1 Section Auto                    1.1 Sub Auto
+
+
+
+
+Sub Auto
+Doit avoir titre ‘Sub Auto’
+
+
+
+
+          Gemini Agent        Test D03_auto_title_logic: Test Auto-Title vs Manual   6/6
+>>> END_FILE: assets/tests/structure_stress_test/test_split_D03_auto_title_logic.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_E01_headings_inside_slide.pdf <<<
+Test E01_headings_inside_slide: Titres
+        INTERNES à la Slide
+               Stress Test Automatisé
+            Gemini Agent   2026-01-18
+                               1 Section Externe (Navigation)
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Titres INTERNES à la Slide
+Description : Utilisation de =, ==, === DANS le contenu d’une slide.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Les titres internes doivent être stylisés MAIS ignorés par la navigation et ne pas créer de
+  nouvelles sections.
+
+
+
+
+           Gemini Agent                    Test E01_headings_inside_slide: Titres INTERNES à la Slide   2/5
+1 Section Externe (Navigation)
+                           1 Section Externe (Navigation)
+
+
+
+
+Test Isolation
+Ceci est du texte normal. Texte sous H1. Texte sous H2.
+
+
+
+
+         Gemini Agent                  Test E01_headings_inside_slide: Titres INTERNES à la Slide   4/5
+                             1 Section Externe (Navigation)
+
+
+
+
+Check
+Slide de vérification après le chaos.
+
+
+
+
+          Gemini Agent                   Test E01_headings_inside_slide: Titres INTERNES à la Slide   5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_split_E01_headings_inside_slide.pdf <<<
+>>> START_FILE: assets/tests/structure_stress_test/test_split_F01_deep_structure_L4.pdf <<<
+Test F01_deep_structure_L4: Structure
+        Profonde (Niveau 4+)
+              Stress Test Automatisé
+           Gemini Agent   2026-01-18
+                                             1 Section 1
+
+
+
+
+CONTEXTE DU TEST
+Scénario : Structure Profonde (Niveau 4+)
+Description : Utilisation de ==== et ===== à l’extérieur des slides.
+Mapping Actif : (section: 1, subsection: 2)
+Comportement Attendu :
+
+  Pas de crash. Les niveaux > 3 sont ignorés par la nav mais le contenu s’affiche. Titre slide hérité
+  de L2 ou L3 selon mapping.
+
+
+
+
+           Gemini Agent              Test F01_deep_structure_L4: Structure Profonde (Niveau 4+)   2/5
+1 Section 1
+
+  1.1 Subsection 1.1
+Deep Level (L4)
+                                   1 Section 1                  1.1 Subsection 1.1
+
+
+
+
+  Subsection 1.1
+  Slide Profonde L4
+
+
+
+
+            Gemini Agent   Test F01_deep_structure_L4: Structure Profonde (Niveau 4+)   4/5
+Very Deep (L5)
+                                  1 Section 1                  1.1 Subsection 1.1
+
+
+
+
+  Subsection 1.1
+  Slide Profonde L5
+
+
+
+
+           Gemini Agent   Test F01_deep_structure_L4: Structure Profonde (Niveau 4+)   5/5
+>>> END_FILE: assets/tests/structure_stress_test/test_split_F01_deep_structure_L4.pdf <<<

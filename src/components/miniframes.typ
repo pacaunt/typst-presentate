@@ -3,7 +3,7 @@
 /// Extraction of the presentation structure.
 /// Returns a dictionary with sections, each containing subsections, each containing logical slides.
 #let get-structure() = {
-  let headings = query(heading.where(outlined: true).or(heading.where(level: 1)).or(heading.where(level: 2)))
+  let headings = query(heading.where(outlined: true).or(heading.where(level: 1)).or(heading.where(level: 2)).or(heading.where(level: 3)))
   let all-slides = query(metadata).filter(m => 
     type(m.value) == dictionary and m.value.at("t", default: none) == "LogicalSlide"
   )
@@ -25,6 +25,7 @@
   let structure = ()
   let current-section = none
   let current-subsection = none
+  let current-subsubsection = none
 
   // Sort headings by location
   let sorted-headings = headings.sorted(key: h => (h.location().page(), h.location().position().y))
@@ -41,17 +42,10 @@
       )
       structure.push(current-section)
       current-subsection = none
+      current-subsubsection = none
     } else if h.level == 2 {
       if current-section == none {
-        // Subsection without section? Create a dummy section.
-        current-section = (
-          title: none,
-          numbering: none,
-          counter: (),
-          level: 1,
-          loc: h.location(),
-          subsections: ()
-        )
+        current-section = (title: none, numbering: none, counter: (), level: 1, loc: h.location(), subsections: ())
         structure.push(current-section)
       }
       current-subsection = (
@@ -60,50 +54,93 @@
         counter: counter(heading).at(h.location()),
         level: h.level,
         loc: h.location(),
+        subsections: () // Now can contain subsubsections or slides
+      )
+      structure.last().subsections.push(current-subsection)
+      current-subsubsection = none
+    } else if h.level == 3 {
+      if current-subsection == none {
+        if current-section == none {
+          current-section = (title: none, numbering: none, counter: (), level: 1, loc: h.location(), subsections: ())
+          structure.push(current-section)
+        }
+        current-subsection = (title: none, numbering: none, counter: (), level: 2, loc: h.location(), subsections: ())
+        structure.last().subsections.push(current-subsection)
+      }
+      current-subsubsection = (
+        title: h.body,
+        numbering: h.numbering,
+        counter: counter(heading).at(h.location()),
+        level: h.level,
+        loc: h.location(),
         slides: ()
       )
-      // We need to update the last section in the structure array
-      structure.last().subsections.push(current-subsection)
+      structure.last().subsections.last().subsections.push(current-subsubsection)
     }
   }
 
-  // If no sections/subsections were found, create a dummy one for slides
+  // If no sections found, create dummy
   if structure.len() == 0 {
     structure.push((title: none, loc: none, subsections: ((title: none, loc: none, slides: ()),)))
   }
 
-  // Assign slides to subsections
+  // Assign slides to the deepest level
   for s in unique-slides {
-    // Find which heading this slide belongs to.
-    // A slide belongs to the last heading that appears before it.
     let best-h1-idx = -1
     let best-h2-idx = -1
+    let best-h3-idx = -1
 
     for (i, h1) in structure.enumerate() {
       if h1.loc == none or s.loc.page() > h1.loc.page() or (s.loc.page() == h1.loc.page() and s.loc.position().y >= h1.loc.position().y) {
         best-h1-idx = i
-        // Find H2 within this H1
         best-h2-idx = -1
         for (j, h2) in h1.subsections.enumerate() {
           if h2.loc == none or s.loc.page() > h2.loc.page() or (s.loc.page() == h2.loc.page() and s.loc.position().y >= h2.loc.position().y) {
             best-h2-idx = j
+            best-h3-idx = -1
+            if h2.at("subsections", default: none) != none {
+              for (k, h3) in h2.subsections.enumerate() {
+                if h3.loc == none or s.loc.page() > h3.loc.page() or (s.loc.page() == h3.loc.page() and s.loc.position().y >= h3.loc.position().y) {
+                  best-h3-idx = k
+                }
+              }
+            }
           }
         }
       }
     }
 
     if best-h1-idx != -1 {
+      let sec = structure.at(best-h1-idx)
       if best-h2-idx == -1 {
-        // Slide belongs to H1 but no H2 yet. Create a dummy H2 if needed.
-        if structure.at(best-h1-idx).subsections.len() == 0 {
+        if sec.subsections.len() == 0 {
           structure.at(best-h1-idx).subsections.push((title: none, loc: none, slides: (s,)))
         } else {
-          // If there are H2s, but this slide is before the first H2?
-          // For simplicity, attach to the first H2 or create one.
-          structure.at(best-h1-idx).subsections.at(0).slides.push(s)
+          // Attach to first subsection
+          let sub = sec.subsections.at(0)
+          if sub.at("slides", default: none) != none { structure.at(best-h1-idx).subsections.at(0).slides.push(s) }
+          else { 
+             // Logic for Level 3: Check if sub-subsections exist
+             if structure.at(best-h1-idx).subsections.at(0).subsections.len() == 0 {
+               structure.at(best-h1-idx).subsections.at(0).subsections.push((title: none, loc: none, slides: (s,)))
+             } else {
+               structure.at(best-h1-idx).subsections.at(0).subsections.at(0).slides.push(s) 
+             }
+          }
         }
       } else {
-        structure.at(best-h1-idx).subsections.at(best-h2-idx).slides.push(s)
+        let sub = sec.subsections.at(best-h2-idx)
+        if best-h3-idx == -1 {
+          if sub.at("slides", default: none) != none { structure.at(best-h1-idx).subsections.at(best-h2-idx).slides.push(s) }
+          else if sub.at("subsections", default: none) != none and sub.subsections.len() > 0 {
+             structure.at(best-h1-idx).subsections.at(best-h2-idx).subsections.at(0).slides.push(s)
+          } else {
+             // Create dummy subsubsection
+             structure.at(best-h1-idx).subsections.at(best-h2-idx).subsections = ((title: none, loc: none, slides: (s,)),)
+          }
+        } else {
+          structure.at(best-h1-idx).subsections.at(best-h2-idx).subsections.at(best-h3-idx).slides.push(s)
+        }
       }
     }
   }
@@ -135,11 +172,11 @@
   inactive-color: gray,
   marker-shape: "circle",
   marker-size: 4pt,
-  style: "compact", // "compact" or "grid"
+  style: "grid", // "compact" or "grid"
   align-mode: "left",
   dots-align: "left",
-  show-section-titles: true,
-  show-subsection-titles: true,
+  show-level1-titles: true,
+  show-level2-titles: true,
   show-numbering: false,
   gap: 1.5em,
   line-spacing: 4pt,
@@ -160,25 +197,19 @@
     )
   }
 
-  let render-dots(slides) = {
-    stack(
-      dir: ltr,
-      spacing: marker-size * 0.8,
-      ..slides.map(s => {
-        let is-active = s.number == current-slide-num
-        let is-future = s.number > current-slide-num
-        let m = marker(is-active, is-future)
-        if s.loc != none { link(s.loc, m) } else { m }
-      })
-    )
+  let render-dot-group(slides) = {
+    slides.map(s => {
+      let is-active = s.number == current-slide-num
+      let is-future = s.number > current-slide-num
+      let m = marker(is-active, is-future)
+      if s.loc != none { link(s.loc, m) } else { m }
+    })
   }
   
   let fmt-title(item) = {
     let t = item.title
     if t == none { return none }
     if show-numbering and item.at("numbering", default: none) != none {
-      // For miniframe bar, we usually want short numbering "1" or "1.1"
-      // If the heading level is 1, use just "1". If 2, "1.1".
       let fmt = if item.at("level", default: 1) == 1 { "1" } else { "1.1" }
       let num = numbering(fmt, ..item.counter)
       t = [#num #t]
@@ -188,48 +219,87 @@
 
   let content = {
     set text(fill: text-color, size: text-size)
-    set par(leading: 0.8em) // Augmenté de 0.6em à 0.8em
+    set par(leading: 0.8em)
     if font != none { set text(font: font) }
     
     let items = ()
-    for section in structure {
-      let is-section-active = section.subsections.any(sub => sub.slides.any(s => s.number == current-slide-num))
+    for root in structure {
+      let is-root-active = root.subsections.any(sub => {
+        if sub.at("slides", default: none) != none {
+          return sub.slides.any(s => s.number == current-slide-num)
+        } else if sub.at("subsections", default: none) != none {
+          return sub.subsections.any(ss => ss.slides.any(s => s.number == current-slide-num))
+        }
+        false
+      })
       
-      let section-content = stack(
+      let root-content = stack(
         dir: ttb,
         spacing: line-spacing,
-        if show-section-titles and section.title != none {
-          let t = fmt-title(section)
-          let title-text = if is-section-active { strong(t) } else { t }
-          let title-link = if section.loc != none { link(section.loc, title-text) } else { title-text }
+        // 1. Level 1 Title (Part or Section)
+        if show-level1-titles and root.title != none {
+          let t = fmt-title(root)
+          let title-text = if is-root-active { strong(t) } else { t }
+          let title-link = if root.loc != none { link(root.loc, title-text) } else { title-text }
           align(eval(dots-align), title-link)
         },
+        
+        // 2. Render children (Level 2)
         if style == "compact" {
-          // Combine all dots from all subsections
-          let all-dots = section.subsections.map(sub => sub.slides).flatten()
-          align(eval(dots-align), render-dots(all-dots))
+          let all-slides = ()
+          for sub in root.subsections {
+            if sub.at("slides", default: none) != none { all-slides += sub.slides }
+            else if sub.at("subsections", default: none) != none {
+              for ss in sub.subsections { all-slides += ss.slides }
+            }
+          }
+          align(eval(dots-align), stack(dir: ltr, spacing: marker-size * 0.8, ..render-dot-group(all-slides)))
         } else {
-          // Grid mode: one line per subsection
-          if show-subsection-titles {
-            grid(
-              columns: (auto, auto),
-              column-gutter: 0.8em,
-              row-gutter: line-spacing * 0.7,
-              ..section.subsections.map(sub => (
-                align(horizon, text(size: text-size * 0.85, fmt-title(sub))),
-                align(horizon, render-dots(sub.slides))
-              )).flatten()
-            )
+          // Grid mode
+          let rows = ()
+          for child in root.subsections {
+            let is-child-active = if child.at("slides", default: none) != none {
+              child.slides.any(s => s.number == current-slide-num)
+            } else {
+              child.subsections.any(ss => ss.slides.any(s => s.number == current-slide-num))
+            }
+
+            let title-cell = if show-level2-titles {
+              let t = fmt-title(child)
+              if t != none {
+                let txt = if is-child-active { strong(t) } else { t }
+                text(size: text-size * 0.85, if child.loc != none { link(child.loc, txt) } else { txt })
+              }
+            }
+            
+            let dots-cell = if child.at("subsections", default: none) != none {
+              // Level 3 exists: join with '|'
+              let groups = child.subsections.map(ss => {
+                render-dot-group(ss.slides).join(h(marker-size * 0.8))
+              })
+              let sep = box(baseline: marker-size * 0.2, text(fill: inactive-color, weight: "bold", size: text-size * 0.8, [|]))
+              groups.join(h(marker-size * 0.5) + sep + h(marker-size * 0.5))
+            } else {
+              // Level 2 only
+              render-dot-group(child.slides).join(h(marker-size * 0.8))
+            }
+
+            if show-level2-titles {
+              rows.push(align(horizon, title-cell))
+              rows.push(align(horizon, dots-cell))
+            } else {
+              rows.push(align(eval(dots-align), dots-cell))
+            }
+          }
+          
+          if show-level2-titles {
+            grid(columns: (auto, auto), column-gutter: 0.8em, row-gutter: line-spacing * 0.7, ..rows)
           } else {
-            stack(
-              dir: ttb,
-              spacing: line-spacing * 0.7,
-              ..section.subsections.map(sub => align(eval(dots-align), render-dots(sub.slides)))
-            )
+            stack(dir: ttb, spacing: line-spacing * 0.7, ..rows)
           }
         }
       )
-      items.push(section-content)
+      items.push(root-content)
     }
 
     grid(
@@ -245,7 +315,6 @@
     inset: inset,
     outset: (x: outset-x),
     radius: radius,
-    // On retire height: auto et on laisse le contenu dicter la taille
     align(eval(align-mode), content)
   )
 }
