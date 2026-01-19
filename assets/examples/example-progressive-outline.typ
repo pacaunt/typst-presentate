@@ -1,82 +1,51 @@
-#import "../../src/export.typ": *
-#import "../../src/themes/progressive-outline.typ": slide, template
+#import "../../src/themes/structured/progressive-outline.typ": template, slide
+#import "../../src/render.typ": pause
 
 #show: template.with(
-  author: "David",
+  author: "David Hajage",
   title: "Progressive Outline Demo",
-  subtitle: "Show a progressive-outline use case",
-  show-all-sections-in-transition: true,
-  // aspect-ratio: "4-3" // Change aspect ratio to 4:3
+  subtitle: "Hierarchy-aware navigation with breadcrumbs",
+  mapping: (part: 1, section: 2, subsection: 3),
+  auto-title: true,
 )
 
-= Introduction to Physics
+= Introduction
 
-== Font Config
+== Theme Philosophy
 #slide[
-  You can customize the font and size globally:
+  The *Progressive Outline* theme focuses on document progression. 
+  
+  It features a clean layout with a dynamic breadcrumb header that shows exactly where you are in the hierarchy.
+]
+
+== Roadmap Transitions
+#slide[
+  Transition slides are automatically generated when moving between parts, sections, or subsections. 
+]
+
+= Dynamic Header
+
+== Breadcrumb Support
+#slide[
+  The header (breadcrumb) automatically adapts to your `mapping`. 
+  
+  It can display up to 3 levels: Part, Section, and Subsection.
+]
+
+= Conclusion
+
+== Summary
+#slide[
+  The Progressive Outline theme is perfect for clean, professional presentations.
   
   ```typ
+  #import "@preview/presentate:0.2.3": `progressive-outline`, pause
+  #import `progressive-outline`: template, slide
+
   #show: template.with(
-    text-font: "Roboto",
-    text-size: 22pt
+    title: [My Presentation],
   )
+
+  #slide[ Hello World! ]
   ```
-]
-
-== Classical Mechanics
-#slide[
-  Welcome to Classical Mechanics. This is the first slide.
-]
-
-=== Newton's Laws
-#slide[
-  Newton's laws are the foundation.
-  - First law: Inertia
-  - Second law: F=ma
-]
-
-#slide(none)[
-  *This is a titleless slide.*
-  
-  It was generated with `#slide(none)[...]`. 
-  Even though we are still in the Newton's Laws subsubsection, the header title has disappeared.
-]
-
-=== Lagrangian Mechanics
-#slide[
-  A more abstract formulation using energy.
-]
-
-== Electromagnetism
-#slide[
-  Maxwell's equations rule here.
-]
-
-= Modern Physics
-
-== Relativity
-#slide[
-  Things get weird near the speed of light.
-]
-
-=== Special Relativity
-#slide[
-  - Time dilation
-  - Length contraction
-  - E = mc²
-]
-
-=== General Relativity
-#slide[
-  Gravity is curvature of spacetime.
-]
-
-== Quantum Mechanics
-#slide[
-  Probabilities and wavefunctions.
-]
-
-= Future Research
-#slide[
-  This section has no subsections. 
 ]

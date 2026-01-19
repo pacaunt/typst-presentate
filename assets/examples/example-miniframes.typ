@@ -1,163 +1,131 @@
-#import "../../src/presentate.typ": *
-#import "../../src/themes/miniframes.typ": *
+#import "../../src/themes/structured/miniframes.typ": template, slide
 #import "../../src/render.typ": pause
 
 #show: template.with(
   title: [The Miniframes Theme],
-  subtitle: [Navigation bar with progress tracking],
+  subtitle: [A deep dive into structured navigation],
   author: [David Hajage],
   color: rgb("#1a5fb4"),
+  // We use 3 levels to demonstrate the full power of the navigation bar
+  mapping: (part: 1, section: 2, subsection: 3),
   navigation: (
     style: "grid",
-    show-subsection-titles: true,
+    show-level2-titles: true,
     marker-shape: "circle",
     inset: (x: 2em, y: 1.2em),
   ),
   transitions: (
-    enabled: true,
-    level: 2
-  )
+    max-level: 3,
+  ),
+  auto-title: true,
 )
 
 = Introduction
 
-== What is this theme?
+== Theme Overview
 #slide[
   The *Miniframes* theme provides a navigation bar at the top or bottom of every slide.
   
-  It is inspired by classic LaTeX Beamer themes (like *Frankfurt* or *Berlin*) where small dots represent the progress within each section.
+  It uses small dots to represent the progress within each structural unit, ensuring the audience always knows where you are in your presentation.
 ]
 
-== Key Features
+== Roadmap Transitions
 #slide[
-  - *Automatic Tracking*: Dots are generated and highlighted based on your headings.
-  - *Stable Layout*: The header and footer are fixed to prevent content from jumping.
-  - *Transition Slides*: Automated outlines appear between sections and subsections.
-  - *Highly Customizable*: Control colors, shapes, spacing, and positioning.
+  The transition engine automatically generates roadmap slides when the document structure changes. 
+  
+  By default, it highlights the active section while showing its context. This is fully configurable via the `transitions` dictionary.
 ]
 
-= Layout & Zones
+= Hierarchy & Structure
 
-== The 3-Zone System
-#slide("Slide Zones")[
-  The theme splits every slide into three vertical zones:
+== 3-Level Support
+#slide("Advanced Hierarchy")[
+  Miniframes supports up to 3 levels of hierarchy:
   
-  1.  *Navigation Zone*: Contains the miniframes bar.
-  2.  *Content Zone*: Contains the slide title and body.
-  3.  *Metadata Zone*: Contains the footer (author, title, page numbering).
+  1.  *Level 1 (Part)*: Acts as a global group title in the bar.
+  2.  *Level 2 (Section)*: Acts as a row title in the bar.
+  3.  *Level 3 (Subsection)*: Groups of dots separated by a vertical bar `|`.
 ]
 
-== Slide Titles
-#slide("Optional Titles")[
-  Slide titles are now optional and strictly manual. 
-  
-  Unlike previous versions, the theme no longer automatically uses the subsection title as the slide title.
-  
-  - `#slide[...]`: No title block shown.
-  - `#slide("My Title")[...]`: Displays "My Title" at the top.
-]
-
-== Font Configuration
+== Automatic Titling
 #slide[
-  The theme supports global font customization:
+  With `auto-title: true`, the theme automatically uses the current heading as the slide title.
   
-  ```typ
-  text-font: "Roboto",
-  text-size: 22pt
-  ```
-  
-  The navigation bar (dots), titles, and footer will scale proportionally to the chosen text size.
+  This reduces repetition and ensures your slides are always correctly labeled according to your document structure.
 ]
 
-== Navigation Position
-#slide[
-  By default, the bar is at the top. You can move it to the bottom:
-  
-  ```typ
-  navigation: (
-    position: "bottom"
-  )
-  ```
-  
-  In this case, it will be placed just below the footer.
-]
-
-= Navigation Options
+= Navigation Customization
 
 == Compact vs Grid
 #slide[
-  There are two main styles for the navigation bar:
+  The navigation bar offers two layout styles:
   
-  - *compact*: All dots of a section are aligned on a single line.
-  - *grid*: Each subsection gets its own line (current mode).
+  - *compact*: All dots of a section are squeezed into a single line.
+  - *grid*: Each unit (Section or Subsection) gets its own line for better clarity.
+]
+
+== Marker Shapes
+#slide[
+  Progress indicators can be customized:
+  
+  - `marker-shape`: Choose between `"circle"` or `"square"`.
+  - `marker-size`: Adjust the size of the indicators.
+]
+
+== Alignment Options
+#slide[
+  You have fine-grained control over alignment:
+  
+  - `align-mode`: Aligns the entire navigation block (left, center, right).
+  - `dots-align`: Aligns the dots *within* their respective columns.
+]
+
+== Custom Colors
+#slide[
+  Beyond the primary theme color, you can override specific colors:
   
   ```typ
   navigation: (
-    style: "grid",
-    show-subsection-titles: true
+    fill: rgb("#2d3436"),
+    active-color: yellow,
+    inactive-color: gray,
+    text-color: white
   )
   ```
 ]
 
-== Heading Numbering
+= Layout & Spacing
+
+== Spacing Control
 #slide[
-  You can toggle section numbering:
+  Control the rhythm of the navigation bar:
   
-  ```typ
-  show-heading-numbering: false
-  ```
-  
-  This affects the slide titles, the navigation outlines, and the transition slides.
+  - `gap`: Horizontal space between section groups.
+  - `line-spacing`: Vertical space between titles and dots.
+  - `inset`: Internal padding of the navigation block.
 ]
 
-== Marker Customization
+== Position & Marges
 #slide[
-  You can change the shape and size of the progress dots:
+  The bar can be at the `"top"` or `"bottom"`. 
   
-  - `marker-shape`: `"circle"` or `"square"`.
-  - `marker-size`: The diameter/width of the marker.
-  
-  The colors are derived from the theme's main color but can be overridden.
-]
-
-== Advanced Layout
-#slide[
-  You can further customize the block containing the navigation bar:
-  
-  - *Width*: Reduce the bar's width (e.g., `width: 80%`).
-  - *Radius*: Round the corners of the bar (e.g., `radius: 10pt`).
-  - *Alignment*: Align the entire block (left, center, right).
-  
-  ```typ
-  navigation: (
-    width: 80%,
-    radius: 10pt,
-    align-mode: "center"
-  )
-  ```
-]
-
-= Animations
-
-== Dots & Pauses
-#slide("Stable Navigation")[
-  Even when using animations like `pause`, the navigation bar remains stable.
-  
-  #pause[
-    Note that a slide with pauses only counts as *one* dot in the navigation bar.
-  ]
-  #pause[
-    This ensures that the bar reflects the *logical* progress of your talk, not the number of click-steps.
-  ]
+  When in `"bottom"`, the theme automatically adds top margin to the slide titles to maintain a balanced visual composition.
 ]
 
 = Conclusion
 
-== Getting Started
-#slide("Summary")[
-  Simply import the theme and start using standard headings:
+== Summary
+#slide[
+  The Miniframes theme is the most sophisticated choice for long, technical, or highly structured presentations.
   
-  - `=` for Sections (H1)
-  - `==` for Subsections (H2)
-  - `#slide("Title")[...]` for your content.
+  ```typ
+  #import "@preview/presentate:0.2.3": miniframes, pause
+  #import miniframes: template, slide
+
+  #show: template.with(
+    title: [My Presentation],
+  )
+
+  #slide[ Hello World! ]
+  ```
 ]

@@ -1,152 +1,62 @@
-#import "../../src/presentate.typ": *
-#import "../../src/themes/split.typ": *
+#import "../../src/themes/structured/split.typ": template, slide
+#import "../../src/render.typ": pause
 
 #show: template.with(
   title: [The Split Theme],
-  subtitle: [Inspired by Copenhagen & Cambridge],
+  subtitle: [Dual-column header for structural awareness],
   author: [David Hajage],
-  navigation-style: "all", // Change to "current" for a minimalist look
+  navigation-style: "all",
   primary: rgb("#003366"),
   secondary: rgb("#336699"),
-  text-size: 22pt,         // Global text size
-  transitions: (enabled: false), 
+  mapping: (section: 1, subsection: 2),
+  auto-title: true,
 )
 
 = Introduction
 
-== Motivation
-#slide("Motivation")[
-  The *Split* theme offers a dual-column header for clear structural awareness.
-  
-  - *Left side*: All sections (H1).
-  - *Right side*: Subsections (H2) of the current section.
-]
-
-== Navigation Styles
-#slide("Navigation Styles")[
-  You can toggle between two navigation styles in the template:
-  
-  - `navigation-style: "all"`: Full overview (Beamer Copenhagen style).
-  - `navigation-style: "current"`: Focus on current context only (Beamer Cambridge style).
-
-  ```typ
-  #show: doc => template(doc,
-    navigation-style: "current",
-    ...
-  )
-  ```
-]
-
-= Features
-
-== Font Configuration
-#slide("Font Configuration")[
-  You can easily change the global font and size. Headers and footers scale automatically.
-  
-  ```typ
-  #show: doc => template(doc,
-    text-font: "Roboto", // Default is "Lato"
-    text-size: 22pt,     // Default is 20pt
-    ...
-  )
-  ```
-  
-  In this presentation, we are using `22pt`.
-]
-
-== Auto-scaling UI
-#slide("Auto-scaling UI")[
-  The header and footer sizes are defined using relative units (`em`).
-  
-  This means they automatically scale when you change the `text-size` in the template configuration, maintaining a consistent visual balance without manual adjustment.
-]
-
-== Visual Layout
-#slide("Visual Layout")[
-  The slide is organized into fixed areas:
-  - *Header*: Split into two thematic colors.
-  - *Body*: Large area for content with an optional manual title.
-  - *Footer*: Three-part bar with author, title, and numbering.
-]
-
-== Automatic Transitions
-#slide("Transitions")[
-  Section changes automatically trigger a high-contrast transition slide. 
-  
-  Configure this via the `transitions` dictionary:
-  
-  ```typ
-  transitions: (
-    enabled: true, // Toggle on/off
-    level: 2       // 1: Sections, 2: Sections & Subsections
-  )
-  ```
-]
-
-== Header Proportions
-#slide("Header Columns")[
-  By default, the header is split 50/50. You can change this using `header-columns`:
-  
-  ```typ
-  header-columns: (2fr, 1fr)
-  ```
-  
-  This is useful if your section names are much longer than your subsection names.
-]
-
-== Header Alignment
-#slide("Header Alignment")[
-  You can control the alignment of the text in the header columns:
-  
-  ```typ
-  section-align: right,    // Default
-  subsection-align: left,  // Default
-  ```
-  
-  For example, to center everything:
-  ```typ
-  section-align: center,
-  subsection-align: center,
-  ```
-]
-
-== Heading Numbering
-#slide("Numbering")[
-  Toggle the display of numbers in the header navigation:
-  
-  ```typ
-  show-heading-numbering: false
-  ```
-  
-  By default, it is set to `true`.
-]
-
-#slide("Manual Title Demo")[
-  By default, slides have *no title* (empty space). 
-  
-  If you want a title, provide it as the first argument:
-  `#slide("My Title")[...]`.
-]
-
+== Theme Philosophy
 #slide[
-  This slide has *no title* because we called `#slide[...]` without a string argument.
+  The *Split* theme offers a dual-column header:
   
-  Note how the header still highlights the current subsection ("Automatic Transitions") regardless of the slide's own title.
+  - *Left side*: Displays the sections.
+  - *Right side*: Displays subsections of the current section.
 ]
 
-= Deep Hierarchy
+== Transitions
+#slide[
+  Integrated transition slides provide a roadmap between sections and subsections, helping the audience stay oriented.
+]
 
-== Subsection A
-#slide("Part A")[Content for Subsection A]
+= Configuration
 
-== Subsection B
-#slide("Part B")[Content for Subsection B]
+== Navigation Style
+#slide[
+  Toggle between two modes:
+  
+  - `navigation-style: "all"`: Shows all siblings (Copenhagen style).
+  - `navigation-style: "current"`: Shows only the active context (Cambridge style).
+]
 
-== Subsection C
-#slide("Part C")[Content for Subsection C]
+== Layout
+#slide[
+  Customize the header proportions using `header-columns` (e.g., `(2fr, 1fr)`) and alignments (`section-align`, `subsection-align`).
+]
 
 = Conclusion
 
-#slide("Summary")[
-  The Split theme is perfect for long presentations where keeping track of the global plan is essential.
+== Summary
+#slide[
+  Perfect for professional talks with a clear hierarchical structure.
+  
+  ```typ
+  #import "@preview/presentate:0.2.3": split, pause
+  #import split: template, slide
+
+  #show: template.with(
+    title: [My Presentation],
+    primary: rgb("#003366"),
+  )
+
+  #slide[ Hello World! ]
+  ```
 ]
