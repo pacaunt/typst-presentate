@@ -52,6 +52,8 @@ The following parameters are supported by all five structured themes:
   [`text-size`], [length], [Base text size. Default: `20pt`.],
   [`mapping`], [dictionary], [Maps logical roles to Typst heading levels. Default: `(section: 1, subsection: 2)`. Supports `part`, `section`, `subsection`.],
   [`auto-title`], [bool], [If `true`, slides without a manual title will automatically display the current heading body. Default: `false`.],
+  [`show-heading-numbering`], [bool], [Global toggle for heading numbering. Default: `true`.],
+  [`numbering-format`], [string], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). Default: `"1.1"`.],
   [`transitions`], [dictionary], [Configuration for the transition engine (see Section 3).],
 )
 
@@ -79,7 +81,7 @@ The `transitions` dictionary accepts the following keys:
   table.header([*Key*], [*Type*], [*Description*]),
   [`enabled`], [bool], [Global switch for transitions. Default: `true`.],
   [`max-level`], [int], [The maximum Typst heading level (1-3) that triggers a transition. Default: `3`.],
-  [`show-numbering`], [bool], [Display heading numbers in transition outlines. Default: `true`.],
+  [`show-numbering`], [bool], [Display heading numbers in transition outlines using the global `numbering-format`. Default: `true`.],
   [`background`], [color | str], [Background of transition slides. `"theme"` (primary color), `"none"` (white), or an explicit color.],
   [`filter`], [function], [A callback `(heading) => bool`. Headings returning `false` will not trigger slides and will be hidden from outlines.],
   [`style`], [dictionary], [Global styling for the transition outline (see below).],

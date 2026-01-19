@@ -67,11 +67,16 @@
   h, 
   transitions: (:), 
   mapping: (:), 
+  show-heading-numbering: true,
+  numbering-format: "1.1",
   theme-colors: (:),
   slide-func: none, 
 ) = {
   // 1. Merge options
   let options = merge-dicts(transitions, base: default-transitions)
+  
+  // Use global toggle if not explicitly overridden in transitions dict
+  let final-show-numbering = if "show-numbering" in transitions { options.show-numbering } else { show-heading-numbering }
 
   // 2. Global checks
   if not options.enabled { return place(hide(h)) }
@@ -141,7 +146,8 @@
         level-1-mode: level-modes.level-1-mode,
         level-2-mode: level-modes.level-2-mode,
         level-3-mode: level-modes.level-3-mode,
-        show-numbering: options.show-numbering,
+        show-numbering: final-show-numbering,
+        numbering-format: numbering-format,
         target-location: h.location(),
         text-styles: text-styles,
         filter: options.filter,

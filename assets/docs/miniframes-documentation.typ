@@ -76,8 +76,10 @@ The `render-miniframes` function generates a navigation bar showing the progress
   [`font`], [string | none], [Font family for titles. Uses document default if `none`.],
   [`align-mode`], [string], [Global horizontal alignment of the block: `"left"`, `"center"`, `"right"`.],
   [`dots-align`], [string], [Alignment of the dots *within* their section column.],
-  [`show-section-titles`], [bool], [Whether to display the names of sections.],
-  [`show-subsection-titles`], [bool], [In grid mode, whether to display subsection names.],
+  [`show-level1-titles`], [bool], [Whether to display the names of sections.],
+  [`show-level2-titles`], [bool], [In grid mode, whether to display subsection names.],
+  [`show-numbering`], [bool], [Whether to display heading numbers. Default: `false`.],
+  [`numbering-format`], [string], [Typst numbering format string (e.g., `"1.1"`). Default: `"1.1"`.],
   [`gap`], [length], [Horizontal space between sections. Default: `1.5em`.],
   [`line-spacing`], [length], [Vertical space between titles and dots. Default: `4pt`.],
   [`inset`], [dict | length], [Internal padding of the bar block. Default: `(x: 1em, y: 0.5em)`.],
@@ -109,9 +111,9 @@ The `"grid"` style is ideal for presentations with many subsections, as it align
 "render-miniframes(
   structure, 4, 
   style: 'grid',
-  show-subsection-titles: true
+  show-level2-titles: true
 )",
-render-miniframes(mock-structure, 4, style: "grid", show-subsection-titles: true, fill: navy))
+render-miniframes(mock-structure, 4, style: "grid", show-level2-titles: true, fill: navy))
 
 == Hiding Titles
 You can hide titles to obtain a minimalist bar consisting only of dots.
@@ -119,9 +121,9 @@ You can hide titles to obtain a minimalist bar consisting only of dots.
 #demo("Dots Only",
 "render-miniframes(
   structure, 4, 
-  show-section-titles: false
+  show-level1-titles: false
 )",
-render-miniframes(mock-structure, 4, show-section-titles: false, fill: navy))
+render-miniframes(mock-structure, 4, show-level1-titles: false, fill: navy))
 
 = Customization
 
@@ -172,9 +174,9 @@ Use `inset` and `width` to integrate the bar into specific layout zones.
   width: 60%,
   align-mode: 'center',
   inset: 15pt,
-  show-section-titles: false
+  show-level1-titles: false
 )",
-render-miniframes(mock-structure, 4, width: 60%, align-mode: "center", inset: 15pt, show-section-titles: false, fill: navy))
+render-miniframes(mock-structure, 4, width: 60%, align-mode: "center", inset: 15pt, show-level1-titles: false, fill: navy))
 
 #demo("Rounded Corners",
 "render-miniframes(

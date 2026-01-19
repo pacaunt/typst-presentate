@@ -29,6 +29,7 @@
   let sec-align = config.section-align
   let subsec-align = config.subsection-align
   let show-num = config.show-heading-numbering
+  let num-fmt = config.numbering-format
   
   let header-size = 0.45em
   let footer-size = 0.4em
@@ -71,6 +72,7 @@
           level-2-mode: if lvl == 2 { mode } else { "none" },
           level-3-mode: if lvl == 3 { mode } else { "none" },
           show-numbering: show-num,
+          numbering-format: num-fmt,
           text-styles: (
             ("level-" + str(lvl)): (
               active: (weight: "bold", fill: white),
@@ -137,6 +139,7 @@
   section-align: right,
   subsection-align: left,
   show-heading-numbering: true,
+  numbering-format: "1.1",
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   on-part-change: none,
@@ -166,6 +169,7 @@
     section-align: section-align,
     subsection-align: subsection-align,
     show-heading-numbering: show-heading-numbering,
+    numbering-format: numbering-format,
     title: title,
     author: author,
     text-size: text-size,
@@ -179,7 +183,12 @@
   
   show heading: set text(size: 1em, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
-    if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
+    if show-heading-numbering {
+      let lvl = nums.pos().len()
+      if lvl in mapping.values() {
+        numbering(numbering-format, ..nums)
+      }
+    }
   })
   
   let mapped-levels = mapping.values()
@@ -203,6 +212,8 @@
           h,
           transitions: transitions,
           mapping: mapping,
+          show-heading-numbering: show-heading-numbering,
+          numbering-format: numbering-format,
           theme-colors: (primary: primary, secondary: secondary, accent: white),
           slide-func: empty-slide
         )

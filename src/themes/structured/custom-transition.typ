@@ -48,6 +48,7 @@
   text-font: "Lato",
   text-size: 20pt,
   show-heading-numbering: true,
+  numbering-format: "1.1",
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   on-part-change: none,
@@ -77,7 +78,7 @@
         let h = active.at("h" + str(lvl), default: none)
         if h == none or h.location == none { return box[] }
         let num = if show-heading-numbering {
-          numbering("1.1", ..h.counter) + " "
+          numbering(numbering-format, ..h.counter) + " "
         } else { "" }
         [#num#h.body]
       }
@@ -123,6 +124,8 @@
         h,
         transitions: transitions,
         mapping: mapping,
+        show-heading-numbering: show-heading-numbering,
+        numbering-format: numbering-format,
         theme-colors: (primary: eastern, accent: eastern),
         slide-func: empty-slide
       )
@@ -131,8 +134,16 @@
   
   show heading: set text(size: 1em, weight: "regular")
   
-  // Apply numbering settings globally to all headings
-  set heading(outlined: true, numbering: if show-heading-numbering { "1.1" } else { none })
+  // Apply numbering settings globally to all headings in mapping
+  set heading(outlined: true, numbering: (..nums) => {
+    if show-heading-numbering {
+      let lvl = nums.pos().len()
+      let mapped-lvls = mapping.values()
+      if lvl in mapped-lvls {
+        numbering(numbering-format, ..nums)
+      }
+    }
+  })
   
   show emph: set text(fill: eastern)
   set-options(..options)

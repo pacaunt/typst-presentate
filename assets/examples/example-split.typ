@@ -8,6 +8,8 @@
   navigation-style: "all",
   primary: rgb("#003366"),
   secondary: rgb("#336699"),
+  show-heading-numbering: true,
+  numbering-format: "1.1.",
   mapping: (section: 1, subsection: 2),
   auto-title: true,
 )

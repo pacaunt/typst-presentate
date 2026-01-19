@@ -49,6 +49,7 @@
   text-font: "Lato",
   text-size: 20pt,
   show-heading-numbering: true,
+  numbering-format: "1.1",
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   on-part-change: none,
@@ -85,7 +86,7 @@
           if h != none and h.location != none {
             let num = if show-heading-numbering {
               let idx = counter(heading).at(h.location)
-              numbering("1.1", ..idx.slice(0, h.level)) + " "
+              numbering(numbering-format, ..idx.slice(0, h.level)) + " "
             } else { "" }
             
             let col = if role == "part" { gray.darken(20%) } else if role == "section" { gray } else { luma(150) }
@@ -114,7 +115,12 @@
   
   show heading: set text(size: 1em, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
-    if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
+    if show-heading-numbering {
+      let lvl = nums.pos().len()
+      if lvl in mapping.values() {
+        numbering(numbering-format, ..nums)
+      }
+    }
   })
   
   let mapped-levels = mapping.values()
@@ -138,6 +144,8 @@
         h,
         transitions: transitions,
         mapping: mapping,
+        show-heading-numbering: show-heading-numbering,
+        numbering-format: numbering-format,
         theme-colors: (primary: eastern, accent: eastern),
         slide-func: empty-slide
       )

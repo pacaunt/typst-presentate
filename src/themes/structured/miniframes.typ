@@ -21,6 +21,7 @@
   let gap-zone = config.gap-zone
   let footer-content = config.footer-content
   let show-num = config.show-heading-numbering
+  let num-fmt = config.numbering-format
   
   let footer-size = 0.75em
 
@@ -47,6 +48,7 @@
       show-level1-titles: nav-opts.show-level1-titles,
       show-level2-titles: nav-opts.show-level2-titles,
       show-numbering: show-num,
+      numbering-format: num-fmt,
       gap: nav-opts.gap,
       line-spacing: nav-opts.line-spacing,
       inset: nav-opts.inset,
@@ -115,6 +117,7 @@
   text-font: "Lato",
   text-size: 20pt,
   show-heading-numbering: true,
+  numbering-format: "1.1",
   show-level1-titles: true,
   show-level2-titles: true,
   mapping: (section: 1, subsection: 2),
@@ -162,6 +165,7 @@
     color: color,
     text-size: text-size,
     show-heading-numbering: show-heading-numbering,
+    numbering-format: numbering-format,
   ))
 
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
@@ -173,7 +177,12 @@
   
   show heading: set text(size: 1em, weight: "regular")
   set heading(outlined: true, numbering: (..nums) => {
-    if show-heading-numbering and nums.pos().len() < 3 { numbering("1.1", ..nums) }
+    if show-heading-numbering {
+      let lvl = nums.pos().len()
+      if lvl in mapping.values() {
+        numbering(numbering-format, ..nums)
+      }
+    }
   })
   
   // Level 3 headings are registered but typically not rendered to avoid slide clutter IF mapped
@@ -231,6 +240,8 @@
         h,
         transitions: transitions,
         mapping: mapping,
+        show-heading-numbering: show-heading-numbering,
+        numbering-format: numbering-format,
         theme-colors: (primary: color, accent: white),
         slide-func: (fill: none, body) => {
           let f = if fill == none { color } else { fill }

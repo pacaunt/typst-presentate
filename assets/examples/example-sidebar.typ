@@ -10,6 +10,8 @@
   width: 20%,
   sidebar-color: rgb("#1a2a6c"),
   active-color: rgb("#f7b731"),
+  show-heading-numbering: true,
+  numbering-format: "I.i",
   // Enable auto-title to simplify slide creation
   mapping: (section: 1, subsection: 2),
   auto-title: true,

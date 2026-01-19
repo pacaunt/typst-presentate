@@ -6,6 +6,8 @@
   title: "Progressive Outline Demo",
   subtitle: "Hierarchy-aware navigation with breadcrumbs",
   mapping: (part: 1, section: 2, subsection: 3),
+  show-heading-numbering: true,
+  numbering-format: "(1.a)",
   auto-title: true,
 )
 

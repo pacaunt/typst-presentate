@@ -178,6 +178,7 @@
   show-level1-titles: true,
   show-level2-titles: true,
   show-numbering: false,
+  numbering-format: "1.1",
   gap: 1.5em,
   line-spacing: 4pt,
   inset: (x: 1em, y: 0.5em),
@@ -210,8 +211,7 @@
     let t = item.title
     if t == none { return none }
     if show-numbering and item.at("numbering", default: none) != none {
-      let fmt = if item.at("level", default: 1) == 1 { "1" } else { "1.1" }
-      let num = numbering(fmt, ..item.counter)
+      let num = numbering(numbering-format, ..item.counter)
       t = [#num #t]
     }
     t

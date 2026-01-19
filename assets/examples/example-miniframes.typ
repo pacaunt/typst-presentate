@@ -8,6 +8,8 @@
   color: rgb("#1a5fb4"),
   // We use 3 levels to demonstrate the full power of the navigation bar
   mapping: (part: 1, section: 2, subsection: 3),
+  show-heading-numbering: true,
+  numbering-format: "1-1-a",
   navigation: (
     style: "grid",
     show-level2-titles: true,

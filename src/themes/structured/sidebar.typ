@@ -55,7 +55,8 @@
   logo-position: "top",
   text-font: "Lato",
   text-size: 20pt,
-  numbering: "1.1",
+  show-heading-numbering: true,
+  numbering-format: "1.1",
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   on-part-change: none,
@@ -104,8 +105,8 @@
     level-3-mode: if 3 in mapped-levels { "all" } else { "none" },
     match-page-only: true,
     text-styles: default-text-styles,
-    show-numbering: numbering != none,
-    numbering-format: if numbering != none { numbering } else { "1.1" },
+    show-numbering: show-heading-numbering,
+    numbering-format: numbering-format,
     spacing: (
       indent-2: 1.2em,
       indent-3: 2.4em,
@@ -172,7 +173,14 @@
 
   set text(size: text-size, font: text-font, fill: black)
   show heading: it => register-heading(it) + it
-  set heading(outlined: true, numbering: numbering)
+  set heading(outlined: true, numbering: (..nums) => {
+    if show-heading-numbering {
+      let lvl = nums.pos().len()
+      if lvl in mapping.values() {
+        numbering(numbering-format, ..nums)
+      }
+    }
+  })
 
   // Unified Transition Rule
   show heading: h => {
@@ -190,6 +198,8 @@
         h,
         transitions: transitions,
         mapping: mapping,
+        show-heading-numbering: show-heading-numbering,
+        numbering-format: numbering-format,
         theme-colors: (primary: sidebar-color, accent: active-color),
         slide-func: empty-slide
       )
