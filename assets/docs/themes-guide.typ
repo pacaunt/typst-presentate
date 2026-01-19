@@ -10,23 +10,25 @@
 #let primary-color = rgb("#1a5fb4")
 
 #align(center)[
-  #text(size: 28pt, weight: "bold", fill: primary-color)[Presentate: Themes Reference Manual] \ 
-  #text(size: 12pt, style: "italic", [A comprehensive guide to the built-in presentation themes])
+  #text(size: 28pt, weight: "bold", fill: primary-color)[Presentate: Structured Themes Manual] \ 
+  #text(size: 12pt, style: "italic", [A guide for hierarchy-aware themes])
 ]
 
 #outline(indent: 2em)
 
 = Introduction
-Presentate offers a suite of five high-level themes, each designed to handle document structure and transitions automatically. Unlike basic layouts, these themes are aware of your document's hierarchy (Parts, Sections, Subsections) and use a *Unified Transition Engine* to generate roadmap slides between content blocks.
+Presentate provides two categories of themes:
+1.  *Basic Layouts*: Minimalist themes like `simple` and `default` that focus on content without managing complex document hierarchy.
+2.  *Structured Themes*: A suite of themes (`sidebar`, `miniframes`, `split`, `progressive-outline`, and `custom-transition`) designed to automatically handle document structure, navigation, and transitions.
 
-This manual describes the shared configuration interface, the transition engine logic, and provide an exhaustive reference for each theme's specific parameters.
+*This manual focuses exclusively on the Structured Themes category.* These themes share a common core API and a *Unified Transition Engine* to generate roadmap slides between content blocks.
 
-= Global Configuration
-All themes follow a consistent API pattern. They are invoked using a `template` function through a show rule.
+= Global Configuration for Structured Themes
+All structured themes follow a consistent API pattern and are located in the `themes.structured` namespace. They are invoked using a `template` function through a show rule.
 
 ```typ
 #import "@preview/presentate:0.2.3": themes
-#show: themes.sidebar.template.with(
+#show: themes.structured.sidebar.template.with(
   title: [My Presentation],
   author: [John Doe],
   // ... options
@@ -34,7 +36,7 @@ All themes follow a consistent API pattern. They are invoked using a `template` 
 ```
 
 == Common Parameters
-The following parameters are supported by all five themes:
+The following parameters are supported by all five structured themes:
 
 #table(
   columns: (1.2fr, 1fr, 3fr),
@@ -42,10 +44,10 @@ The following parameters are supported by all five themes:
   align: horizon,
   fill: (x, y) => if y == 0 { primary-color.lighten(95%) },
   table.header([*Parameter*], [*Type*], [*Description*]),
-  [`title`], [content], [The main title displayed on the title slide.],
+  [`title`], [content], [The main title displayed on the title slide and often in the navigation bar.],
   [`subtitle`], [content], [Displayed below the title on the title slide (optional).],
   [`author`], [content], [The name of the presenter.],
-  [`date`], [content], [Presentation date. Defaults to `#datetime.today()`.],
+  [`date`], [content], [Presentation date. Defaults to current date.],
   [`text-font`], [string], [Font family family for the whole document. Default: "Lato".],
   [`text-size`], [length], [Base text size. Default: `20pt`.],
   [`mapping`], [dictionary], [Maps logical roles to Typst heading levels. Default: `(section: 1, subsection: 2)`. Supports `part`, `section`, `subsection`.],
@@ -65,7 +67,7 @@ mapping: (part: 1, section: 2, subsection: 3)
 ```
 
 = The Unified Transition Engine
-The transition engine automatically generates "road-map" slides when your structure changes. It is highly configurable via the `transitions` argument.
+The transition engine automatically generates roadmap slides when your structure changes. It is highly configurable via the `transitions` argument.
 
 == Configuration Options
 The `transitions` dictionary accepts the following keys:
@@ -101,13 +103,13 @@ For each roadmap type (`parts`, `sections`, `subsections`), you can define which
 - `"none"`: Hide this level.
 
 *Default Behavior:*
-- Part transitions: Show all Parts, hide others.
+- Part transitions: Show all Parts, hide Sections/Subsections.
 - Section transitions: Show current Part, all Sections, current Subsections.
 
 = Theme Reference
 
 == Sidebar Theme
-The `sidebar` theme provides a persistent navigation bar on the left or right side.
+The `sidebar` theme provides a persistent navigation bar on the left or right side. It now automatically displays the presentation title at the top of the bar for better branding.
 
 === Theme Parameters
 #table(
@@ -118,13 +120,13 @@ The `sidebar` theme provides a persistent navigation bar on the left or right si
   [`sidebar-color`], [color], [Background color of the sidebar.],
   [`main-color`], [color], [Background color of the content area. Default: `white`.],
   [`active-color`], [color], [Highlight color for the current item in the sidebar.],
-  [`logo`], [content], [An image or shape to display in the sidebar.],
+  [`logo`], [content], [An image or shape to display in the sidebar above the title.],
   [`logo-position`], [string], [`"top"` or `"bottom"`. Default: `"top"`.],
-  [`outline-options`], [dictionary], [Advanced parameters for the sidebar outline component.],
+  [`outline-options`], [dictionary], [Advanced parameters for the sidebar outline component (spacing, modes).],
 )
 
 == Miniframes Theme
-Inspired by the Beamer Berlin theme, it uses "dots" to show progress within sections.
+Inspired by the Beamer Berlin theme, it uses dots to show progress within sections. It features a specific separator `|` when three levels of hierarchy are used.
 
 === Navigation Dictionary
 The `navigation` parameter is a dictionary containing:
@@ -154,28 +156,28 @@ Features a horizontal header divided into two contrasting areas for Section and 
 )
 
 == Progressive Outline Theme
-A clean theme focused on document progression with a breadcrumb-style header.
+A clean theme focused on document progression with a breadcrumb-style header. It supports dynamic fil-d'ariane based on the active `mapping`.
 
 === Theme Parameters
 #table(
   columns: (1fr, 1fr, 3fr),
   inset: 6pt,
-  [`header`], [content | auto], [Override the top breadcrumb fil d'ariane.],
+  [`header`], [content | auto], [Override the top breadcrumb navigation.],
   [`footer`], [content | auto], [Override the bottom page number area.],
 )
 
 == Custom Transition Theme
-A minimalist theme with no default navigation, designed for presenters who want full control over the content area while still utilizing the transition engine.
+A minimalist theme with no default navigation, designed for presenters who want full control over the content area while still utilizing the advanced transition engine.
 
 = Hooks API
-If you need to generate a transition slide that doesn't fit the roadmap pattern (e.g., a full-page image), use hooks. They intercept the transition engine.
+If you need to generate a transition slide that doesn't fit the roadmap pattern (e.g., a full-page image), use hooks. They take precedence over the transition engine.
 
 - `on-part-change(heading)`
 - `on-section-change(heading)`
 - `on-subsection-change(heading)`
 
 *Example:*
-```typst
+```typ
 #show: template.with(
   on-section-change: (h) => {
     empty-slide(fill: black)[
