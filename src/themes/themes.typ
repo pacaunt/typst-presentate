@@ -1,7 +1,7 @@
 #import "default.typ": template as default
 #import "simple.typ": template as simple
-#import "progressive-outline.typ": template as progressive-outline
-#import "custom-transition.typ": template as custom-transition
-#import "sidebar.typ": template as sidebar
-#import "miniframes.typ": template as miniframes
-#import "split.typ": template as split
+#import "structured/progressive-outline.typ": template as progressive-outline
+#import "structured/custom-transition.typ": template as custom-transition
+#import "structured/sidebar.typ": template as sidebar
+#import "structured/miniframes.typ": template as miniframes
+#import "structured/split.typ": template as split

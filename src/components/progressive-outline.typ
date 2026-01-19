@@ -340,7 +340,10 @@
         }
         
         if level-2-mode == "all" { should-render = true }
-        else if level-2-mode == "current-parent" and is-child-of-active-h1 { should-render = true }
+        else if level-2-mode == "current-parent" {
+           if is-child-of-active-h1 { should-render = true }
+           else if active-h1 == none and current-h1 == none { should-render = true } // Orphan case: share root parent
+        }
         else if level-2-mode == "current" and is-active { should-render = true }
       } else if h.level == 3 {
         if active-h3 != none and h-loc == active-h3.location { is-active = true }
@@ -355,6 +358,8 @@
            if is-child-of-active-h2 { should-render = true }
            // Fallback for skipped levels (L1 -> L3): show if child of active L1 and no L2 exists
            else if active-h2 == none and is-child-of-active-h1 { should-render = true }
+           // Fallback for full orphans: show if no L1 and no L2 parent exists
+           else if active-h2 == none and active-h1 == none and current-h1 == none and current-h2 == none { should-render = true }
         }
         else if level-3-mode == "current" and is-active { should-render = true }
       }
