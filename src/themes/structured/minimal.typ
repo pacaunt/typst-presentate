@@ -3,6 +3,9 @@
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
+// State to share configuration between template and slides
+#let config-state = state("minimal-config", none)
+
 /// Slide with absolute top-left alignment and no margins
 #let empty-slide(fill: none, body) = {
   set page(margin: 0pt, header: none, footer: none, fill: fill)
@@ -11,6 +14,36 @@
     set align(top + left)
     set text(size: ts)
     body
+  })
+}
+
+/// Internal layout engine for minimal slides
+#let apply-layout(title: none, body) = context {
+  let config = config-state.get()
+  if config == none { return body }
+  
+  let footer-content = config.footer-content
+  
+  block(width: 100%, height: 100%, {
+    // Marker for miniframes dot production
+    metadata((t: "Miniframes_Normal"))
+    
+    stack(
+      dir: ttb,
+      // 1. Title zone
+      slide-title(resolve-slide-title(title), inset: (x: 5%, top: 1.5em, bottom: 1em)),
+      
+      // 2. Content zone
+      pad(x: 5%, body),
+      
+      v(1fr),
+      
+      // 3. Footer zone
+      if footer-content != none {
+        set text(fill: gray, size: 0.8em)
+        pad(x: 5%, bottom: 1em, footer-content)
+      }
+    )
   })
 }
 
@@ -30,11 +63,10 @@
 
   p.slide(
     ..kwargs,
-    [
-      #slide-title(resolve-slide-title(manual-title), inset: (x: 5%, top: 1.5em, bottom: 1em))
-      #set std.align(align)
-      #pad(x: 5%, body)
-    ],
+    apply-layout(title: manual-title, {
+      set std.align(align)
+      body
+    }),
   )
 }
 
@@ -47,6 +79,8 @@
   aspect-ratio: "16-9",
   text-font: "Lato",
   text-size: 20pt,
+  header: none,
+  footer: auto,
   show-heading-numbering: true,
   numbering-format: "1.1",
   mapping: (section: 1, subsection: 2),
@@ -67,7 +101,22 @@
     numbering-format: numbering-format,
   ))
 
-  set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
+  let footer-content = if footer == auto {
+    context grid(
+      columns: (1fr, 1fr, 1fr),
+      align(left, if author != none { author }),
+      align(center, if title != none { title }),
+      align(right, counter(page).display("1"))
+    )
+  } else {
+    footer
+  }
+
+  config-state.update((
+    footer-content: footer-content,
+  ))
+
+  set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: header, footer: none)
   set text(size: text-size, font: text-font)
   
   // Unified Transition Rule

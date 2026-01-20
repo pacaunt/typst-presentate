@@ -19,7 +19,7 @@
 = Introduction
 Presentate provides two categories of themes:
 1.  *Basic Layouts*: Minimalist themes like `simple` and `default` that focus on content without managing complex document hierarchy.
-2.  *Structured Themes*: A suite of themes (`sidebar`, `miniframes`, `split`, `progressive-outline`, and `custom-transition`) designed to automatically handle document structure, navigation, and transitions.
+2.  *Structured Themes*: A suite of themes (`sidebar`, `miniframes`, `split`, `progressive-outline`, `minimal`, and `custom-transition`) designed to automatically handle document structure, navigation, and transitions.
 
 *This manual focuses exclusively on the Structured Themes category.* These themes share a common core API and a *Unified Transition Engine* to generate roadmap slides between content blocks.
 
@@ -36,7 +36,7 @@ All structured themes follow a consistent API pattern and are located in the `th
 ```
 
 == Common Parameters
-The following parameters are supported by all five structured themes:
+The following parameters are supported by all six structured themes:
 
 #table(
   columns: (1.2fr, 1fr, 3fr),
@@ -166,6 +166,17 @@ A clean theme focused on document progression with a breadcrumb-style header. It
   inset: 6pt,
   [`header`], [content | auto], [Override the top breadcrumb navigation.],
   [`footer`], [content | auto], [Override the bottom page number area.],
+)
+
+== Minimal Theme
+A content-first theme with zero distractions. It has no persistent headers or sidebars, providing the maximum possible area for your content while still supporting automatic roadmap transitions.
+
+=== Theme Parameters
+#table(
+  columns: (1fr, 1fr, 3fr),
+  inset: 6pt,
+  [`header`], [content | none], [Optional header content. Default: `none`.],
+  [`footer`], [content | auto], [Optional footer content. Displays author, title and page number by default.],
 )
 
 == Custom Transition Theme
