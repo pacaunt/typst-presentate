@@ -54,7 +54,7 @@
   on-part-change: none,
   on-section-change: none,
   on-subsection-change: none,
-  on-subsubsection-change: none,
+  show-all-sections-in-transition: false,
   transitions: (),
   body,
   ..options,

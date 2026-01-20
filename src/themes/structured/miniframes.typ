@@ -125,6 +125,7 @@
   on-part-change: none,
   on-section-change: none,
   on-subsection-change: none,
+  show-all-sections-in-transition: false,
   navigation: (),
   transitions: (),
   body,

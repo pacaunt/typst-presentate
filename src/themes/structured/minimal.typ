@@ -1,4 +1,5 @@
 #import "../../presentate.typ" as p
+#import "../../store.typ": set-options
 #import "../../components/components.typ": register-heading, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
@@ -88,6 +89,7 @@
   on-part-change: none,
   on-section-change: none,
   on-subsection-change: none,
+  show-all-sections-in-transition: false,
   transitions: (),
   body,
   ..options,
@@ -153,6 +155,8 @@
     }
   })
   
+  set-options(..options)
+
   // --- Title Slide ---
   empty-slide({
     set align(center + horizon)

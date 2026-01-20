@@ -54,6 +54,7 @@ The following parameters are supported by all six structured themes:
   [`auto-title`], [bool], [If `true`, slides without a manual title will automatically display the current heading body. Default: `false`.],
   [`show-heading-numbering`], [bool], [Global toggle for heading numbering. Default: `true`.],
   [`numbering-format`], [string], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). Default: `"1.1"`.],
+  [`show-all-sections-in-transition`], [bool], [If `true`, displays the full presentation outline during roadmap slides. Default: `false`.],
   [`transitions`], [dictionary], [Configuration for the transition engine (see Section 3).],
 )
 
