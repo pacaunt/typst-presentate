@@ -161,18 +161,32 @@
 #slide[
   Used for `on-section-change` (Level 2) in this mapping:
   
-  ```typ
-  #let my-subsection-transition(h) = empty-slide({
-    // ... top-left Part title and grid layout ...
-    progressive-outline(
-      level-1-mode: "none", level-2-mode: "current-parent",
-      target-location: h.location(),
-      show-numbering: h.numbering != none,
-      text-styles: (level-2: (active: (fill: eastern, weight: "bold")))
-    )
-    // ... right column with level-3 details ...
-  })
-  ```
+  #text(size: 0.65em)[```typ
+  #let my-subsection-transition(h) = {
+    let active = get-active-headings(h.location())
+    let is-first = counter(heading).at(h.location()).at(1, default: 1) == 1
+    
+    empty-slide({
+      // ... Part title logic ...
+      grid(columns: (1fr, 1fr),
+        // Left: Current Section Highlighting
+        progressive-outline(
+          level-1-mode: "none", level-2-mode: "current-parent",
+          target-location: if not (is-first and sub == 1) { h.location() } else { active.h1.location },
+          // ... styles ...
+        ),
+        // Right: Future Subsection preview
+        uncover(if is-first { 2 } else { 1 })[
+          progressive-outline(
+            level-1-mode: "none", level-2-mode: "none", level-3-mode: "current-parent",
+            target-location: h.location(),
+            // ... styles ...
+          )
+        ]
+      )
+    })
+  }
+  ```]
 ]
 
 = Conclusion
