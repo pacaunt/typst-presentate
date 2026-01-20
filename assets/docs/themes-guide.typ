@@ -125,7 +125,19 @@ The `sidebar` theme provides a persistent navigation bar on the left or right si
   [`active-color`], [color], [Highlight color for the current item in the sidebar.],
   [`logo`], [content], [An image or shape to display in the sidebar above the title.],
   [`logo-position`], [string], [`"top"` or `"bottom"`. Default: `"top"`.],
-  [`outline-options`], [dictionary], [Advanced parameters for the sidebar outline component (spacing, modes).],
+  [`outline-options`], [dictionary], [See "Outline Configuration" below. Customizes visibility, spacing, and styling.],
+)
+
+==== Outline Configuration
+The `outline-options` dictionary allows fine-grained control over the sidebar navigation menu. It merges with the theme defaults to customize the `progressive-outline` component.
+
+#table(
+  columns: (1fr, 3fr),
+  inset: 6pt,
+  [`level-{n}-mode`], [Visibility for level `n` (1-3). Options: `"all"`, `"current"`, `"current-parent"`, `"none"`.],
+  [`spacing`], [Dictionary for layout. Keys include `indent-{n}` (e.g., `indent-2`) and `v-between-{prev}-{curr}` (e.g., `v-between-1-2`) defining vertical gaps between specific level transitions.],
+  [`text-styles`], [Dictionary defining font styles. Keys: `level-{n}` containing sub-keys `active`, `inactive`, `completed` (each accepting text parameters like `fill`, `weight`).],
+  [`match-page-only`], [Bool. If `true` (default), the outline highlights only the heading exactly on the current page. If `false`, it maintains the highlight on the current logical section even on subsequent slides.],
 )
 
 == Miniframes Theme
