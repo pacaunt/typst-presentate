@@ -5,3 +5,4 @@
 #import "structured/sidebar.typ": template as sidebar
 #import "structured/miniframes.typ": template as miniframes
 #import "structured/split.typ": template as split
+#import "structured/minimal.typ": template as minimal

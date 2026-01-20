@@ -76,6 +76,8 @@
     mapping: mapping,
     auto-title: auto-title,
     text-size: text-size,
+    show-heading-numbering: show-heading-numbering,
+    numbering-format: numbering-format,
   ))
 
   // Default text styles for the sidebar
