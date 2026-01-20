@@ -127,8 +127,8 @@
   
   ```typ
   #show: template.with(
-    on-section-change: my-section-transition,
-    on-subsection-change: my-subsection-transition,
+    on-part-change: my-section-transition,
+    on-section-change: my-subsection-transition,
     ...
   )
   ```
@@ -137,6 +137,42 @@
 == Numbering Propagation
 #slide[
   Even with custom hooks, the global `show-heading-numbering` and `numbering-format` options are respected.
+]
+
+== Source Code: Section Hook
+#slide[
+  Used for `on-part-change` (Level 1) in this mapping:
+  
+  ```typ
+  #let my-section-transition(h) = empty-slide(fill: eastern, {
+    set text(fill: white)
+    set align(center + horizon)
+    let part-num = counter(heading).at(h.location()).at(0)
+    text(size: 1.2em, white.transparentize(30%), smallcaps[Part #part-num])
+    v(0.5em)
+    text(size: 1.8em, weight: "bold", h.body)
+    v(1em)
+    line(length: 40%, stroke: 0.5pt + white)
+  })
+  ```
+]
+
+== Source Code: Subsection Hook
+#slide[
+  Used for `on-section-change` (Level 2) in this mapping:
+  
+  ```typ
+  #let my-subsection-transition(h) = empty-slide({
+    // ... top-left Part title and grid layout ...
+    progressive-outline(
+      level-1-mode: "none", level-2-mode: "current-parent",
+      target-location: h.location(),
+      show-numbering: h.numbering != none,
+      text-styles: (level-2: (active: (fill: eastern, weight: "bold")))
+    )
+    // ... right column with level-3 details ...
+  })
+  ```
 ]
 
 = Conclusion

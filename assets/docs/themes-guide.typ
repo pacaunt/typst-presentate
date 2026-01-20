@@ -19,7 +19,7 @@
 = Introduction
 Presentate provides two categories of themes:
 1.  *Basic Layouts*: Minimalist themes like `simple` and `default` that focus on content without managing complex document hierarchy.
-2.  *Structured Themes*: A suite of themes (`sidebar`, `miniframes`, `split`, `progressive-outline`, `minimal`, and `custom-transition`) designed to automatically handle document structure, navigation, and transitions.
+2.  *Structured Themes*: A suite of themes (`sidebar`, `miniframes`, `split`, `progressive-outline`, and `minimal`) designed to automatically handle document structure, navigation, and transitions.
 
 *This manual focuses exclusively on the Structured Themes category.* These themes share a common core API and a *Unified Transition Engine* to generate roadmap slides between content blocks.
 
@@ -36,7 +36,7 @@ All structured themes follow a consistent API pattern and are located in the `th
 ```
 
 == Common Parameters
-The following parameters are supported by all six structured themes:
+The following parameters are supported by all five structured themes:
 
 #table(
   columns: (1.2fr, 1fr, 3fr),
@@ -179,9 +179,6 @@ A content-first theme with zero distractions. It has no persistent headers or si
   [`header`], [content | none], [Optional header content. Default: `none`.],
   [`footer`], [content | auto], [Optional footer content. Displays author, title and page number by default.],
 )
-
-== Custom Transition Theme
-A minimalist theme with no default navigation, designed for presenters who want full control over the content area while still utilizing the advanced transition engine.
 
 = Hooks API
 If you need to generate a transition slide that doesn't fit the roadmap pattern (e.g., a full-page image), use hooks. They take precedence over the transition engine.
