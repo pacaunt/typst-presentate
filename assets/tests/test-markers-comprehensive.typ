@@ -7,6 +7,7 @@
 
 #set page(width: 20cm, height: auto, margin: 1cm)
 #set text(font: "Lato", size: 11pt)
+#set heading(numbering: "1.1")
 
 // Utility to wrap a test case visually
 #let test-box(title, body) = block(
