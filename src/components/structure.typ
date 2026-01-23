@@ -6,7 +6,7 @@
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   show-heading-numbering: true,
-  numbering-format: "1.1",
+  numbering-format: auto,
 ))
 
 /// Resolves the title for a slide based on manual input and global config.
@@ -22,9 +22,13 @@
   let format-title(h) = {
     if h == none { return none }
     let body = h.body
-    if config.at("show-heading-numbering", default: false) and h.at("numbering", default: none) != none {
-      let fmt = config.at("numbering-format", default: "1.1")
-      return numbering(fmt, ..h.counter) + " " + body
+    let show-num = config.at("show-heading-numbering", default: false)
+    if show-num {
+      let fmt = config.at("numbering-format", default: auto)
+      let final-fmt = if fmt == auto { h.numbering } else { fmt }
+      if final-fmt != none {
+        return numbering(final-fmt, ..counter(heading).at(h.location())) + " " + body
+      }
     }
     body
   }

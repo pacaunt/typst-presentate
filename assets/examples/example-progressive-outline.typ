@@ -1,13 +1,16 @@
 #import "../../src/themes/structured/progressive-outline.typ": template, slide
 #import "../../src/render.typ": pause
 
+// On définit un style de numérotation personnalisé globalement
+#set heading(numbering: "I.1.a")
+
 #show: template.with(
   author: "David Hajage",
   title: "Progressive Outline Demo",
   subtitle: "Hierarchy-aware navigation with breadcrumbs",
   mapping: (part: 1, section: 2, subsection: 3),
   show-heading-numbering: true,
-  numbering-format: "(1.a)",
+  // numbering-format est omis, donc il utilise 'auto' par défaut
   auto-title: true,
 )
 
@@ -41,8 +44,8 @@
   The Progressive Outline theme is perfect for clean, professional presentations.
   
   ```typ
-  #import "@preview/presentate:0.2.3": `progressive-outline`, pause
-  #import `progressive-outline`: template, slide
+  #import "@preview/presentate:0.2.3": miniframes, pause
+  #import miniframes: template, slide
 
   #show: template.with(
     title: [My Presentation],

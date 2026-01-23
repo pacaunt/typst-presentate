@@ -1,13 +1,9 @@
 #import "../../src/presentate.typ": *
-#import "../../src/components/progressive-outline.typ": progressive-outline, register-heading
+#import "../../src/components/progressive-outline.typ": progressive-outline
 
 // ----------------------------------------------------------------------
 // SETUP
 // ----------------------------------------------------------------------
-#show heading: it => {
-  register-heading(it)
-  it
-}
 
 #set page(width: 20cm, height: auto, margin: 1cm)
 #set text(font: "Lato", size: 11pt)

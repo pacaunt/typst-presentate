@@ -23,7 +23,7 @@
   
   empty-slide({
     if active.h1 != none {
-      let h1-num = if h.numbering != none { numbering("1", ..active.h1.counter) + " " } else { "" }
+      let h1-num = if h.numbering != none { numbering("1", ..counter(heading).at(active.h1.location())) + " " } else { "" }
       place(top + left, pad(left: 2cm, top: 1.5cm)[
         #text(size: 1.1em, fill: luma(150), weight: "bold", smallcaps([#h1-num#active.h1.body]))
       ])
@@ -41,7 +41,7 @@
           let show-highlight = not (is-first and sub == 1)
           progressive-outline(
             level-1-mode: "none", level-2-mode: "current-parent",
-            target-location: if show-highlight { h.location() } else { active.h1.location },
+            target-location: if show-highlight { h.location() } else { active.h1.location() },
             show-numbering: h.numbering != none,
             text-styles: (level-2: (
               active: (fill: eastern, weight: "bold", size: 1.2em),
@@ -172,7 +172,7 @@
         // Left: Current Section Highlighting
         progressive-outline(
           level-1-mode: "none", level-2-mode: "current-parent",
-          target-location: if not (is-first and sub == 1) { h.location() } else { active.h1.location },
+          target-location: if not (is-first and sub == 1) { h.location() } else { active.h1.location() },
           // ... styles ...
         ),
         // Right: Future Subsection preview

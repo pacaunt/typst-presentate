@@ -1,10 +1,5 @@
 #import "../../src/export.typ": *
-#import components: progressive-outline, register-heading
-
-#show heading: it => {
-  register-heading(it)
-  it
-}
+#import components: progressive-outline
 
 #set page(width: 16cm, height: 12cm, margin: 1cm)
 #set text(font: "Lato", size: 14pt)

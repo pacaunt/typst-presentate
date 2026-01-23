@@ -53,7 +53,7 @@ The following parameters are supported by all five structured themes:
   [`mapping`], [dictionary], [Maps logical roles to Typst heading levels. Default: `(section: 1, subsection: 2)`. Supports `part`, `section`, `subsection`.],
   [`auto-title`], [bool], [If `true`, slides without a manual title will automatically display the current heading body. Default: `false`.],
   [`show-heading-numbering`], [bool], [Global toggle for heading numbering. Default: `true`.],
-  [`numbering-format`], [string], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). Default: `"1.1"`.],
+  [`numbering-format`], [str | auto], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). If set to `auto`, it respects the global `#set heading(numbering: ...)` setting. Default: `auto`.],
   [`show-all-sections-in-transition`], [bool], [If `true`, displays the full presentation outline during roadmap slides. Default: `false`.],
   [`transitions`], [dictionary], [Configuration for the transition engine (see Section 3).],
 )

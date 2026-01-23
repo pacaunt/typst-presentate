@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
@@ -139,7 +139,7 @@
   section-align: right,
   subsection-align: left,
   show-heading-numbering: true,
-  numbering-format: "1.1",
+  numbering-format: auto,
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   on-part-change: none,
@@ -180,28 +180,28 @@
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
   set text(size: text-size, font: text-font)
 
-  // Rule to record EVERYTHING including what's handled by other rules
-  show heading: it => register-heading(it) + it
-  
   show heading: set text(size: 1em, weight: "regular")
-  set heading(outlined: true, numbering: (..nums) => {
-    if show-heading-numbering {
+  
+  if not show-heading-numbering {
+    set heading(numbering: none)
+  } else if numbering-format != auto {
+    set heading(outlined: true, numbering: (..nums) => {
       let lvl = nums.pos().len()
       if lvl in mapping.values() {
         numbering(numbering-format, ..nums)
       }
-    }
-  })
+    })
+  } else {
+    set heading(outlined: true)
+  }
   
   let mapped-levels = mapping.values()
   if 3 in mapped-levels {
-    show heading.where(level: 3): it => register-heading(it)
+    show heading.where(level: 3): none
   }
 
     // Unified Transition Rule
     show heading: h => {
-      register-heading(h)
-      
       let hook = none
       if is-role(mapping, h.level, "part") { hook = on-part-change }
       else if is-role(mapping, h.level, "section") { hook = on-section-change }

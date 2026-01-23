@@ -1,5 +1,4 @@
-#import "../../src/components/progressive-outline.typ": progressive-outline, register-heading
-#show heading: it => { register-heading(it); it }
+#import "../../src/components/progressive-outline.typ": progressive-outline
 
 #set page(paper: "a4", margin: 1.5cm)
 #set text(font: "Lato", size: 10pt)
@@ -39,7 +38,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`text-styles`], [dict], [Styles passed to `#text` (fill, weight, etc.). You can also use a float (e.g., `0.5`) as a shortcut to inherit the active style with that opacity.],
   [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`) and horizontal indentation (`indent-X`) between elements.],
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
-  [`numbering-format`], [str | func], [Typst numbering format (e.g., `"1.1"`) or custom function `(..n) => ...`. Default: `"1.1.1"`.],
+  [`numbering-format`], [str | func | auto], [Typst numbering format (e.g., `"1.1"`) or custom function. If `auto`, respects global heading settings. Default: `auto`.],
   [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
   [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
   [`marker`], [content | dict | func], [Content displayed before the item. Can be static, a dict by state, or a function `(state, level) => content`.],
