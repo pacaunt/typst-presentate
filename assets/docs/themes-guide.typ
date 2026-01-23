@@ -86,9 +86,9 @@ The `transitions` dictionary accepts the following keys:
   [`background`], [color | str], [Background of transition slides. `"theme"` (primary color), `"none"` (white), or an explicit color.],
   [`filter`], [function], [A callback `(heading) => bool`. Headings returning `false` will not trigger slides and will be hidden from outlines.],
   [`style`], [dictionary], [Global styling for the transition outline (see below).],
-  [`parts`], [dictionary], [Override settings for Part transitions.],
-  [`sections`], [dictionary], [Override settings for Section transitions.],
-  [`subsections`], [dictionary], [Override settings for Subsection transitions.],
+  [`parts`], [dictionary], [Override settings for Part transitions. Accepts `enabled` (bool), `visibility` (dict), and `background` (color|str).],
+  [`sections`], [dictionary], [Override settings for Section transitions. Accepts `enabled` (bool), `visibility` (dict), and `background` (color|str).],
+  [`subsections`], [dictionary], [Override settings for Subsection transitions. Accepts `enabled` (bool), `visibility` (dict), and `background` (color|str).],
 )
 
 == Transition Style
@@ -150,7 +150,7 @@ The `navigation` parameter is a dictionary containing:
   inset: 6pt,
   [`position`], [string], [`"top"` or `"bottom"`. Default: `"top"`.],
   [`style`], [string], [`"compact"` (one row) or `"grid"` (one row per subsection).],
-  [`marker-shape`], [string], [`"circle"`, `"square"`, `"diamond"`, `"rect"`.],
+  [`marker-shape`], [string], [`"circle"` or `"square"`.],
   [`marker-size`], [length], [Size of the dots. Default: `4pt`.],
   [`fill`], [color], [Color of the navigation bar block.],
   [`show-level1-titles`], [bool], [Show names of sections in the bar. Default: `true`.],
