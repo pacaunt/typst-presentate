@@ -96,7 +96,7 @@
             let num = if show-heading-numbering {
               let idx = counter(heading).at(h.location())
               let fmt = if numbering-format == auto { h.numbering } else { numbering-format }
-              if fmt != none { numbering(fmt, ..idx.slice(0, h.level)) + " " } else { "" }
+              if fmt != none and idx.any(v => v > 0) { numbering(fmt, ..idx.slice(0, h.level)) + " " } else { "" }
             } else { "" }
             
             let col = if role == "part" { gray.darken(20%) } else if role == "section" { gray } else { luma(150) }

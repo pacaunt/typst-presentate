@@ -26,8 +26,9 @@
     if show-num {
       let fmt = config.at("numbering-format", default: auto)
       let final-fmt = if fmt == auto { h.numbering } else { fmt }
-      if final-fmt != none {
-        return numbering(final-fmt, ..counter(heading).at(h.location())) + " " + body
+      let count = counter(heading).at(h.location())
+      if final-fmt != none and count.any(v => v > 0) {
+        return numbering(final-fmt, ..count) + " " + body
       }
     }
     body
