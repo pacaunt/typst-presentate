@@ -250,9 +250,20 @@
     if hook != none {
       hook(h)
     } else {
+      let final-trans = transitions
+      if show-all-sections-in-transition {
+        let all-vis = (part: "all", section: "all", subsection: "all")
+        let override = (parts: (visibility: all-vis), sections: (visibility: all-vis), subsections: (visibility: all-vis))
+        if type(transitions) == dictionary {
+          final-trans = p.utils.merge-dicts(base: transitions, override)
+        } else {
+          final-trans = override
+        }
+      }
+
       render-transition(
         h,
-        transitions: transitions,
+        transitions: final-trans,
         mapping: mapping,
         show-heading-numbering: show-heading-numbering,
         numbering-format: numbering-format,

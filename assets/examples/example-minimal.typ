@@ -8,7 +8,6 @@
   show-heading-numbering: true,
   text-font: "Fira Sans",
   text-size: 28pt,
-  show-all-sections-in-transition: true,
   transitions: (
     background: rgb("#2d3436"),
     style: (active-color: white)
