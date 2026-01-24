@@ -1,6 +1,8 @@
 #import "../../src/themes/structured/sidebar.typ": template, slide
 #import "../../src/render.typ": pause
 
+#set heading(numbering: "I.a.1.")
+
 #show: template.with(
   title: [The Sidebar Theme],
   subtitle: [Persistent navigation for long talks],
@@ -11,15 +13,15 @@
   sidebar-color: rgb("#1a2a6c"),
   active-color: rgb("#f7b731"),
   show-heading-numbering: true,
-  numbering-format: "I.i",
   // Enable auto-title to simplify slide creation
   mapping: (section: 1, subsection: 2),
-  auto-title: true,
+  auto-title: true, 
 )
 
 = Introduction
 
 == Theme Overview
+
 #slide[
   This theme provides a persistent sidebar (left or right) containing a progressive outline of your presentation.
   

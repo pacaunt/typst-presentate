@@ -2,6 +2,8 @@
 #import "../../src/themes/structured/minimal.typ": slide, template, empty-slide
 #import components: get-active-headings, progressive-outline
 
+#set heading(numbering: "I.1.a")
+
 // --- TRANSITION HELPERS (Copied from example-custom-transition.typ) ---
 
 // 1. Section Transition: A high-contrast part announcement

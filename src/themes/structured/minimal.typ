@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": set-options
-#import "../../components/components.typ": structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": register-heading, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
@@ -8,12 +8,14 @@
 #let config-state = state("minimal-config", none)
 
 /// Slide with absolute top-left alignment and no margins
-#let empty-slide(fill: none, body) = {
+#let empty-slide(fill: none, body) = context {
+  let config = config-state.get()
+  let ts = if config != none { config.text-size } else { 20pt }
+  let tf = if config != none { config.text-font } else { "Lato" }
   set page(margin: 0pt, header: none, footer: none, fill: fill)
-  p.slide(context {
-    let ts = structure-config.get().at("text-size", default: 20pt)
+  p.slide({
     set align(top + left)
-    set text(size: ts)
+    set text(size: ts, font: tf)
     body
   })
 }
@@ -116,13 +118,41 @@
 
   config-state.update((
     footer-content: footer-content,
+    text-size: text-size,
+    text-font: text-font,
   ))
 
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: header, footer: none)
   set text(size: text-size, font: text-font)
   
+  // Register all headings for counter tracking
+  show heading: it => register-heading(it) + it
+  show heading: set text(size: 1em, weight: "regular")
+  
+  // Wrap the entire document to ensure heading numbering is global
+  show: doc => {
+    if show-heading-numbering {
+      if numbering-format != auto {
+        set heading(outlined: true, numbering: (..nums) => {
+          let lvl = nums.pos().len()
+          if lvl in mapping.values() {
+            numbering(numbering-format, ..nums)
+          }
+        })
+        doc
+      } else {
+        set heading(outlined: true)
+        doc
+      }
+    } else {
+      set heading(numbering: none)
+      doc
+    }
+  }
+
   // Unified Transition Rule
   show heading: h => {
+    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }
@@ -141,21 +171,6 @@
         slide-func: empty-slide
       )
     }
-  }
-  
-  show heading: set text(size: 1em, weight: "regular")
-  
-  if not show-heading-numbering {
-    set heading(numbering: none)
-  } else if numbering-format != auto {
-    set heading(outlined: true, numbering: (..nums) => {
-      let lvl = nums.pos().len()
-      if lvl in mapping.values() {
-        numbering(numbering-format, ..nums)
-      }
-    })
-  } else {
-    set heading(outlined: true)
   }
   
   set-options(..options)

@@ -1,15 +1,20 @@
 #import "../../presentate.typ" as p
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
+// State to share configuration
+#let config-state = state("sidebar-config", none)
+
 /// Slide without sidebar and margins
-#let empty-slide(fill: none, body) = {
+#let empty-slide(fill: none, body) = context {
+  let config = config-state.get()
+  let ts = if config != none { config.text-size } else { 20pt }
+  let tf = if config != none { config.text-font } else { "Lato" }
   set page(margin: 0pt, background: none, footer: none, fill: fill)
-  p.slide(context {
-    let ts = structure-config.get().at("text-size", default: 20pt)
+  p.slide({
     set align(top + left)
-    set text(size: ts)
+    set text(size: ts, font: tf)
     body
   })
 }
@@ -78,6 +83,11 @@
     text-size: text-size,
     show-heading-numbering: show-heading-numbering,
     numbering-format: numbering-format,
+  ))
+
+  config-state.update((
+    text-size: text-size,
+    text-font: text-font,
   ))
 
   // Default text styles for the sidebar
@@ -174,23 +184,35 @@
   )
 
   set text(size: text-size, font: text-font, fill: black)
+  
+  // Register all headings for counter tracking
+  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
-  if not show-heading-numbering {
-    set heading(numbering: none)
-  } else if numbering-format != auto {
-    set heading(outlined: true, numbering: (..nums) => {
-      let lvl = nums.pos().len()
-      if lvl in mapping.values() {
-        numbering(numbering-format, ..nums)
+  // Wrap the document to ensure heading numbering is global
+  show: doc => {
+    if show-heading-numbering {
+      if numbering-format != auto {
+        set heading(outlined: true, numbering: (..nums) => {
+          let lvl = nums.pos().len()
+          if lvl in mapping.values() {
+            numbering(numbering-format, ..nums)
+          }
+        })
+        doc
+      } else {
+        set heading(outlined: true)
+        doc
       }
-    })
-  } else {
-    set heading(outlined: true)
+    } else {
+      set heading(numbering: none)
+      doc
+    }
   }
 
   // Unified Transition Rule
   show heading: h => {
+    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }

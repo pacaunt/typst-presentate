@@ -1,6 +1,8 @@
 #import "../../src/themes/structured/split.typ": template, slide
 #import "../../src/render.typ": pause
 
+#set heading(numbering: "I.a.1.")
+
 #show: template.with(
   title: [The Split Theme],
   subtitle: [Dual-column header for structural awareness],
@@ -9,7 +11,7 @@
   primary: rgb("#003366"),
   secondary: rgb("#336699"),
   show-heading-numbering: true,
-  numbering-format: "1.1.",
+  numbering-format: auto,
   mapping: (section: 1, subsection: 2),
   auto-title: true,
 )

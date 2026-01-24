@@ -6,7 +6,9 @@
   author: [David Hajage],
   auto-title: true,
   show-heading-numbering: true,
-  numbering-format: "1.a",
+  text-font: "Fira Sans",
+  text-size: 28pt,
+  show-all-sections-in-transition: true,
   transitions: (
     background: rgb("#2d3436"),
     style: (active-color: white)

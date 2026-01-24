@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, register-heading, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
@@ -60,8 +60,8 @@
     block(width: 100%, height: 3em, []) 
   }
 
-  // Style global de la slide
-  set text(weight: "regular", fill: black)
+  // Style global de la slide (on force la police/taille du thème)
+  set text(weight: "regular", fill: black, size: config.text-size, font: config.text-font)
 
   block(width: 100%, height: 100%, fill: white, {
     // Marqueur pour indiquer que cette slide doit produire un dot
@@ -167,6 +167,7 @@
     ), 
     color: color,
     text-size: text-size,
+    text-font: text-font,
     show-heading-numbering: show-heading-numbering,
     numbering-format: numbering-format,
   ))
@@ -174,25 +175,35 @@
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
   set text(size: text-size, font: text-font)
 
+  // Register headings for counter tracking (essential for Presentate)
+  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
-  if not show-heading-numbering {
-    set heading(numbering: none)
-  } else if numbering-format != auto {
-    set heading(outlined: true, numbering: (..nums) => {
-      let lvl = nums.pos().len()
-      if lvl in mapping.values() {
-        numbering(numbering-format, ..nums)
+  // Wrap the document to ensure heading numbering is global and increments counters
+  show: doc => {
+    if show-heading-numbering {
+      if numbering-format != auto {
+        set heading(outlined: true, numbering: (..nums) => {
+          let lvl = nums.pos().len()
+          if lvl in mapping.values() {
+            numbering(numbering-format, ..nums)
+          }
+        })
+        doc
+      } else {
+        set heading(outlined: true)
+        doc
       }
-    })
-  } else {
-    set heading(outlined: true)
+    } else {
+      set heading(numbering: none)
+      doc
+    }
   }
   
   // Level 3 headings are typically not rendered to avoid slide clutter IF mapped
   let mapped-levels = mapping.values()
   if 3 in mapped-levels {
-    show heading.where(level: 3): none
+    show heading.where(level: 3): it => register-heading(it)
   }
 
   show: doc => { context structure-cache.update(get-structure()); doc }
@@ -230,6 +241,7 @@
 
   // Unified Transition Rule
   show heading: h => {
+    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }
@@ -249,7 +261,7 @@
           let f = if fill == none { color } else { fill }
           p.slide(block(width: 100%, height: 100%, fill: f, inset: 0pt, {
             set align(top + left)
-            set text(fill: white, size: text-size, weight: "regular")
+            set text(fill: white, size: text-size, font: text-font, weight: "regular")
             body
           }))
         }

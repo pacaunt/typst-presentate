@@ -210,9 +210,13 @@
   let fmt-title(item) = {
     let t = item.title
     if t == none { return none }
-    if show-numbering and item.at("numbering", default: none) != none {
-      let num = numbering(numbering-format, ..item.counter)
-      t = [#num #t]
+    if show-numbering {
+      let fmt = if numbering-format == auto { item.at("numbering", default: none) } else { numbering-format }
+      // Only display number if format is present AND counter is not 0 (to avoid "0 Introduction")
+      if fmt != none and item.counter.any(v => v > 0) {
+        let num = numbering(fmt, ..item.counter)
+        t = [#num #t]
+      }
     }
     t
   }

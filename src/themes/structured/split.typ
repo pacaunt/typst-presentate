@@ -1,19 +1,20 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
 // State to share configuration
 #let config-state = state("split-config", none)
 
-#let empty-slide(fill: white, body) = {
+#let empty-slide(fill: white, body) = context {
+  let config = config-state.get()
+  let ts = if config != none { config.text-size } else { 20pt }
+  let tf = if config != none { config.text-font } else { "Lato" }
   set page(margin: 0pt, header: none, footer: none, fill: fill)
-  p.slide(context {
-    let config = config-state.get()
-    let ts = if config != none and "text-size" in config { config.text-size } else { 20pt }
+  p.slide({
     set align(top + left)
-    set text(size: ts)
+    set text(size: ts, font: tf)
     body
   })
 }
@@ -129,8 +130,8 @@
   subtitle: none,
   author: none,
   date: datetime.today().display(),
-  primary: rgb("#202060"),
-  secondary: rgb("#404090"),
+  primary: rgb("#003366"),
+  secondary: rgb("#336699"),
   text-font: "Lato",
   text-size: 20pt,
   navigation-style: "all", // "all" or "current"
@@ -175,33 +176,45 @@
     title: title,
     author: author,
     text-size: text-size,
+    text-font: text-font,
   ))
 
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
   set text(size: text-size, font: text-font)
 
+  // Register headings
+  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
-  if not show-heading-numbering {
-    set heading(numbering: none)
-  } else if numbering-format != auto {
-    set heading(outlined: true, numbering: (..nums) => {
-      let lvl = nums.pos().len()
-      if lvl in mapping.values() {
-        numbering(numbering-format, ..nums)
+  // Wrap the document to ensure heading numbering is global
+  show: doc => {
+    if show-heading-numbering {
+      if numbering-format != auto {
+        set heading(outlined: true, numbering: (..nums) => {
+          let lvl = nums.pos().len()
+          if lvl in mapping.values() {
+            numbering(numbering-format, ..nums)
+          }
+        })
+        doc
+      } else {
+        set heading(outlined: true)
+        doc
       }
-    })
-  } else {
-    set heading(outlined: true)
+    } else {
+      set heading(numbering: none)
+      doc
+    }
   }
   
   let mapped-levels = mapping.values()
   if 3 in mapped-levels {
-    show heading.where(level: 3): none
+    show heading.where(level: 3): it => register-heading(it)
   }
 
     // Unified Transition Rule
     show heading: h => {
+      register-heading(h)
       let hook = none
       if is-role(mapping, h.level, "part") { hook = on-part-change }
       else if is-role(mapping, h.level, "section") { hook = on-section-change }

@@ -1,7 +1,6 @@
 #import "../../src/themes/structured/progressive-outline.typ": template, slide
 #import "../../src/render.typ": pause
 
-// On définit un style de numérotation personnalisé globalement
 #set heading(numbering: "I.1.a")
 
 #show: template.with(
@@ -10,7 +9,6 @@
   subtitle: "Hierarchy-aware navigation with breadcrumbs",
   mapping: (part: 1, section: 2, subsection: 3),
   show-heading-numbering: true,
-  // numbering-format est omis, donc il utilise 'auto' par défaut
   auto-title: true,
 )
 

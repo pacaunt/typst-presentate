@@ -1,5 +1,36 @@
 #import "../store.typ"
 
+/// Global state to cache headings data
+#let progressive-outline-cache = state(store.prefix + "progressive-outline-cache", ())
+
+/// Registers a heading into the cache. Returns the update content.
+#let register-heading(it) = {
+  if it.outlined {
+    context {
+      let loc = it.location()
+      let count = counter(heading).at(loc)
+      progressive-outline-cache.update(cache => {
+        if cache.any(h => h.location == loc) { return cache }
+        let new-h = (
+          body: it.body,
+          level: it.level,
+          counter: count,
+          numbering: it.numbering,
+          location: loc,
+          label: if it.has("label") { it.label } else { none },
+        )
+        cache.push(new-h)
+        cache
+      })
+    }
+  } else {
+    []
+  }
+}
+
+/// Helper function to notify a heading occurrence to the state and return the heading
+#let notify-heading(it) = register-heading(it) + it
+
 /// Returns the active headings (h1, h2, h3) at a given location using query.
 #let get-active-headings(loc, match-page-only: false, headings: none) = {
   let all-headings = if headings != none { headings } else { query(heading.where(outlined: true)) }
@@ -267,8 +298,11 @@
         let h-counter = counter(heading).at(h-loc)
         let trimmed-idx = if h-counter.len() >= h.level { h-counter.slice(0, h.level) } else { h-counter }
 
+        // Smart numbering resolution
         let final-fmt = if show-numbering {
-          if numbering-format == auto { h.numbering } else { numbering-format }
+          let fmt = if numbering-format == auto { h.at("numbering", default: none) } else { numbering-format }
+          // Only show numbering if a format exists AND the counter has been incremented (avoiding "0")
+          if fmt != none and trimmed-idx.any(v => v > 0) { fmt } else { none }
         } else { none }
 
         items-to-render.push(block(
