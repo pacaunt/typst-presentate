@@ -126,6 +126,8 @@
   level-1-mode: "all", 
   level-2-mode: "current-parent",
   level-3-mode: "none",
+  layout: "vertical",
+  separator: none,
   text-styles: (
     level-1: (
       active: (fill: rgb("#000000"), weight: "bold"), 
@@ -149,6 +151,7 @@
     v-between-2-2: 0.5em, v-between-2-3: 0.4em, v-between-3-3: 0.3em, 
     v-between-3-2: 0.8em, v-between-3-1: 1.2em,
     v-after-block: 0.5em,
+    h-spacing: 0.5em,
   ),
   show-numbering: false,
   numbering-format: auto,
@@ -236,12 +239,6 @@
       }
 
       if should-render {
-        let spacing-top = 0pt
-        if items-to-render.len() > 0 {
-          let key = "v-between-" + str(last-level) + "-" + str(h.level)
-          spacing-top = spacing.at(key, default: spacing.at("v-after-block", default: 0.5em))
-        }
-
         let styles-lvl = text-styles.at("level-" + str(h.level), default: (:))
         let raw-active = styles-lvl.at("active", default: (:))
         let raw-inactive = styles-lvl.at("inactive", default: (:))
@@ -251,7 +248,6 @@
         let s-inactive = resolve-state-style(s-active, raw-inactive)
         let s-completed = resolve-state-style(s-active, raw-completed)
         
-        let indent = spacing.at("indent-" + str(h.level), default: 0pt)
         let m-active = resolve-marker(marker, "active", h.level)
         let m-inactive = resolve-marker(marker, "inactive", h.level)
         let m-completed = resolve-marker(marker, "completed", h.level)
@@ -267,20 +263,42 @@
           if fmt != none and trimmed-idx.any(v => v > 0) { fmt } else { none }
         } else { none }
 
-        items-to-render.push(block(
-          inset: (top: spacing-top, left: indent),
-          render-item(
-            h.body, is-active: is-active, is-completed: is-completed,
-            text-style: s-inactive, active-text-style: s-active, completed-text-style: s-completed,
-            numbering-format: final-fmt, index: trimmed-idx,
-            clickable: clickable, dest: h-loc,
-            markers: (active: m-active, inactive: m-inactive, completed: m-completed),
-            marker-spacing: m-spacing,
-          )
-        ))
+        let item = render-item(
+          h.body, is-active: is-active, is-completed: is-completed,
+          text-style: s-inactive, active-text-style: s-active, completed-text-style: s-completed,
+          numbering-format: final-fmt, index: trimmed-idx,
+          clickable: clickable, dest: h-loc,
+          markers: (active: m-active, inactive: m-inactive, completed: m-completed),
+          marker-spacing: m-spacing,
+        )
+
+        if layout == "horizontal" {
+          if items-to-render.len() > 0 and separator != none {
+            items-to-render.push(separator)
+          }
+          items-to-render.push(item)
+        } else {
+          let spacing-top = 0pt
+          if items-to-render.len() > 0 {
+            let key = "v-between-" + str(last-level) + "-" + str(h.level)
+            spacing-top = spacing.at(key, default: spacing.at("v-after-block", default: 0.5em))
+          }
+          let indent = spacing.at("indent-" + str(h.level), default: 0pt)
+          
+          items-to-render.push(block(
+            inset: (top: spacing-top, left: indent),
+            item
+          ))
+        }
         last-level = h.level
       }
     }
-    if items-to-render.len() > 0 { grid(columns: (auto,), ..items-to-render) }
+    if items-to-render.len() > 0 { 
+      if layout == "horizontal" {
+        stack(dir: ltr, spacing: spacing.at("h-spacing", default: 0.5em), ..items-to-render)
+      } else {
+        grid(columns: (auto,), ..items-to-render) 
+      }
+    }
   }
 }

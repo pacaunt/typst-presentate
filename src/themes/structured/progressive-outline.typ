@@ -71,33 +71,29 @@
 
   if header == auto {
     header = context {
-      set text(size: 0.8em)
-      let active = get-active-headings(here())
       let mapping = structure-config.get().mapping
+      let level-modes = (level-1-mode: "none", level-2-mode: "none", level-3-mode: "none")
+      let styles = (:)
       
-      let breadcrumb = ()
-      let roles = ("part", "section", "subsection")
-      
-      for role in roles {
+      for role in ("part", "section", "subsection") {
         let lvl = mapping.at(role, default: none)
         if lvl != none {
-          let h = active.at("h" + str(lvl), default: none)
-          if h != none and h.location() != none {
-            let num = if show-heading-numbering {
-              let idx = counter(heading).at(h.location())
-              let fmt = if numbering-format == auto { h.numbering } else { numbering-format }
-              if fmt != none and idx.any(v => v > 0) { numbering(fmt, ..idx.slice(0, h.level)) + " " } else { "" }
-            } else { "" }
-            
-            let col = if role == "part" { gray.darken(20%) } else if role == "section" { gray } else { luma(150) }
-            let weight = if role == "part" or role == "section" { "bold" } else { "regular" }
-            
-            breadcrumb.push(text(fill: col, weight: weight, [#num#h.body]))
-          }
+          level-modes.insert("level-" + str(lvl) + "-mode", "current")
+          let col = if role == "part" { gray.darken(20%) } else if role == "section" { gray } else { luma(150) }
+          let weight = if role == "part" or role == "section" { "bold" } else { "regular" }
+          styles.insert("level-" + str(lvl), (active: (fill: col, weight: weight)))
         }
       }
-      
-      breadcrumb.join(text(fill: gray, " / "))
+
+      set text(size: 0.8em)
+      progressive-outline(
+        ..level-modes,
+        layout: "horizontal",
+        separator: text(fill: gray, " / "),
+        text-styles: styles,
+        show-numbering: show-heading-numbering,
+        numbering-format: numbering-format,
+      )
     }
   }
 

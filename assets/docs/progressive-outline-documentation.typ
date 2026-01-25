@@ -35,8 +35,10 @@ This section details all the parameters available for the `progressive-outline` 
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Effect & Expected Values*]),
   [`level-X-mode`], [string], [Defines the visibility of level X (1, 2, or 3). \ Values: `"all"`, `"current"`, `"current-parent"`, `"none"`.],
+  [`layout`], [string], [Switch between `"vertical"` (default) and `"horizontal"` rendering.],
+  [`separator`], [content | str], [Separator displayed between items in horizontal layout. Ignored in vertical mode.],
   [`text-styles`], [dict], [Styles passed to `#text` (fill, weight, etc.). You can also use a float (e.g., `0.5`) as a shortcut to inherit the active style with that opacity.],
-  [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`) and horizontal indentation (`indent-X`) between elements.],
+  [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`), horizontal indentation (`indent-X`) and horizontal gap (`h-spacing`).],
   [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
   [`numbering-format`], [str | func | auto], [Typst numbering format (e.g., `"1.1"`) or custom function. If `auto`, respects global heading settings. Default: `auto`.],
   [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
@@ -46,6 +48,35 @@ This section details all the parameters available for the `progressive-outline` 
 )
 
 #v(2em)
+
+= Layout Modes
+`progressive-outline` supports two main layout modes: `"vertical"` (the default, based on a grid) and `"horizontal"` (based on a stack).
+
+== Vertical Layout
+This is the default mode, optimized for sidebars and roadmap slides. It supports complex indentation and vertical spacing between different levels.
+
+== Horizontal Layout
+The horizontal mode is ideal for headers, footers, and breadcrumbs. Elements are placed side-by-side and can be separated by custom content.
+
+#demo("Horizontal Breadcrumb",
+"progressive-outline(
+  layout: 'horizontal',
+  level-1-mode: 'current',
+  level-2-mode: 'current',
+  separator: ' > ',
+  show-numbering: true
+)",
+progressive-outline(layout: "horizontal", level-1-mode: "current", level-2-mode: "current", separator: " > ", show-numbering: true))
+
+#demo("Horizontal Navigation Bar",
+"progressive-outline(
+  layout: 'horizontal',
+  level-1-mode: 'all',
+  level-2-mode: 'none',
+  separator: [ | ],
+  spacing: (h-spacing: 1em)
+)",
+progressive-outline(layout: "horizontal", level-1-mode: "all", level-2-mode: "none", separator: [ | ], spacing: (h-spacing: 1em)))
 
 = Navigation & Interactivity
 By default, the outline is interactive: clicking on a section title navigates directly to the corresponding slide in the PDF.
