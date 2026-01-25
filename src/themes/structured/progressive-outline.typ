@@ -1,22 +1,11 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": *
 #import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
 #let config-state = state("progressive-outline-config", none)
-
-#let empty-slide(fill: none, body) = context {
-  let config = config-state.get()
-  let ts = if config != none { config.text-size } else { 20pt }
-  let tf = if config != none { config.text-font } else { "Lato" }
-  set page(margin: 0pt, header: none, footer: none, fill: fill)
-  p.slide({
-    set align(top + left)
-    set text(size: ts, font: tf)
-    body
-  })
-}
 
 #let slide(..args) = {
   let kwargs = args.named()
@@ -70,6 +59,7 @@
     mapping: mapping,
     auto-title: auto-title,
     text-size: text-size,
+    text-font: text-font,
     show-heading-numbering: show-heading-numbering,
     numbering-format: numbering-format,
   ))
@@ -182,13 +172,13 @@
         show-heading-numbering: show-heading-numbering,
         numbering-format: numbering-format,
         theme-colors: (primary: eastern, accent: eastern),
-        slide-func: empty-slide
+        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
       )
     }
   }
 
   // --- Title Slide ---
-  empty-slide({
+  empty-slide(text-size: text-size, text-font: text-font, {
     set align(center + horizon)
     pad(x: 10%)[
       #block(text(size: 2em, weight: "bold", title), inset: (bottom: 1.2em), stroke: (bottom: 2pt + eastern))

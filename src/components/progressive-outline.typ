@@ -1,4 +1,5 @@
 #import "../store.typ"
+#import "structure.typ": get-active-headings
 
 /// Global state to cache headings data
 #let progressive-outline-cache = state(store.prefix + "progressive-outline-cache", ())
@@ -30,45 +31,6 @@
 
 /// Helper function to notify a heading occurrence to the state and return the heading
 #let notify-heading(it) = register-heading(it) + it
-
-/// Returns the active headings (h1, h2, h3) at a given location using query.
-#let get-active-headings(loc, match-page-only: false, headings: none) = {
-  let all-headings = if headings != none { headings } else { query(heading.where(outlined: true)) }
-  let active-h1 = none
-  let active-h2 = none
-  let active-h3 = none
-  
-  for h in all-headings {
-    let h-loc = h.location()
-    let is-match = (h-loc == loc)
-    let is-before = false
-    
-    if not is-match {
-      if h-loc.page() < loc.page() {
-        is-before = true
-      } else if h-loc.page() == loc.page() {
-        if match-page-only {
-          is-before = true
-        } else {
-          let h-pos = h-loc.position()
-          let loc-pos = loc.position()
-          if h-pos != none and loc-pos != none and h-pos.y <= loc-pos.y {
-            is-before = true
-          }
-        }
-      }
-    }
-
-    if is-match or is-before {
-      if h.level == 1 { active-h1 = h; active-h2 = none; active-h3 = none }
-      else if h.level == 2 { active-h2 = h; active-h3 = none }
-      else if h.level == 3 { active-h3 = h }
-    } else {
-      break
-    }
-  }
-  (h1: active-h1, h2: active-h2, h3: active-h3)
-}
 
 /// Helper to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {

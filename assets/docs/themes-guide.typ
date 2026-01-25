@@ -69,6 +69,11 @@ The `mapping` dictionary is crucial as it tells the theme which headings should 
 mapping: (part: 1, section: 2, subsection: 3)
 ```
 
+== Important Note: Heading Placement
+To ensure that transitions and navigation work correctly, structural headings (`=`, `==`, etc.) must always be placed at the **top level** of your document. 
+
+*Do not place these headings inside a `#slide[...]` block.* Headings nested inside slides will not trigger transitions and will cause the compilation to fail.
+
 = The Unified Transition Engine
 The transition engine automatically generates roadmap slides when your structure changes. It is highly configurable via the `transitions` argument.
 

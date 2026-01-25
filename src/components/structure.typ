@@ -1,5 +1,5 @@
 #import "../store.typ"
-#import "progressive-outline.typ": get-active-headings
+#import "../presentate.typ" as p
 
 /// Global state for structure mapping and auto-titling
 #let structure-config = state(store.prefix + "structure-config", (
@@ -8,6 +8,56 @@
   show-heading-numbering: true,
   numbering-format: auto,
 ))
+
+/// Returns the active headings (h1, h2, h3) at a given location using query.
+#let get-active-headings(loc, match-page-only: false, headings: none) = {
+  let all-headings = if headings != none { headings } else { query(heading.where(outlined: true)) }
+  let active-h1 = none
+  let active-h2 = none
+  let active-h3 = none
+  
+  for h in all-headings {
+    let h-loc = h.location()
+    let is-match = (h-loc == loc)
+    let is-before = false
+    
+    if not is-match {
+      if h-loc.page() < loc.page() {
+        is-before = true
+      } else if h-loc.page() == loc.page() {
+        if match-page-only {
+          is-before = true
+        } else {
+          let h-pos = h-loc.position()
+          let loc-pos = loc.position()
+          if h-pos != none and loc-pos != none and h-pos.y <= loc-pos.y {
+            is-before = true
+          }
+        }
+      }
+    }
+
+    if is-match or is-before {
+      if h.level == 1 { active-h1 = h; active-h2 = none; active-h3 = none }
+      else if h.level == 2 { active-h2 = h; active-h3 = none }
+      else if h.level == 3 { active-h3 = h }
+    } else {
+      break
+    }
+  }
+  (h1: active-h1, h2: active-h2, h3: active-h3)
+}
+
+/// A slide with no margins, header, footer, or background decorations. 
+#let empty-slide(fill: none, text-size: 20pt, text-font: "Lato", body) = {
+  // We force background: none to ensure sidebars or logos from themes don't show up.
+  set page(margin: 0pt, header: none, footer: none, fill: fill, background: none)
+  p.slide({
+    set align(top + left)
+    set text(size: text-size, font: text-font)
+    body
+  })
+}
 
 /// Resolves the title for a slide based on manual input and global config.
 #let resolve-slide-title(manual-title) = context {

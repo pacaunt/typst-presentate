@@ -1,6 +1,7 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
 #import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, register-heading, structure-config, resolve-slide-title, is-role
+#import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
 
@@ -153,6 +154,7 @@
     mapping: mapping,
     auto-title: auto-title,
     text-size: text-size,
+    text-font: text-font,
     show-heading-numbering: show-heading-numbering,
     numbering-format: numbering-format,
   ))
@@ -268,14 +270,7 @@
         show-heading-numbering: show-heading-numbering,
         numbering-format: numbering-format,
         theme-colors: (primary: color, accent: white),
-        slide-func: (fill: none, body) => {
-          let f = if fill == none { color } else { fill }
-          p.slide(block(width: 100%, height: 100%, fill: f, inset: 0pt, {
-            set align(top + left)
-            set text(fill: white, size: text-size, font: text-font, weight: "regular")
-            body
-          }))
-        }
+        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
       )
     }
   }
