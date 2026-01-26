@@ -41,8 +41,9 @@
   auto-title: false,
   show-heading-numbering: true,
   numbering-format: auto,
-  show-outline: true,
+  show-outline: false,
   outline-title: [Outline],
+  outline-depth: 2,
   transitions: (),
   show-all-sections-in-transition: false,
   on-part-change: none,
@@ -194,7 +195,7 @@
       ]
       #v(1em)
       #set text(size: 0.9em)
-      #outline(title: none, indent: 2em, depth: 2)
+      #outline(title: none, indent: 2em, depth: outline-depth)
     ])
   }
 

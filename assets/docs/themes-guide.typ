@@ -54,6 +54,9 @@ The following parameters are supported by all five structured themes:
   [`auto-title`], [bool], [If `true`, slides without a manual title will automatically display the current heading body. Default: `false`.],
   [`show-heading-numbering`], [bool], [Global toggle for heading numbering. Default: `true`.],
   [`numbering-format`], [str | auto], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). If set to `auto`, it respects the global `#set heading(numbering: ...)` setting. Default: `auto`.],
+  [`show-outline`], [bool], [If `true`, displays an outline slide after the title slide. Default: `false`.],
+  [`outline-title`], [content], [The title of the automatic outline slide. Default: `[Outline]`.],
+  [`outline-depth`], [int], [The maximum depth of headings shown in the outline slide. Default: `2`.],
   [`show-all-sections-in-transition`], [bool], [If `true`, displays the full presentation outline during roadmap slides. Default: `false`.],
   [`transitions`], [dictionary], [Configuration for the transition engine (see Section 3).],
 )
@@ -70,7 +73,7 @@ mapping: (part: 1, section: 2, subsection: 3)
 ```
 
 == Important Note: Heading Placement
-To ensure that transitions and navigation work correctly, structural headings (`=`, `==`, etc.) must always be placed at the **top level** of your document. 
+To ensure that transitions and navigation work correctly, structural headings (`=`, `==`, etc.) must always be placed at the *top level* of your document. 
 
 *Do not place these headings inside a `#slide[...]` block.* Headings nested inside slides will not trigger transitions and will cause the compilation to fail.
 

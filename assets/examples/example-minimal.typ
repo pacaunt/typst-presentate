@@ -7,7 +7,7 @@
   auto-title: true,
   show-heading-numbering: true,
   text-font: "Fira Sans",
-  text-size: 28pt,
+  text-size: 26pt,
   transitions: (
     background: rgb("#2d3436"),
     style: (active-color: white)
