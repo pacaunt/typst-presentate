@@ -1,38 +1,7 @@
 #import "../store.typ"
 #import "structure.typ": get-active-headings
 
-/// Global state to cache headings data
-#let progressive-outline-cache = state(store.prefix + "progressive-outline-cache", ())
-
-/// Registers a heading into the cache. Returns the update content.
-#let register-heading(it) = {
-  if it.outlined {
-    context {
-      let loc = it.location()
-      let count = counter(heading).at(loc)
-      progressive-outline-cache.update(cache => {
-        if cache.any(h => h.location == loc) { return cache }
-        let new-h = (
-          body: it.body,
-          level: it.level,
-          counter: count,
-          numbering: it.numbering,
-          location: loc,
-          label: if it.has("label") { it.label } else { none },
-        )
-        cache.push(new-h)
-        cache
-      })
-    }
-  } else {
-    []
-  }
-}
-
-/// Helper function to notify a heading occurrence to the state and return the heading
-#let notify-heading(it) = register-heading(it) + it
-
-/// Helper to resolve styles with opacity/inheritance logic
+/// Helper function to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {
   if type(target-style) == float or type(target-style) == int {
     let new-style = active-style

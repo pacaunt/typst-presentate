@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, register-heading, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
@@ -181,8 +181,6 @@
   set page(paper: "presentation-" + aspect-ratio, margin: 0pt, header: none, footer: none)
   set text(size: text-size, font: text-font)
 
-  // Register headings for counter tracking (essential for Presentate)
-  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
   // Wrap the document to ensure heading numbering is global and increments counters
@@ -206,12 +204,6 @@
     }
   }
   
-  // Level 3 headings are typically not rendered to avoid slide clutter IF mapped
-  let mapped-levels = mapping.values()
-  if 3 in mapped-levels {
-    show heading.where(level: 3): it => register-heading(it)
-  }
-
   show: doc => { context structure-cache.update(get-structure()); doc }
   
   // Title slide
@@ -258,7 +250,6 @@
 
   // Unified Transition Rule
   show heading: h => {
-    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }

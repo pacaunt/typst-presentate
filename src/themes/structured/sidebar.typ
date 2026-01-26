@@ -1,5 +1,5 @@
 #import "../../presentate.typ" as p
-#import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
@@ -179,8 +179,6 @@
 
   set text(size: text-size, font: text-font, fill: black)
   
-  // Register all headings for counter tracking
-  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
   // Wrap the document to ensure heading numbering is global
@@ -206,7 +204,6 @@
 
   // Unified Transition Rule
   show heading: h => {
-    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }

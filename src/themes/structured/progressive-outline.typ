@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": *
-#import "../../components/components.typ": progressive-outline, register-heading, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 #import "../../components/transition-engine.typ": render-transition
@@ -113,8 +113,6 @@
   set page(paper: "presentation-" + aspect-ratio, header: header, footer: footer)
   set text(size: text-size, font: text-font)
   
-  // Register headings
-  show heading: it => register-heading(it) + it
   show heading: set text(size: 1em, weight: "regular")
   
   // Wrap the document to ensure heading numbering is global
@@ -138,14 +136,8 @@
     }
   }
   
-  let mapped-levels = mapping.values()
-  if 3 in mapped-levels {
-    show heading.where(level: 3): it => register-heading(it)
-  }
-
   // Unified Transition Rule
   show heading: h => {
-    register-heading(h)
     let hook = none
     if is-role(mapping, h.level, "part") { hook = on-part-change }
     else if is-role(mapping, h.level, "section") { hook = on-section-change }
