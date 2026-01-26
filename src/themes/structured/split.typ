@@ -126,6 +126,8 @@
   auto-title: false,
   show-heading-numbering: true,
   numbering-format: auto,
+  show-outline: false,
+  outline-title: [Outline],
   transitions: (),
   show-all-sections-in-transition: false,
   on-part-change: none,
@@ -246,6 +248,17 @@
     linebreak()
     grid(columns: 2, author, grid.vline(), date, inset: (x: 0.5em))
   })
+
+  if show-outline {
+    p.slide(pad(x: 1.5em, y: 1.5em)[
+      #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + primary))[
+        #text(weight: "bold", size: 1.2em, outline-title)
+      ]
+      #v(1em)
+      #set text(size: 0.9em)
+      #outline(title: none, indent: 2em, depth: 2)
+    ])
+  }
 
   set-options(..options)
   body

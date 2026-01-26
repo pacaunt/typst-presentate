@@ -43,6 +43,8 @@
   auto-title: false,
   show-heading-numbering: true,
   numbering-format: auto,
+  show-outline: false,
+  outline-title: [Outline],
   transitions: (),
   show-all-sections-in-transition: false,
   on-part-change: none,
@@ -257,6 +259,17 @@
       grid(columns: info.len() * 2 - 1, ..info.intersperse(grid.vline(stroke: 0.5pt + white.transparentize(50%))), inset: 0.7em)
     }
   })
+
+  if show-outline {
+    p.slide([
+      #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + sidebar-color))[
+        #text(weight: "bold", size: 1.2em, outline-title)
+      ]
+      #v(1em)
+      #set text(size: 0.9em)
+      #outline(title: none, indent: 2em, depth: 2)
+    ])
+  }
 
   body
 }

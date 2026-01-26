@@ -41,6 +41,8 @@
   auto-title: false,
   show-heading-numbering: true,
   numbering-format: auto,
+  show-outline: true,
+  outline-title: [Outline],
   transitions: (),
   show-all-sections-in-transition: false,
   on-part-change: none,
@@ -185,15 +187,16 @@
     ]
   })
 
-  // --- Global Outline (Classic) ---
-  p.slide([
-    #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
-      #text(weight: "bold", size: 1.2em, [Sommaire])
-    ]
-    #v(1em)
-    #set text(size: 0.9em)
-    #outline(title: none, indent: 2em, depth: 2)
-  ])
+  if show-outline {
+    p.slide([
+      #block(width: 100%, inset: (bottom: 0.6em), stroke: (bottom: 2pt + eastern))[
+        #text(weight: "bold", size: 1.2em, outline-title)
+      ]
+      #v(1em)
+      #set text(size: 0.9em)
+      #outline(title: none, indent: 2em, depth: 2)
+    ])
+  }
 
   show emph: set text(fill: eastern)
   set-options(..options)
