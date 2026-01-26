@@ -63,24 +63,25 @@
 
 /// Minimalist theme focused on content and roadmap transitions
 #let template(
-  author: none,
   title: none,
   subtitle: none,
+  author: none,
   date: datetime.today().display(),
   aspect-ratio: "16-9",
   text-font: "Lato",
   text-size: 20pt,
-  header: none,
-  footer: auto,
-  show-heading-numbering: true,
-  numbering-format: auto,
   mapping: (section: 1, subsection: 2),
   auto-title: false,
+  show-heading-numbering: true,
+  numbering-format: auto,
+  transitions: (),
+  show-all-sections-in-transition: false,
   on-part-change: none,
   on-section-change: none,
   on-subsection-change: none,
-  show-all-sections-in-transition: false,
-  transitions: (),
+  // Thème spécifique
+  header: none,
+  footer: auto,
   body,
   ..options,
 ) = {

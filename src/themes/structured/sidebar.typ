@@ -32,10 +32,23 @@
 
 /// A sidebar-based template inspired by Beamer's Hannover/Marburg themes.
 #let template(
-  title: [Title of Presentation],
+  title: none,
   subtitle: none,
   author: none,
-  date: none,
+  date: datetime.today().display(),
+  aspect-ratio: "16-9",
+  text-font: "Lato",
+  text-size: 20pt,
+  mapping: (section: 1, subsection: 2),
+  auto-title: false,
+  show-heading-numbering: true,
+  numbering-format: auto,
+  transitions: (),
+  show-all-sections-in-transition: false,
+  on-part-change: none,
+  on-section-change: none,
+  on-subsection-change: none,
+  // Thème spécifique
   side: "left",
   width: 22%,
   sidebar-color: rgb("#2c3e50"),
@@ -46,17 +59,6 @@
   title-color: rgb("#2c3e50"),
   logo: none,
   logo-position: "top",
-  text-font: "Lato",
-  text-size: 20pt,
-  show-heading-numbering: true,
-  numbering-format: auto,
-  mapping: (section: 1, subsection: 2),
-  auto-title: false,
-  on-part-change: none,
-  on-section-change: none,
-  on-subsection-change: none,
-  transitions: (),
-  show-all-sections-in-transition: false,
   outline-options: (:),
   body,
   ..options
@@ -160,7 +162,7 @@
   }
 
   set page(
-    paper: "presentation-16-9",
+    paper: "presentation-" + aspect-ratio,
     margin: layout-margins,
     fill: main-color,
     background: sidebar-content,
