@@ -7,7 +7,6 @@ THEMES = {
     "miniframes": "../../../src/themes/structured/miniframes.typ",
     "split": "../../../src/themes/structured/split.typ",
     "progressive-outline": "../../../src/themes/structured/progressive-outline.typ",
-    "custom-transition": "../../../src/themes/structured/custom-transition.typ",
 }
 
 # --- THEME SPECIFIC SCENARIOS ---

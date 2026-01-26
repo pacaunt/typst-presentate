@@ -7,7 +7,6 @@ THEMES = {
     "miniframes": "../../../src/themes/structured/miniframes.typ",
     "split": "../../../src/themes/structured/split.typ",
     "progressive-outline": "../../../src/themes/structured/progressive-outline.typ",
-    "custom-transition": "../../../src/themes/structured/custom-transition.typ",
 }
 
 # --- SCENARIOS ---
@@ -178,10 +177,6 @@ for theme, path in THEMES.items():
              extra = 'side: "left", active-color: rgb("#f39c12"),'
         elif theme == "miniframes":
              extra = 'color: rgb("#1a5fb4"),'
-        elif theme == "custom-transition":
-             # Custom needs at least some hook or it falls back to engine. 
-             # We want to test engine, so we leave hooks as none (default).
-             pass
 
         filename = f"{OUTPUT_DIR}/test_TRANSITION_{theme}_{case['id']}.typ"
         
