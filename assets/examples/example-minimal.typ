@@ -1,4 +1,5 @@
-#import "../../src/themes/structured/minimal.typ": template, slide
+#import "../../src/export.typ": * 
+#import themes.minimal: template, slide
 
 #show: template.with(
   title: [The Minimal Theme],
@@ -22,6 +23,8 @@
   
   There are no persistent headers, sidebars, or footers. The entire slide is your canvas.
 ]
+
+
 
 == Transitions
 #slide[

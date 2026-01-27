@@ -1,5 +1,5 @@
-#import "../../src/themes/structured/split.typ": template, slide
-#import "../../src/render.typ": pause
+#import "../../src/export.typ": * 
+#import themes.split: template, slide
 
 #set heading(numbering: "I.a.1.")
 

@@ -1,5 +1,5 @@
-#import "../../src/themes/structured/progressive-outline.typ": template, slide
-#import "../../src/render.typ": pause
+#import "../../src/export.typ": * 
+#import themes.progressive-outline: template, slide
 
 #set heading(numbering: "I.1.a")
 

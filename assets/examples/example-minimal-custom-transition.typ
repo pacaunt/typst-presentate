@@ -1,5 +1,5 @@
-#import "../../src/export.typ": *
-#import "../../src/themes/structured/minimal.typ": slide, template, empty-slide
+#import "../../src/export.typ": * 
+#import themes.minimal: slide, template, empty-slide
 #import components: get-active-headings, progressive-outline
 
 #set heading(numbering: "I.1.a")
@@ -102,8 +102,8 @@
 == The Best of Both Worlds
 === Clean Canvas
 #slide[
-  This example uses the `minimal` theme, which provides a clean canvas without persistent UI elements (no sidebars, headers, or footers).
-]
+  This example uses the `minimal` theme, which provides a clean canvas without persistent UI elements (no sidebars, headers, or footers). 
+] 
 
 === Bespoke Transitions
 #slide[

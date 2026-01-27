@@ -1,5 +1,5 @@
-#import "../../src/themes/structured/sidebar.typ": template, slide
-#import "../../src/render.typ": pause
+#import "../../src/export.typ": * 
+#import themes.sidebar: template, slide
 
 #set heading(numbering: "I.a.1.")
 

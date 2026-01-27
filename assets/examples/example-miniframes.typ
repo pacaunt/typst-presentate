@@ -1,5 +1,5 @@
-#import "../../src/themes/structured/miniframes.typ": template, slide
-#import "../../src/render.typ": pause
+#import "../../src/export.typ": * 
+#import themes.miniframes: template, slide
 
 #show: template.with(
   title: [The Miniframes Theme],
