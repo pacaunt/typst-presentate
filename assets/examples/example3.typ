@@ -1,4 +1,4 @@
-#import "@submit/presentate:0.2.0": *
+#import "@local/presentate:0.2.3": *
 #import themes.simple: *
 
 #show: template.with(

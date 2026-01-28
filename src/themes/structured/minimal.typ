@@ -1,9 +1,8 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": set-options
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
-#import "../../components/transition-engine.typ": render-transition
 
 // State to share configuration between template and slides
 #let config-state = state("minimal-config", none)

@@ -1,4 +1,4 @@
-#import "@submit/presentate:0.2.0": * 
+#import "@local/presentate:0.2.3": * 
 
 #set page(width: 4cm, height: 1.75cm, margin: 0.5cm)
 #set text(size: 1cm)

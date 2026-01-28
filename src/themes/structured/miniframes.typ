@@ -1,9 +1,8 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role
+#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
-#import "../../components/transition-engine.typ": render-transition
 
 // États pour partager la config entre le template et les fonctions slide
 #let structure-cache = state("miniframes-structure-cache", none)
@@ -204,7 +203,7 @@
     }
   }
   
-  show: doc => { context structure-cache.update(get-structure()); doc }
+  show: doc => { context structure-cache.update(get-structure(filter-selector: metadata.where(value: (t: "Miniframes_Normal")))); doc }
   
   // Title slide
   p.slide[

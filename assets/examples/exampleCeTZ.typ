@@ -1,4 +1,4 @@
-#import "@submit/presentate:0.2.0": *
+#import "@local/presentate:0.2.3": *
 
 #import "@preview/cetz:0.4.1": canvas, draw
 #import "@preview/fletcher:0.5.8": diagram, edge, node
