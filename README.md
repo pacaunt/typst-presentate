@@ -242,6 +242,48 @@ which results in
 
 
 
+## Structured Themes
+
+Presentate now includes a suite of **structured themes** designed to automatically handle document hierarchy (up to 3 levels of nesting), navigation, and transitions. These themes use the [navigator](https://typst.app/universe/package/navigator/) package.
+
+### Available Themes
+- `sidebar`: A persistent navigation sidebar (left or right) that tracks your progress.
+- `miniframes`: A dot-based progress bar (beamer Berlin style).
+- `split`: A header divided into two contrasting areas for current section and subsection titles (beamer Copenhagen style).
+- `progressive-outline`: A clean, progression-focused design featuring dynamic breadcrumbs.
+- `minimal`: A "content-first" theme with no persistent UI, but with automatic roadmap transitions.
+
+### Usage
+Structured themes are located in the `themes.structured` namespace. They are applied via a `show` rule:
+
+```typ
+#import "@preview/presentate:0.2.3": themes
+#show: themes.structured.sidebar.template.with(
+  title: [My Presentation],
+  author: [pacaunt],
+  mapping: (section: 1, subsection: 2), // Defines which heading levels trigger the structure
+)
+
+= Introduction
+== Concept
+#slide[ ... ]
+```
+
+### Key Features
+- **Transition**: Automatically generates "roadmap" slides during section changes. Highly configurable via the `transitions` argument.
+- **Auto-titling**: With `auto-title: true`, slide titles are automatically derived from the most recent structural heading.
+
+### Examples
+You can find full implementations of these themes in the `assets/examples/` directory:
+- [Sidebar demo](assets/examples/example-sidebar.typ)
+- [Miniframes demo](assets/examples/example-miniframes.typ)
+- [Split demo](assets/examples/example-split.typ)
+- [Progressive-outline demo](assets/examples/example-progressive-outline.typ)
+- [Minimal demo](assets/examples/example-minimal.typ)
+- [Custom transition hooks demo](assets/examples/example-minimal-custom-transition.typ)
+
+For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](assets/docs/themes-guide.pdf).
+
 ## Versions
 ### 0.2.3
 - Added `#motion` and `#tag` function for precise control of animation display order. 

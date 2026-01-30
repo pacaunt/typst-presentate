@@ -5,10 +5,6 @@
 // Re-export navigator config
 #let structure-config = nav.navigator-config
 
-#let get-active-headings = nav.get-active-headings
-#let resolve-slide-title = nav.resolve-slide-title
-#let is-role = nav.is-role
-
 /// A slide with no margins, header, footer, or background decorations. 
 #let empty-slide(fill: none, text-size: 20pt, text-font: "Lato", body) = {
   // We force background: none to ensure sidebars or logos from themes don't show up.

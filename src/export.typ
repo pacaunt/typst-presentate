@@ -2,8 +2,7 @@
 #import "components/components.typ"
 #let components = components
 
-#import "components/title.typ": slide-title
-#import "components/structure.typ": structure-config, resolve-slide-title, is-role
+#import "components/components.typ": slide-title, structure-config, resolve-slide-title, is-role
 
 #import "animation.typ" 
 #let animation = animation

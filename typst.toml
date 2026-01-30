@@ -10,4 +10,4 @@ description = "A package to create slides with ease."
 categories = ["presentation"]
 
 [dependencies]
-navigator = { path = "../typst-navigator" }
+navigator = "0.1.0"
