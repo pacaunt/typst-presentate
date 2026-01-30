@@ -1147,7 +1147,7 @@
 ]
 #let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
 #slide[Structured Themes][
-  Integration with #footlink("https://typst.app/universe/package/navigator")[navigator] package provides a structured theme that have an animation of the outlines. Big thanks to #link("https://github.com/eusebe")[David Hajade] for providing all of the structured themes and a complete #link("https://github.com/pacaunt/typst-presentate/blob/main/assets/docs/themes-guide.pdf")[theme guide] of this package. 
+  Integration with #footlink("https://typst.app/universe/package/navigator")[navigator] package provides a structured theme that have an animation of the outlines. Big thanks to #link("https://github.com/eusebe")[David Hajage] for providing all of the structured themes and a complete #link("https://github.com/pacaunt/typst-presentate/blob/main/assets/docs/themes-guide.pdf")[theme guide] of this package. 
 
   You can visit the examples of the structured themes here: 
   - #link(home + "examples/example-minimal.pdf")[minimal] 
