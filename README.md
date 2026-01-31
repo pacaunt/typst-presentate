@@ -254,11 +254,11 @@ Presentate now includes a suite of **structured themes** designed to automatical
 - `minimal`: A "content-first" theme with no persistent UI, but with automatic roadmap transitions.
 
 ### Usage
-Structured themes are located in the `themes.structured` namespace. They are applied via a `show` rule:
+Structured themes are located in the `themes` namespace. They are applied via a `show` rule:
 
 ```typ
 #import "@preview/presentate:0.2.3": themes
-#show: themes.structured.sidebar.template.with(
+#show: themes.sidebar.template.with(
   title: [My Presentation],
   author: [pacaunt],
   mapping: (section: 1, subsection: 2), // Defines which heading levels trigger the structure
@@ -285,6 +285,8 @@ You can find full implementations of these themes in the `assets/examples/` dire
 For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](assets/docs/themes-guide.pdf).
 
 ## Versions
+### 0.2.4 
+- Featured with [navigator](https://typst.app/universe/package/navigator/) package for structured themes.
 ### 0.2.3
 - Added `#motion` and `#tag` function for precise control of animation display order. 
 - Added relative index `(rel: int)` to animate elements earlier than the current number of pauses.  
