@@ -1078,7 +1078,7 @@
 ]
 
 #slide[
-  #image("simple_theme.png")
+  #image("simple-theme.png")
 ]
 
 #slide[
@@ -1124,7 +1124,7 @@
 
 #slide[
   Some example of the Default theme.
-  #image("default_theme.png")
+  #image("default-theme.png")
 ]
 
 #slide[
@@ -1145,9 +1145,17 @@
   ]
   ```
 ]
+#let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
+#slide[Structured Themes][
+  Integration with #footlink("https://typst.app/universe/package/navigator")[navigator] package provides a structured theme that have an animation of the outlines. Big thanks to #link("https://github.com/eusebe")[David Hajage] for providing all of the structured themes and a complete #link("https://github.com/pacaunt/typst-presentate/blob/main/assets/docs/themes-guide.pdf")[theme guide] of this package. 
 
-#slide[
-  By default Presentate is still young and does not provide more themes currently, but the integration of Typst styling in Presentate should be seamless, and convenient enough to create by yourself :)
+  You can visit the examples of the structured themes here: 
+  - #link(home + "examples/example-minimal.pdf")[minimal] 
+  - #link(home + "examples/example-progressive-outline.pdf")[progressive-outline] 
+  - #link(home + "examples/example-sidebar.pdf")[sidebar]
+  - #link(home + "examples/example-split.pdf")[split] 
+  - #link(home + "examples/example-miniframes.pdf")[miniframes]
+
 ]
 
 #empty-slide[

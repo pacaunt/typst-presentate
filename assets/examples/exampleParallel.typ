@@ -1,4 +1,4 @@
-#import "@submit/presentate:0.2.1": *
+#import "@local/presentate:0.2.3": *
 #import "@preview/layout-ltd:0.1.0": layout-limiter
 #show: layout-limiter.with(max-iterations: 3)
 

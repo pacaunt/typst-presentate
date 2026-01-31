@@ -66,7 +66,6 @@
 }
 
 #let template(
-  body,
   header: auto,
   footer: auto,
   author: [Author Name],
@@ -75,6 +74,7 @@
   date: datetime.today().display(),
   enable-section-slide: true,
   aspect-ratio: "16-9",
+  body,
   ..options,
 ) = {
   if header == auto {

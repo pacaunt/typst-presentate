@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.1": *
+#import "@local/presentate:0.2.3": *
 
 #import "@preview/alchemist:0.1.8" as alc
 
