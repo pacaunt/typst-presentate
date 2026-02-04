@@ -229,7 +229,7 @@
 #slide[Getting Started][
   Start with the following snippets:
   ```typ
-  #import "@preview/presentate:0.2.3": *
+  #import "@preview/presentate:0.2.4": *
   #set text(size: 25pt) // of your choice
 
   #slide[
@@ -251,7 +251,7 @@
 #slide[
   You may styling the way you want, for example:
   ```
-  #import "@preview/presentate:0.2.3": *
+  #import "@preview/presentate:0.2.4": *
   #set page(paper: "presentation-16-9")
   #set text(size: 25pt, font: "FiraCode Nerd Font Mono")
   #set align(horizon)

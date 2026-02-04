@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.3" as p: *
+#import "@local/presentate:0.2.4" as p: *
 #import themes.simple: *
 #import "@preview/codly:1.3.0": *
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
