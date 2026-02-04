@@ -1,4 +1,4 @@
-#import "@preview/navigator:0.1.0": render-miniframes, get-structure, get-current-logical-slide-number, progressive-outline, get-active-headings, resolve-slide-title, is-role, render-transition
+#import "@preview/navigator:0.1.2": render-miniframes, get-structure, get-current-logical-slide-number, progressive-outline, get-active-headings, resolve-slide-title, is-role, render-transition
 #import "structure.typ": structure-config, empty-slide
 #import "title.typ": slide-title
 
