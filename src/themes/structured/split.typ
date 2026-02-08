@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 
@@ -60,8 +60,6 @@
           level-1-mode: if lvl == 1 { mode } else { "none" },
           level-2-mode: if lvl == 2 { mode } else { "none" },
           level-3-mode: if lvl == 3 { mode } else { "none" },
-          show-numbering: show-num,
-          numbering-format: num-fmt,
           text-styles: (
             ("level-" + str(lvl)): (
               active: (weight: "bold", fill: white),
@@ -69,7 +67,6 @@
               completed: (weight: "regular", fill: white.transparentize(40%))
             )
           ),
-          spacing: (v-between-1-1: 0.4em, v-between-2-2: 0.4em, v-between-3-3: 0.4em)
         )
       }
     })
@@ -141,20 +138,33 @@
   header-inset: (x: 1.5em, y: 0.8em),
   section-align: right,
   subsection-align: left,
+  max-length: none,
+  use-short-title: false,
   body,
   ..options,
 ) = {
   let trans-opts = (enabled: true, level: 2)
   if type(transitions) == dictionary { trans-opts = p.utils.merge-dicts(base: trans-opts, transitions) }
 
-  structure-config.update(conf => (
-    mapping: mapping,
-    auto-title: auto-title,
-    text-size: text-size,
-    text-font: text-font,
-    show-heading-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-  ))
+  // Synchronisation avec navigator-config
+  navigator-config.update(c => {
+    c.mapping = mapping
+    c.auto-title = auto-title
+    c.show-heading-numbering = show-heading-numbering
+    c.numbering-format = numbering-format
+    c.slide-func = empty-slide.with(text-size: text-size, text-font: text-font)
+    c.theme-colors = (primary: primary, accent: white)
+    c.transitions = transitions
+    c.max-length = max-length
+    c.use-short-title = use-short-title
+    c.progressive-outline = p.utils.merge-dicts(
+      (
+        spacing: (v-between-1-1: 0.4em, v-between-2-2: 0.4em, v-between-3-3: 0.4em)
+      ),
+      base: c.at("progressive-outline", default: (:))
+    )
+    c
+  })
 
   config-state.update((
     primary: primary,
@@ -221,12 +231,8 @@
 
         render-transition(
           h,
-          transitions: final-trans,
-          mapping: mapping,
-          show-heading-numbering: show-heading-numbering,
-          numbering-format: numbering-format,
-          theme-colors: (primary: primary, secondary: secondary, accent: white),
-          slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
+          use-short-title: false,
+          max-length: none,
         )
       }
     }

@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": *
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 
@@ -51,6 +51,8 @@
   // Thème spécifique
   header: auto,
   footer: auto,
+  max-length: none,
+  use-short-title: false,
   body,
   ..options,
 ) = {
@@ -58,33 +60,42 @@
   let trans-opts = (enabled: true, level: 2)
   if type(transitions) == dictionary { trans-opts = p.utils.merge-dicts(base: trans-opts, transitions) }
 
-  structure-config.update(conf => (
-    mapping: mapping,
-    auto-title: auto-title,
-    text-size: text-size,
-    text-font: text-font,
-    show-heading-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-  ))
-
-  config-state.update((
-    text-size: text-size,
-    text-font: text-font,
-  ))
+  // Synchronisation avec navigator-config
+  navigator-config.update(c => {
+    c.mapping = mapping
+    c.auto-title = auto-title
+    c.show-heading-numbering = show-heading-numbering
+    c.numbering-format = numbering-format
+    c.slide-func = empty-slide.with(text-size: text-size, text-font: text-font)
+    c.theme-colors = (primary: eastern, accent: eastern)
+    c.transitions = transitions
+    c.max-length = max-length
+    c.use-short-title = use-short-title
+    c.progressive-outline = p.utils.merge-dicts(
+      (
+        level-1-mode: "none",
+        level-2-mode: "none",
+        level-3-mode: "none",
+        text-styles: (
+          level-1: (active: (fill: gray.darken(20%), weight: "bold"), completed: (weight: "bold"), inactive: (weight: "bold")),
+          level-2: (active: (fill: gray, weight: "bold"), completed: (weight: "bold"), inactive: (weight: "bold")),
+          level-3: (active: (fill: gray.lighten(40%), weight: "regular"), completed: (weight: "regular"), inactive: (weight: "regular")),
+        ),
+      ),
+      base: c.at("progressive-outline", default: (:))
+    )
+    c
+  })
 
   if header == auto {
     header = context {
-      let mapping = structure-config.get().mapping
-      let level-modes = (level-1-mode: "none", level-2-mode: "none", level-3-mode: "none")
-      let styles = (:)
+      let mapping = navigator-config.get().mapping
+      let level-modes = (:)
       
       for role in ("part", "section", "subsection") {
         let lvl = mapping.at(role, default: none)
         if lvl != none {
           level-modes.insert("level-" + str(lvl) + "-mode", "current")
-          let col = if role == "part" { gray.darken(20%) } else if role == "section" { gray } else { luma(150) }
-          let weight = if role == "part" or role == "section" { "bold" } else { "regular" }
-          styles.insert("level-" + str(lvl), (active: (fill: col, weight: weight)))
         }
       }
 
@@ -93,9 +104,6 @@
         ..level-modes,
         layout: "horizontal",
         separator: text(fill: gray, " / "),
-        text-styles: styles,
-        show-numbering: show-heading-numbering,
-        numbering-format: numbering-format,
       )
     }
   }
@@ -156,15 +164,7 @@
         }
       }
 
-      render-transition(
-        h,
-        transitions: final-trans,
-        mapping: mapping,
-        show-heading-numbering: show-heading-numbering,
-        numbering-format: numbering-format,
-        theme-colors: (primary: eastern, accent: eastern),
-        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
-      )
+      render-transition(h, use-short-title: false, max-length: none)
     }
   }
 

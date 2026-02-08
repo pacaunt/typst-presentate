@@ -1,5 +1,5 @@
 #import "../../presentate.typ" as p
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 
@@ -62,6 +62,8 @@
   logo: none,
   logo-position: "top",
   outline-options: (:),
+  max-length: none,
+  use-short-title: false,
   body,
   ..options
 ) = {
@@ -69,59 +71,63 @@
   let trans-opts = (enabled: true, level: 2)
   if type(transitions) == dictionary { trans-opts = p.utils.merge-dicts(base: trans-opts, transitions) }
 
-  structure-config.update(conf => (
-    mapping: mapping,
-    auto-title: auto-title,
-    text-size: text-size,
-    text-font: text-font,
-    show-heading-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-  ))
+  // Synchronisation avec navigator-config
+  navigator-config.update(c => {
+    c.mapping = mapping
+    c.auto-title = auto-title
+    c.show-heading-numbering = show-heading-numbering
+    c.numbering-format = numbering-format
+    c.slide-func = empty-slide.with(text-size: text-size, text-font: text-font)
+    c.theme-colors = (primary: sidebar-color, accent: active-color)
+    c.transitions = transitions
+    c.max-length = max-length
+    c.use-short-title = use-short-title
+    c.progressive-outline = p.utils.merge-dicts(
+      (
+        level-1-mode: if 1 in mapping.values() { "all" } else { "none" },
+        level-2-mode: if 2 in mapping.values() { "all" } else { "none" },
+        level-3-mode: if 3 in mapping.values() { "all" } else { "none" },
+        text-styles: (
+          level-1: (
+            active: (weight: "bold", fill: active-color),
+            completed: (fill: completed-color),
+            inactive: (fill: text-color)
+          ),
+          level-2: (
+            active: (weight: "bold", fill: active-color, size: 0.9em),
+            completed: (fill: completed-color, size: 0.9em),
+            inactive: (fill: text-color.darken(10%), size: 0.9em)
+          ),
+          level-3: (
+            active: (weight: "bold", fill: active-color, size: 0.8em),
+            completed: (fill: completed-color, size: 0.8em),
+            inactive: (fill: text-color.darken(20%), size: 0.8em)
+          )
+        ),
+        spacing: (
+          indent-2: 1.2em,
+          indent-3: 2.4em,
+          v-between-1-1: 1.2em, 
+          v-between-1-2: 0.8em,
+          v-between-2-1: 1.2em, 
+          v-between-2-2: 0.6em,
+          v-between-2-3: 0.4em,
+          v-between-3-3: 0.3em,
+        )
+      ),
+      base: c.at("progressive-outline", default: (:))
+    )
+    c
+  })
 
   config-state.update((
     text-size: text-size,
     text-font: text-font,
   ))
 
-  // Default text styles for the sidebar
-  let default-text-styles = (
-    level-1: (
-      active: (weight: "bold", fill: active-color),
-      completed: (fill: completed-color),
-      inactive: (fill: text-color)
-    ),
-    level-2: (
-      active: (weight: "bold", fill: active-color, size: 0.9em),
-      completed: (fill: completed-color, size: 0.9em),
-      inactive: (fill: text-color.darken(10%), size: 0.9em)
-    ),
-    level-3: (
-      active: (weight: "bold", fill: active-color, size: 0.8em),
-      completed: (fill: completed-color, size: 0.8em),
-      inactive: (fill: text-color.darken(20%), size: 0.8em)
-    )
-  )
-
   // Mapping-aware outline options
-  let mapped-levels = mapping.values()
   let final-outline-opts = (
-    level-1-mode: if 1 in mapped-levels { "all" } else { "none" },
-    level-2-mode: if 2 in mapped-levels { "all" } else { "none" },
-    level-3-mode: if 3 in mapped-levels { "all" } else { "none" },
     match-page-only: true,
-    text-styles: default-text-styles,
-    show-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-    spacing: (
-      indent-2: 1.2em,
-      indent-3: 2.4em,
-      v-between-1-1: 1.2em, 
-      v-between-1-2: 0.8em,
-      v-between-2-1: 1.2em, 
-      v-between-2-2: 0.6em,
-      v-between-2-3: 0.4em,
-      v-between-3-3: 0.3em,
-    )
   ) + outline-options
 
   // The content of the sidebar
@@ -224,12 +230,8 @@
 
       render-transition(
         h,
-        transitions: final-trans,
-        mapping: mapping,
-        show-heading-numbering: show-heading-numbering,
-        numbering-format: numbering-format,
-        theme-colors: (primary: sidebar-color, accent: active-color),
-        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
+        use-short-title: false,
+        max-length: none,
       )
     }
   }
