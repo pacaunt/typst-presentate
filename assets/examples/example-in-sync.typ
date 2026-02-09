@@ -30,24 +30,3 @@
     Heheh
   ]
 ]
-
-#slide[
-  #step-item[
-    - A
-      #step-item[
-        - H 
-        - I 
-        - J
-      ]
-    - B
-    - C
-  ]
-]
-
-#slide[
-  A 
-  #show: pause.with(update: false)
-  B
-  #show: pause 
-  C 
-]

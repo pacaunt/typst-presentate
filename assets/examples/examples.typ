@@ -7,10 +7,10 @@
 
 #let all-pages = muchpdf(imgs).children
 
-#set page(margin: 5pt, height: auto, width: auto)
+#set page(margin: 5pt, height: auto, width: auto, fill: gray)
 
 #grid(
-  columns: if file-name == "example-pdf-animation" { 3 } else { 2 }, 
+  columns: if file-name in ("example-pdf-animation.pdf", "example-simple-theme.pdf", "example-default-theme.pdf") { 3 } else { 2 }, 
   gutter: 5pt,
-  ..all-pages.map(block.with(stroke: 1pt))
+  ..all-pages.map(block.with(stroke: 1pt, fill: white))
 )
