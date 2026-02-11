@@ -1,1 +1,1 @@
-#import "../../../typst-navigator/lib.typ": slide-title
+#import "@preview/navigator:0.1.3": slide-title

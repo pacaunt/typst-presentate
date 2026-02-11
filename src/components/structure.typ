@@ -1,6 +1,6 @@
 #import "../store.typ"
 #import "../presentate.typ" as p
-#import "../../../typst-navigator/lib.typ" as nav
+#import "@preview/navigator:0.1.3" as nav
 
 // Re-export navigator config
 #let structure-config = nav.navigator-config
