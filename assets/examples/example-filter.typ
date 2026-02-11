@@ -1,5 +1,5 @@
-#import "../../src/presentate.typ": *
-#import "../../src/themes/structured/sidebar.typ": template, slide
+#import "@local/presentate:0.2.4": *
+#import themes.sidebar: template, slide
 
 #show: template.with(
   title: [Filtering Demo],

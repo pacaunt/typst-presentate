@@ -1,4 +1,4 @@
-#import "../../src/export.typ": * 
+#import "@local/presentate:0.2.4": *
 #import themes.miniframes: template, slide
 
 #show: template.with(
