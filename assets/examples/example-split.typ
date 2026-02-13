@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.4": *
+#import "@local/presentate:0.2.5": *
 #import themes.split: template, slide
 
 #set heading(numbering: "I.a.1.")

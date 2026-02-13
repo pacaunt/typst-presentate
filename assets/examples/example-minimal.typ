@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.4": *
+#import "@local/presentate:0.2.5": *
 #import themes.minimal: template, slide
 
 #show: template.with(

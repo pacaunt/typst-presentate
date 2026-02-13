@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.4": *
+#import "@local/presentate:0.2.5": *
 
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)

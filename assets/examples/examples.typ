@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.4": * 
+#import "@local/presentate:0.2.5": * 
 #import "@preview/muchpdf:0.1.2": muchpdf
 
 #let file-name = sys.inputs.at("name", default: "example-pdf-animation.pdf")
