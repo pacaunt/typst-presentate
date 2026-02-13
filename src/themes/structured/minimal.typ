@@ -1,6 +1,6 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": set-options
-#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
+#import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 
@@ -84,26 +84,49 @@
   // Thème spécifique
   header: none,
   footer: auto,
+  max-length: none,
+  use-short-title: false,
   body,
   ..options,
 ) = {
   
-  structure-config.update(conf => (
-    mapping: mapping,
-    auto-title: auto-title,
-    text-size: text-size,
-    text-font: text-font,
-    show-heading-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-  ))
+  // Synchronisation avec navigator-config
+  navigator-config.update(c => {
+    c.mapping = mapping
+    c.auto-title = auto-title
+    c.show-heading-numbering = show-heading-numbering
+    c.numbering-format = numbering-format
+    c.slide-func = empty-slide.with(text-size: text-size, text-font: text-font)
+    c.theme-colors = (primary: black, accent: blue)
+    c.transitions = transitions
+    c
+  })
 
   let footer-content = if footer == auto {
-    context grid(
-      columns: (1fr, 1fr, 1fr),
-      align(left, if author != none { author }),
-      align(center, if title != none { title }),
-      align(right, counter(page).display("1"))
-    )
+    context {
+      let mapping = navigator-config.get().mapping
+      let level-modes = (:)
+      for role in ("part", "section", "subsection") {
+        let lvl = mapping.at(role, default: none)
+        if lvl != none { level-modes.insert("level-" + str(lvl) + "-mode", "current") }
+      }
+      
+      grid(
+        columns: (1fr, 2fr, 1fr),
+        align(left, if author != none { author }),
+        align(center, {
+          set text(size: 0.8em, fill: gray.lighten(10%))
+          progressive-outline(
+            ..level-modes,
+            layout: "horizontal",
+            separator: text(fill: gray.lighten(50%), " / "),
+            max-length: max-length,
+            use-short-title: use-short-title,
+          )
+        }),
+        align(right, counter(page).display("1"))
+      )
+    }
   } else {
     footer
   }
@@ -163,12 +186,8 @@
 
       render-transition(
         h,
-        transitions: final-trans,
-        mapping: mapping,
-        show-heading-numbering: show-heading-numbering,
-        numbering-format: numbering-format,
-        theme-colors: (primary: black, accent: blue),
-        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
+        use-short-title: false,
+        max-length: none,
       )
     }
   }

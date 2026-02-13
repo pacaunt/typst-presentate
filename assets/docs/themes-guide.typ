@@ -27,7 +27,7 @@ Presentate provides two categories of themes:
 All structured themes follow a consistent API pattern and are located in the `themes.structured` namespace. They are invoked using a `template` function through a show rule.
 
 ```typ
-#import "@preview/presentate:0.2.3": themes
+#import "@preview/presentate:0.2.5": themes
 #show: themes.structured.sidebar.template.with(
   title: [My Presentation],
   author: [John Doe],
@@ -52,6 +52,8 @@ The following parameters are supported by all five structured themes:
   [`text-size`], [length], [Base text size. Default: `20pt`.],
   [`mapping`], [dictionary], [Maps logical roles to Typst heading levels. Default: `(section: 1, subsection: 2)`. Supports `part`, `section`, `subsection`.],
   [`auto-title`], [bool], [If `true`, slides without a manual title will automatically display the current heading body. Default: `false`.],
+  [`max-length`], [dict | none], [Allows truncating titles in navigation bars per level. Example: `(level-1: 15, level-2: 10)`. Default: `none`.],
+  [`use-short-title`], [bool], [If `true`, themes will prioritize alternative titles defined via the `<short>` label for navigation components. Default: `false`.],
   [`show-heading-numbering`], [bool], [Global toggle for heading numbering. Default: `true`.],
   [`numbering-format`], [str | auto], [Typst numbering format string (e.g., `"1.1"`, `"I.a"`). If set to `auto`, it respects the global `#set heading(numbering: ...)` setting. Default: `auto`.],
   [`show-outline`], [bool], [If `true`, displays an outline slide after the title slide. Default: `false`.],
@@ -76,6 +78,26 @@ mapping: (part: 1, section: 2, subsection: 3)
 To ensure that transitions and navigation work correctly, structural headings (`=`, `==`, etc.) must always be placed at the *top level* of your document. 
 
 *Do not place these headings inside a `#slide[...]` block.* Headings nested inside slides will not trigger transitions and will cause the compilation to fail.
+
+== Navigation and Long Titles
+To handle complex document structures in limited space (like sidebars or breadcrumbs), Presentate offers two complementary mechanisms:
+
+=== Short Titles (Labels)
+You can define an alternative short title for any heading by placing a `#metadata` block with the `<short>` label immediately after the heading.
+
+```typ
+= This is a very long section title that might overflow
+#metadata("Short Title") <short>
+```
+
+When `use-short-title: true` is enabled in the template configuration, navigation components will automatically use "Short Title" instead of the full heading body.
+
+=== Automatic Truncation
+The `max-length` parameter allows you to enforce a character limit on navigation items. If a title exceeds the specified length, it will be truncated with an ellipsis (`...`).
+
+```typ
+max-length: (level-1: 15, level-2: 10)
+```
 
 = The Unified Transition Engine
 The transition engine automatically generates roadmap slides when your structure changes. It is highly configurable via the `transitions` argument.
@@ -149,7 +171,7 @@ The `outline-options` dictionary allows fine-grained control over the sidebar na
 )
 
 == Miniframes Theme
-Inspired by the Beamer Berlin theme, it uses dots to show progress within sections. It features a specific separator `|` when three levels of hierarchy are used.
+Inspired by the Beamer Berlin theme, it uses dots to show progress within sections. It features a specific separator `|` when three levels of hierarchy are used. It fully supports `max-length` truncation and `<short>` titles for its section names.
 
 === Navigation Dictionary
 The `navigation` parameter is a dictionary containing:
@@ -165,7 +187,7 @@ The `navigation` parameter is a dictionary containing:
 )
 
 == Split Theme
-Features a horizontal header divided into two contrasting areas for Section and Subsection titles.
+Features a horizontal header divided into two contrasting areas for Section and Subsection titles. It also supports `max-length` and `<short>` titles for both blocks.
 
 === Theme Parameters
 #table(
@@ -179,7 +201,7 @@ Features a horizontal header divided into two contrasting areas for Section and 
 )
 
 == Progressive Outline Theme
-A clean theme focused on document progression with a breadcrumb-style header. It supports dynamic fil-d'ariane based on the active `mapping`.
+A clean theme focused on document progression with a breadcrumb-style header. It supports dynamic fil-d'ariane based on the active `mapping`, and automatically integrates `max-length` and short titles.
 
 === Theme Parameters
 #table(
@@ -192,12 +214,14 @@ A clean theme focused on document progression with a breadcrumb-style header. It
 == Minimal Theme
 A content-first theme with zero distractions. It has no persistent headers or sidebars, providing the maximum possible area for your content while still supporting automatic roadmap transitions.
 
+It features a discrete breadcrumb-style navigation in the footer by default, providing a sense of progression without cluttering the slide.
+
 === Theme Parameters
 #table(
   columns: (1fr, 1fr, 3fr),
   inset: 6pt,
   [`header`], [content | none], [Optional header content. Default: `none`.],
-  [`footer`], [content | auto], [Optional footer content. Displays author, title and page number by default.],
+  [`footer`], [content | auto], [Optional footer content. Displays a breadcrumb navigation with author and page number by default.],
 )
 
 = Hooks API

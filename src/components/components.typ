@@ -1,4 +1,4 @@
-#import "@preview/navigator:0.1.2": render-miniframes, get-structure, get-current-logical-slide-number, progressive-outline, get-active-headings, resolve-slide-title, is-role, render-transition
+#import "@preview/navigator:0.1.3": render-miniframes, get-structure, get-current-logical-slide-number, progressive-outline, get-active-headings, resolve-slide-title, is-role, render-transition, navigator-config
 #import "structure.typ": structure-config, empty-slide
 #import "title.typ": slide-title
 
@@ -10,6 +10,7 @@
 #let resolve-slide-title = resolve-slide-title
 #let is-role = is-role
 #let render-transition = render-transition
+#let navigator-config = navigator-config
 #let structure-config = structure-config
 #let empty-slide = empty-slide
 #let slide-title = slide-title

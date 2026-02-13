@@ -286,6 +286,9 @@ You can find full implementations of these themes in the `assets/examples/` dire
 For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/4cabe6e207b5bc94a0902b5da6824b5e31664739/assets/docs/themes-guide.pdf).
 
 ## Versions
+### 0.2.5 
+- refactor structured themes to use [navigator](https://typst.app/universe/package/navigator/) 0.1.3 simplified API
+- update themes guide with navigation improvements (short titles and title truncation)
 ### 0.2.4 
 - Featured with [navigator](https://typst.app/universe/package/navigator/) package for structured themes.
 ### 0.2.3

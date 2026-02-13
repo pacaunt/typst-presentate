@@ -1,11 +1,10 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": states, set-options
-#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition
+#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
 
 // États pour partager la config entre le template et les fonctions slide
-#let structure-cache = state("miniframes-structure-cache", none)
 #let config-state = state("miniframes-config", none)
 
 // Layout standard avec barre et footer
@@ -13,15 +12,10 @@
   let config = config-state.get()
   if config == none { return body }
   
-  let struct = structure-cache.get()
-  let current = get-current-logical-slide-number()
-  
   let nav-opts = config.nav-opts
   let margin-x = config.margin-x
   let gap-zone = config.gap-zone
   let footer-content = config.footer-content
-  let show-num = config.show-heading-numbering
-  let num-fmt = config.numbering-format
   
   let footer-size = 0.75em
 
@@ -30,35 +24,7 @@
   if nav-opts.position == "bottom" { st-inset.insert("top", 1.5em) }
   let st = slide-title(resolve-slide-title(title), size: 1.2em, weight: "bold", inset: st-inset)
 
-  let bar = if struct != none {
-    render-miniframes(
-      struct,
-      current,
-      fill: nav-opts.fill,
-      text-color: nav-opts.text-color,
-      text-size: nav-opts.text-size,
-      font: nav-opts.font,
-      active-color: nav-opts.active-color,
-      inactive-color: nav-opts.inactive-color,
-      marker-shape: nav-opts.marker-shape,
-      marker-size: nav-opts.marker-size,
-      style: nav-opts.style,
-      align-mode: nav-opts.align-mode,
-      dots-align: nav-opts.dots-align,
-      show-level1-titles: nav-opts.show-level1-titles,
-      show-level2-titles: nav-opts.show-level2-titles,
-      show-numbering: show-num,
-      numbering-format: num-fmt,
-      gap: nav-opts.gap,
-      line-spacing: nav-opts.line-spacing,
-      inset: nav-opts.inset,
-      width: nav-opts.width,
-      outset-x: nav-opts.outset-x,
-      radius: nav-opts.radius,
-    )
-  } else { 
-    block(width: 100%, height: 3em, []) 
-  }
+  let bar = render-miniframes()
 
   // Style global de la slide (on force la police/taille du thème)
   set text(weight: "regular", fill: black, size: config.text-size, font: config.text-font)
@@ -132,6 +98,8 @@
   show-level1-titles: true,
   show-level2-titles: true,
   navigation: (),
+  max-length: none,
+  use-short-title: false,
   body,
   ..options,
 ) = {
@@ -153,14 +121,25 @@
     nav-opts = p.utils.merge-dicts(base: nav-opts, navigation) 
   }
 
-  structure-config.update(conf => (
-    mapping: mapping,
-    auto-title: auto-title,
-    text-size: text-size,
-    text-font: text-font,
-    show-heading-numbering: show-heading-numbering,
-    numbering-format: numbering-format,
-  ))
+  navigator-config.update(c => {
+    c.mapping = mapping
+    c.auto-title = auto-title
+    c.show-heading-numbering = show-heading-numbering
+    c.numbering-format = numbering-format
+    c.slide-func = empty-slide.with(text-size: text-size, text-font: text-font)
+    c.theme-colors = (primary: color, accent: white)
+    c.transitions = transitions
+    c.slide-selector = metadata.where(value: (t: "Miniframes_Normal"))
+    c.max-length = max-length
+    c.use-short-title = use-short-title
+    c.miniframes = (
+      fill: nav-opts.fill,
+      active-color: nav-opts.active-color,
+      inactive-color: nav-opts.inactive-color,
+      style: nav-opts.style,
+    )
+    c
+  })
 
   config-state.update((
     nav-opts: nav-opts, margin-x: 2.5em, gap-zone: 1.5em,
@@ -202,8 +181,6 @@
       doc
     }
   }
-  
-  show: doc => { context structure-cache.update(get-structure(filter-selector: metadata.where(value: (t: "Miniframes_Normal")))); doc }
   
   // Title slide
   p.slide[
@@ -270,12 +247,8 @@
 
       render-transition(
         h,
-        transitions: final-trans,
-        mapping: mapping,
-        show-heading-numbering: show-heading-numbering,
-        numbering-format: numbering-format,
-        theme-colors: (primary: color, accent: white),
-        slide-func: empty-slide.with(text-size: text-size, text-font: text-font)
+        use-short-title: false,
+        max-length: none,
       )
     }
   }
