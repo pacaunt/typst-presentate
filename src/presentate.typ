@@ -81,4 +81,6 @@
       }
     }
   }
+  // magic ???
+  start-location.update(none)
 }

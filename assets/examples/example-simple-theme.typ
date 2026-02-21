@@ -1,4 +1,4 @@
-#import "@local/presentate:0.2.5": *
+#import "../../src/export.typ": *
 #import themes.simple: *
 
 #show: template.with(
