@@ -47,10 +47,12 @@
     numbering: (n, m) => text(numbering("1 / 1", n, m), fill: gray, size: 0.8em),
     number-align: right,
   )
+  show heading.where(level: 1): set text(size: 1.2em) 
   show heading.where(level: 1): empty-slide
   show heading.where(level: 2): none
   set text(font: "TeX Gyre Heros", size: 20pt)
   show math.equation: set text(font: "TeX Gyre Termes Math")
+  show sty.select("title"): set text(size: 1.2em)
 
   body
 }

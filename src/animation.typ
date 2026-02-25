@@ -137,22 +137,25 @@
     })
 }
 
+
 #let tag(s, name, body, hider: auto) = {
   let (info, ..x) = s
-  let shown = info.tags
+  let displays = info.motion.tags
   if hider == auto { hider = info.tag-hider }
-  if name in shown { body } else { hider(body) }
+  if name in displays { body } else { hider(body) }
 }
 
 #let motion(
   s,
   // contains the tags.
   func,
-  /// This is an array of motion control.
-  /// (A, B, C) means show A then B then C.
-  /// (A, (B, C), C) means shown A, then B + C, and then C.
+  // This is an array of motion control.
+  // (A, B, C) means show A then B then C.
+  // (A, (B, C), C) means shown A, then B + C, and then C.
   controls: (),
   hider: it => none,
+  // If nothing is specified in the controls, whether to show the elment.
+  is-shown: true,
   start: none,
 ) = {
   let (info, ..x) = s
@@ -199,7 +202,8 @@
     rules.at(n - start)
   }
   // put the information to the state.
-  info.tags = shown-tags
+  info.motion = (:)
+  info.motion.tags = shown-tags
   func((info,))
 }
 
