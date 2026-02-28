@@ -190,7 +190,7 @@
 ]
 
 #slide[
-  #let step-item = step-item.with(hider: text.with(fill: gray))
+  #let step-item = _step-item.with(hider: text.with(fill: gray))
   = Item Lists
   #step-item[
     - This is the first Item

@@ -140,7 +140,136 @@
   states.update(s => func(s).at(-1, default: s))
 }
 
-#let step-item(
+
+#let tag = animation.tag
+
+#let motion(
+  // contains the tags.
+  func,
+  /// This is an array of motion control.
+  /// (A, B, C) means show A then B then C.
+  /// (A, (B, C), C) means shown A, then B + C, and then C.
+  controls: (),
+  hider: hide,
+  start: none,
+  update-pause: false,
+) = {
+  let n = controls.len()
+  if n == 0 { n = 1 }
+  context {
+    states.update(s => {
+      if update-pause {
+        s + (start,) + (auto,) * (n - 1)
+      } else {
+        s + ((start,) + (auto,) * (n - 1),)
+      }
+    })
+    animation.motion(
+      states.get(),
+      func,
+      controls: controls,
+      hider: hider,
+      start: start,
+    )
+  }
+}
+
+#let reveal-item(
+  numbering: auto,
+  marker: auto,
+  body-wrapper: it => it,
+  label-wrapper: it => it,
+  // default hider
+  hider: hide,
+  // arguments and indices
+  ..args,
+  body,
+) = context {
+  if body.func() != [].func() {
+    panic("Styling in step-list function is not supported.")
+  }
+
+  let styles = args.named()
+  let indices = args.pos()
+  let numbering = if numbering == auto { enum.numbering }
+  let marker = if marker == auto { list.marker }
+  let uncover = uncover.with(hider: hider)
+  let covers = indices.map(i => {
+    if type(i) not in (array, dictionary) { i = (i,) }
+    uncover.with(..i)
+  })
+
+  let children = body.children
+  let items = children.filter(i => i not in ([], [ ], parbreak()))
+  let is-tight = children.any(c => c == parbreak())
+  let n-child = children.len()
+  let n-covers = covers.len()
+  if n-covers < n-child {
+    // default cover is pause.
+    if covers == () { covers = (uncover.with(from: auto),) * n-child } else {
+      // broadcast the last function.
+      covers += (n-child - n-covers) * (covers.last(),)
+    }
+  }
+
+  covers = covers.map(f => f.with(update-pause: false))
+  let cover-state = state(prefix + "_step-item-cover-state", ())
+  cover-state.update(c => c + (covers,))
+
+  let inside-wrapper(it, func) = func(body-wrapper({
+    // revert to default
+    set enum(numbering: numbering, ..styles)
+    set list(marker: marker, ..styles)
+    it
+  }))
+
+  // parse the items
+  let result = ()
+  for (item, cover) in items.zip(covers) {
+    cover = cover.with(update-pause: true)
+    if item.func() == enum.item {
+      let fields = item.fields()
+      let body = item.body
+      let number = fields.at("number", default: auto)
+      if number == auto {
+        result.push(enum.item(inside-wrapper(body, cover)))
+      } else {
+        result.push(enum.item(number, inside-wrapper(body, cover)))
+      }
+    } else if item.func() == list.item {
+      let body = item.body
+      result.push(list.item(inside-wrapper(body, cover)))
+    } else { result.push(item) }
+  }
+  if is-tight { result.insert(1, parbreak()) }
+
+  // HACK: a function that makes enum and list markers react to states.
+  let react(it) = label-wrapper({
+    context {
+      let func = cover-state.get().last().first()
+      func(it)
+    }
+    cover-state.update(c => {
+      let _ = c.last().remove(0)
+      return c
+    })
+  })
+
+  let new-marker = if type(marker) == array { marker.map(react) } else { react(marker) }
+  let new-numbering = (..n) => react(std.numbering(numbering, ..n))
+
+  set enum(numbering: new-numbering, ..styles)
+  set list(marker: new-marker, ..styles)
+
+  result.sum()
+  cover-state.update(c => {
+    let _ = c.pop()
+    c
+  })
+}
+
+
+#let _step-item(
   body,
   numbering: auto,
   marker: auto,
@@ -180,10 +309,10 @@
       list.item(inside-wrapper(body))
     } else { i }
   })
-  let cover(it) = pause(update: false, marker-wrapper(it))
+  let label-cover(it) = pause(update: false, marker-wrapper(it))
 
-  let new-marker = if type(marker) == array { marker.map(cover) } else { cover(marker) }
-  let new-numbering = (..n) => cover(std.numbering(numbering, ..n))
+  let new-marker = if type(marker) == array { marker.map(label-cover) } else { label-cover(marker) }
+  let new-numbering = (..n) => label-cover(std.numbering(numbering, ..n))
 
   set enum(numbering: new-numbering, ..args)
   set list(marker: new-marker, ..args)
@@ -191,35 +320,34 @@
   children.sum()
 }
 
-#let tag = animation.tag
-
-#let motion(
-  // contains the tags.
-  func,
-  /// This is an array of motion control.
-  /// (A, B, C) means show A then B then C.
-  /// (A, (B, C), C) means shown A, then B + C, and then C.
-  controls: (),
+#let step-item(
+  marker: auto,
+  numbering: auto,
+  body-wrapper: it => it,
+  label-wrapper: it => it,
   hider: hide,
-  start: none,
-  update-pause: false,
-) = {
-  let n = controls.len()
-  if n == 0 { n = 1 }
-  context {
-    states.update(s => {
-      if update-pause {
-        s + (start,) + (auto,) * (n - 1)
-      } else {
-        s + ((start,) + (auto,) * (n - 1),)
-      }
-    })
-    animation.motion(
-      states.get(),
-      func,
-      controls: controls,
-      hider: hider,
-      start: start,
-    )
+  accumulated: true,
+  ..args,
+) = context {
+  let bodies = args.pos()
+  assert(
+    bodies.all(body => body.func() == [].func()),
+    message: "Styling in `step-item` function is not supported.",
+  )
+
+  if bodies.len() == 1 {
+    return _step-item(marker: marker, numbering: numbering, hider: hider, ..args)
   }
+
+  let indices = ()
+  for body in bodies {
+    let children = body.children
+    let items = children.filter(c => c not in ([], [ ], parbreak()))
+    if accumulated {
+      indices += ((from: auto),) + ((from: none),) * (items.len() - 1)
+    } else {
+      indices += (auto,) + (none,) * (items.len() - 1)
+    }
+  }
+  return reveal-item(..indices, bodies.sum())
 }
