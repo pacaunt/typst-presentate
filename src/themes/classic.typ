@@ -50,7 +50,7 @@
   show heading.where(level: 1): set text(size: 1.2em) 
   show heading.where(level: 1): empty-slide
   show heading.where(level: 2): none
-  set text(font: "TeX Gyre Heros", size: 20pt)
+  set text(font: "TeX Gyre Termes", size: 20pt)
   show math.equation: set text(font: "TeX Gyre Termes Math")
   show sty.select("title"): set text(size: 1.2em)
 

@@ -174,7 +174,7 @@
   }
 }
 
-#let reveal-item(
+#let display-item(
   numbering: auto,
   marker: auto,
   body-wrapper: it => it,
@@ -269,7 +269,7 @@
 }
 
 
-#let _step-item(
+#let step-item(
   body,
   numbering: auto,
   marker: auto,
@@ -320,7 +320,7 @@
   children.sum()
 }
 
-#let step-item(
+#let reveal-item(
   marker: auto,
   numbering: auto,
   body-wrapper: it => it,
@@ -335,10 +335,6 @@
     message: "Styling in `step-item` function is not supported.",
   )
 
-  if bodies.len() == 1 {
-    return _step-item(marker: marker, numbering: numbering, hider: hider, ..args)
-  }
-
   let indices = ()
   for body in bodies {
     let children = body.children
@@ -349,5 +345,5 @@
       indices += (auto,) + (none,) * (items.len() - 1)
     }
   }
-  return reveal-item(..indices, bodies.sum())
+  return display-item(..indices, bodies.sum())
 }

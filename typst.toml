@@ -6,7 +6,8 @@ authors = ["pacaunt <@pacaunt>"]
 license = "MIT"
 compiler = "0.13.0"
 repository = "https://github.com/pacaunt/typst-presentate"
-description = "A package to create slides with ease."
+description = "Dynamic presentation with package integration framework"
+keywords = ["presentation", "slide", "slides", "deck"]
 categories = ["presentation"]
 
 [dependencies]

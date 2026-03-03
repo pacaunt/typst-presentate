@@ -16,3 +16,7 @@
   }
   body
 }
+
+#let slide(body, ..args) = {
+  p.slide(..args, block(width: 100%, height: 1fr, body))
+}

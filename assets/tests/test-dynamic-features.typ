@@ -1,5 +1,5 @@
 #import "../../src/themes/structured/progressive-outline.typ": template, slide, empty-slide
-#import "../../src/render.typ": pause, uncover, only, fragments, step-item, alert, transform, render
+#import "../../src/render.typ": pause, uncover, only, fragments, reveal-item, alert, transform, render
 #import "../../src/animation.typ"
 #import "../../src/utils.typ"
 
@@ -17,7 +17,7 @@
   This presentation demonstrates the dynamic capabilities of *Presentate*.
   
   We will cover:
-  #step-item[
+  #reveal-item[
     - Basic flow control (`pause`, `fragments`)
     - Precise visibility (`uncover`, `only`)
     - Relative indices and timeline synchronization
@@ -58,9 +58,9 @@
 #slide[Using `#step-item`][
   `#step-item` is optimized for lists. It can even hide list markers and supports nesting.
   
-  #step-item[
+  #reveal-item[
     - Outer Item 1
-      #step-item[
+      #reveal-item[
         - Nested A
         - Nested B
       ]
@@ -116,7 +116,7 @@
 #slide[Alerts and Emphasis][
   `#alert` wraps content in a function (default is `emph`) on a specific subslide.
   
-  #step-item[
+  #reveal-item[
     - Item 1
     - #alert(auto)[Item 2 (Alerted!)]
     - Item 3
@@ -167,7 +167,7 @@
 
 #slide[Summary][
   Presentate provides a robust framework for:
-  #step-item[
+  #reveal-item[
     - Chaining animations easily.
     - Targeting specific subslides.
     - Synchronizing multiple components.
