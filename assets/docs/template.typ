@@ -31,11 +31,12 @@
   body
 }
 
-#let config(body) = {
+#let config(body, ..args) = {
   show: template.with(
     author: [\@pacaunt],
     title: [Welcome To Presentate!],
     subtitle: [Tools for creating integrated dynamic slides.],
+    handout: eval(sys.inputs.at("handout", default: "false"))
   )
   set raw(lang: "typst")
   show raw: set text(font: "Noto Sans Mono")

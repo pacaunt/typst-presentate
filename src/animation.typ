@@ -121,7 +121,9 @@
     .map(func => (s, ..args) => {
       if type(s) != array or type(s.at(0, default: none)) != dictionary {
         panic(
-          "Did you forget to put the state `s` in the argument of the function `" + repr(func) + "` ?",
+          "Did you forget to put the state `s` in the argument of the function `"
+            + repr(func)
+            + "` ?",
         )
       }
       wrapper(
@@ -138,11 +140,14 @@
 }
 
 
-#let tag(s, name, body, hider: auto) = {
+#let tag(s, name, body, hider: auto, func: it => it) = {
   let (info, ..x) = s
-  let displays = info.motion.tags
-  if hider == auto { hider = info.tag-hider }
-  if name in displays { body } else { hider(body) }
+  let display-info = info.motion.rule.at(name, default: info.motion.default-info)
+  if hider == auto {
+    if display-info.hider == auto { hider = info.tag-hider } else { hider = display-info.hider }
+  }
+  if display-info.func != auto { func = display-info.func }
+  if display-info.status == "revealed" { func(body) } else { hider(body) }
 }
 
 #let motion(
@@ -154,56 +159,141 @@
   // (A, (B, C), C) means shown A, then B + C, and then C.
   controls: (),
   hider: it => none,
-  // If nothing is specified in the controls, whether to show the elment.
-  is-shown: true,
+  // Default show rules of the elements
+  is-shown: false,
   start: none,
 ) = {
   let (info, ..x) = s
   let (pauses, results: (start,)) = indices.resolve-indices(s, start)
   let n = info.subslide
 
-  info.tag-hider = hider
-  if info.handout { info.tag-hider = it => it }
-  // Change the array of controlled tags into dictionary of state.
-  let tags = controls
-    .flatten()
-    .map(name => {
-      if name.contains(".") {
-        name.match(regex(".+\.")).text.trim(".")
-      } else { name }
-    })
-    .dedup()
-  // A dictionary contains the states of each tags.
-  let tags-status = tags.zip((false,) * tags.len()).to-dict()
-  let shown-filter(status) = status.pairs().filter(((k, v)) => v).map(((k, v)) => k)
+  // Rules
+  // name = show once,
+  // name.start = start showing
+  // name.stop = stop showing
+  // (name, func) = apply function once
+  // (name.apply, func) = apply function from now on
+  // (name.start, func) = apply function from now on, and change the shown state to true
+  // (name.stop, func) = apply the function as hider from now on.
+  // name.revert = revert back to identity function
+  let is-command(command) = {
+    (
+      type(command) == str
+        or {
+          (
+            type(command) == array
+              and command.len() == 2
+              and type(command.first()) == str
+              and type(command.last()) == function
+          )
+        }
+    )
+  }
 
-  let rules = ()
-  let shown = ()
-  for rule in controls {
-    if type(rule) == str { rule = (rule,) }
-    shown = ()
-    for name in rule {
-      if name.contains(".") {
-        // alter the showing state of the objects.
-        let (tag, status) = name.split(".")
-        if status == "start" { tags-status.at(tag) = true } else if status == "stop" { tags-status.at(tag) = false }
-      } else {
-        // show only one time
-        shown.push(name)
+  let default-element-info = (
+    name: none,
+    status: if is-shown { "revealed" } else { "hidden" },
+    func: auto,
+    hider: auto,
+  )
+
+  let parse-str-status(string, info: default-element-info) = {
+    info.name = string
+    if not string.contains(".") {
+      info.status = "once"
+    } else {
+      (info.name, info.status) = string.split(".")
+      assert(
+        info.status
+          in (
+            "start",
+            "stop",
+            "apply",
+            "revert",
+          ),
+        message: "Unknown status `"
+          + info.status
+          + "`, the available statuses are `start`, `stop`, `apply`, and `revert`.",
+      )
+    }
+    return info
+  }
+  // panic(parse-str-status("good"))
+  // controls: (..rules)
+  // rule = (..commands)
+  // command -> info
+  let generate-status(command, info: default-element-info) = {
+    assert(
+      is-command(command),
+      message: "The array command must be in the form `(status, function)`.",
+    )
+    info.name = command
+    if type(command) == str {
+      info = parse-str-status(command, info: info)
+      if info.status == "revert" {
+        info.func = auto
+      }
+    } else {
+      info = parse-str-status(command.first())
+      if info.status == "stop" { info.hider = command.last() } else {
+        info.func = command.last()
       }
     }
-    shown.push(shown-filter(tags-status))
-    rules.push(shown.flatten())
+    return info
+  }
+  // panic(generate-status(("good.s", it => it)))
+
+  let parse-a-rule(commands, info: default-element-info) = {
+    if is-command(commands) {
+      commands = (commands,)
+    }
+    commands.map(generate-status.with(info: info))
   }
 
-  let shown-tags = if n < start { () } else if n - start >= rules.len() { 
-    shown-filter(tags-status)
-   } else {
-    rules.at(n - start)
+  let resolve(rules, info: default-element-info) = {
+    let raw-rules = rules.map(parse-a-rule.with(info: info))
+    let result = ()
+    let all-state = (:)
+    let resolved-state = (:)
+    for rule in raw-rules {
+      for command in rule {
+        let name = command.remove("name")
+        if command.status == "stop" { command.status = "hidden" }
+        if command.status == "start" { command.status = "revealed" }
+        if command.status in ("revert", "apply") {
+          if all-state.at(name, default: info).status == "revealed" {
+            command.status = "revealed"
+          } else {
+            command.status == "hidden"
+          }
+        }
+        all-state.insert(name, command)
+        // resolve the `once` status
+        resolved-state = all-state
+        let resolved-command = command
+        if command.status == "once" { resolved-command.status = "revealed" }
+        resolved-state.insert(name, resolved-command)
+        if command.status == "once" { resolved-command.status = "hidden" }
+        all-state.insert(name, resolved-command)
+      }
+
+      result.push(resolved-state)
+    }
+    return result
   }
-  // put the information to the state.
+
+  let resolved-rules = resolve(controls, info: default-element-info)
+  let current-rule = if n < start { () } else if n - start >= controls.len() {
+    resolved-rules.last()
+  } else {
+    resolved-rules.at(n - start)
+  }
+
+  info.tag-hider = hider
+  if info.handout { info.tag-hider = it => it }
   info.motion = (:)
-  info.motion.tags = shown-tags
+  info.motion.rule = current-rule
+  info.motion.default-info = default-element-info
   func((info,))
 }
 

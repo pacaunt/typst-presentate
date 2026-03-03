@@ -1,0 +1,32 @@
+#import "../../../src/export.typ": * 
+
+#import "@preview/alchemist:0.1.8" as alc
+
+#set page(paper: "presentation-16-9")
+#set text(size: 40pt)
+
+// start-example
+#let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
+#let (single,) = animation.animate(modifier: modifier, alc.single)
+#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // set atom colors to white
+
+#slide[
+  #set align(center + horizon)
+  #render(s => (
+    {
+      alc.skeletize({
+        fragment(s, "H_3C")
+        s.push(auto)
+        single(s, angle: 1)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, angle: -1, from: 0)
+        fragment(s, "CH_2")
+        s.push(auto)
+        single(s, from: 0, angle: 1)
+        fragment(s, "CH_3")
+      })
+    },
+    s,
+  ))
+]

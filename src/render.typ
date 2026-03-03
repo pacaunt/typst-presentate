@@ -140,7 +140,6 @@
   states.update(s => func(s).at(-1, default: s))
 }
 
-
 #let tag = animation.tag
 
 #let motion(

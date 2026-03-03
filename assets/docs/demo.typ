@@ -11,7 +11,7 @@
   })
 }
 #show: config
-#set-options(handout: false, freeze-states: true)
+#set-options(freeze-states: true)
 
 // The contents
 
