@@ -152,6 +152,7 @@
   hider: hide,
   start: none,
   update-pause: false,
+  is-shown: false,
 ) = {
   let n = controls.len()
   if n == 0 { n = 1 }
@@ -169,6 +170,7 @@
       controls: controls,
       hider: hider,
       start: start,
+      is-shown: is-shown,
     )
   }
 }

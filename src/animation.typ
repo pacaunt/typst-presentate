@@ -241,7 +241,7 @@
     }
     return info
   }
-  // panic(generate-status(("good.s", it => it)))
+  // panic(generate-status(("good", it => it)))
 
   let parse-a-rule(commands, info: default-element-info) = {
     if is-command(commands) {
@@ -256,6 +256,8 @@
     let all-state = (:)
     let resolved-state = (:)
     for rule in raw-rules {
+      // save the current resolved state 
+      resolved-state = all-state
       for command in rule {
         let name = command.remove("name")
         if command.status == "stop" { command.status = "hidden" }
@@ -264,19 +266,26 @@
           if all-state.at(name, default: info).status == "revealed" {
             command.status = "revealed"
           } else {
-            command.status == "hidden"
+            command.status = "hidden"
           }
         }
-        all-state.insert(name, command)
         // resolve the `once` status
-        resolved-state = all-state
         let resolved-command = command
-        if command.status == "once" { resolved-command.status = "revealed" }
+        if command.status == "once" {
+          if command.func == auto { resolved-command.status = "revealed" } else {
+            resolved-command.status = all-state.at(name, default: info).status
+          }
+        }
         resolved-state.insert(name, resolved-command)
-        if command.status == "once" { resolved-command.status = "hidden" }
+        if command.status == "once" {
+          if command.func == auto { resolved-command.status = "hidden" } else {
+            resolved-command.status = all-state.at(name, default: info).status
+            resolved-command.func = auto
+          }
+        }
+        // for resetting the `once` specification.
         all-state.insert(name, resolved-command)
       }
-
       result.push(resolved-state)
     }
     return result
@@ -284,7 +293,7 @@
 
   let resolved-rules = resolve(controls, info: default-element-info)
   let current-rule = if n < start { () } else if n - start >= controls.len() {
-    resolved-rules.last()
+    resolved-rules.at(-1, default: (:))
   } else {
     resolved-rules.at(n - start)
   }

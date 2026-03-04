@@ -16,6 +16,7 @@
   background: gray.lighten(70%),
   stroke: 0.5pt,
   gutter: .5em,
+  numbered: true,
   ..styles,
 ) = {
   let file = read(path, encoding: none)
@@ -23,7 +24,7 @@
   for i in range(pages) {
     imgs.push(block(stroke: stroke, {
       image(path, page: i + 1)
-      place(center + horizon, text(.5in, gray.transparentize(70%))[#{ i + 1 }])
+      if numbered { place(center + horizon, text(.5in, gray.transparentize(70%))[#{ i + 1 }]) }
     }))
   }
   grid(
@@ -105,7 +106,7 @@
 #show raw: zebraw.with(lang: false)
 
 
-#outline()
+#outline(depth: 2)
 
 #pagebreak()
 
@@ -241,7 +242,7 @@ If you want to change the hiding method of the text from completely hiding it to
 
 == Precise control of the animation: `motion` and `tag` function
 
-`motion` function provides a _workspace_ for rendering content groups that are named by the `tag` function. The anatomy of this function is 
+`motion` function provides a _workspace_ for rendering content groups that are named by the `tag` function. The anatomy of this function is
 ```typ
 #motion(s => [
   // some content and `tag(s, name, body)`
@@ -254,28 +255,130 @@ Motion function accepts only one positional argument which is a *function* that 
 
 #source-example("img/motion-tags-simple.typ")
 #render-pdf("img/motion-tags-simple.pdf", pages: 5)
-This framework allows user to control the animation step without worrying about the location of each elements in the source code. 
-For the specification of *controls* argument, here is the syntax: 
-- The `controls` only accept *an array of rules* that will be applied on each subslides, similar to `transform` and the functions. 
+This framework allows user to control the animation step without worrying about the location of each elements in the source code.
+For the specification of *controls* argument, here is the syntax:
+- The `controls` only accept *an array of rules* that will be applied on each subslides, similar to `transform` and the functions.
 - Each rule can be a single command or an array of commands that will be use at the same subslide.
 For each command,
-- You can provide a name of the tag to show the content *once*, 
-- or provide with a suffix `.start` to start showing the content from the current step, 
-- or with a suffix `.stop` to stop showing the content. 
+- You can provide a name of the tag to show the content *once*,
+- or provide with a suffix `.start` to start showing the content from the current step,
+- or with a suffix `.stop` to stop showing the content.
 The following example is more complex and use all of the control rule specification.
 #source-example("img/motion-tags.typ")
 #render-pdf("img/motion-tags.pdf", pages: 6)
-This was created with integration of #footlink("https://typst.app/universe/package/cetz", [CeTZ]) pacakge, showing the capability to integrate with other packages. This integration works because of the `hider` argument in the motion function is the CeTZ's hide function, which is compatible for its own elements. Note that for more complex illustrations, you can provide custom `hider` to the `tag` function to use a specific hider for that group.
+This was created with integration of #footlink("https://typst.app/universe/package/cetz", [CeTZ]) package, showing the capability to integrate with other packages. This integration works because of the `hider` argument in the motion function is the CeTZ's hide function, which is compatible for its own elements. Note that for more complex illustrations, you can provide custom `hider` to the `tag` function to use a specific hider for that group.
 
-
+== Advanced `motion`'s control command specification
+For the version after 0.2.5, you can use a special syntax that let you modify the content in the tag group by applying some functions to it. The syntax of the command is
+```typc
+("{name}", {func}) // for apply the function once,
+("{name}.start", {func}) // for starting showing the content and apply the function,
+("{name}.apply", {func}) // for applying the function if it is showing,
+"{name}.revert" // to revert back to original (identity) function
+```
+Here is an example of using this functionality: to annotate a mathematical expression:
+#source-example("img/motion-func.typ")
+#render-pdf("img/motion-func.pdf", pages: 3)
 
 = Package Intregration Framework
-
+Since each package has their own element and data types, to interact with them, Presentate must provide some functions that leave no trace to ensure there will be no conflict between packages. This functionality has been proposed in some ways before in the recent examples: changing the `hider` method of each animation functions.  The later functions that will be shown use a similar logic; you have to specify how to _hide_ the content from each packages _manually_. Moreover, since the functions leave no trace, Presentate cannot know what animation you have used, so you have to update each animation to Presentate _manually_.
 == The `render` workspace
+`render` is a function that accepts another function that returns *an array of length two, containing the content and a state*. The syntax is as follows:
+```typ
+#render(s => ([
+  #import animation: *
+  // your content
+], s))
+```
+where `s` is the *Presentate's state*, which is an array containing
+- a dictionary of current presentation infomation, it is the first member of this array,
+  - you can access the current subslide number by `s.at(0).subslide`,
+  - the curent number of pauses by `s.at(0).pauses`, for example.
+- the indices of the animation from each Presentate's animation functions.
+The content inside `render` can be anything, but it needs to be a `content` data type. The state `s` here will be used by the functions in `animation` module, as will be presented in the next section.
 
 == `animation` module
+To fully use the animation in `render` with other packages, you can import the `animation` module inside the render call as shown in the last code listing.  This module provides a similar set of functions like `pause`, `uncover`, `only`, and others, but all of them will be called a little bit different from the normal usage, as you have to put the state `s` *as the first positional argument* in the function _every time_, like
+```typ
+#render(s => ({
+  import animation: *
+  pause(s, { /* your content */  })
+}, s))
+```
+Moreover, to make Presentate aware of the animation, you have to update the state `s` manually. Since `s` is an array, you can update by using `s.push(idx)` call, where `idx` is the indices that are required for the last animation to perform. For example, the `pause` function needs an additional new subslide, so we update `s` by `s.push(auto)` like in the following example.
+#source-example("img/animation-pause.typ")
+#render-pdf("img/animation-pause.pdf", pages: 4)
+You can see that the diagram is jiggling, because by default, all functions in the `animation` module uses `it => none` as hider function. You can change it to suit the package's hide function, for example,
+#source-example("img/cetz-animation.typ")
+#render-pdf("img/cetz-animation.pdf", pages: 3)
+Not only you can specify `auto` as update indices, in fact, you can put
+- an integer like `s.push(1)`, `s.push(2)` to *set* the current pause to that subslide number,
+- relative indices like normal, but each index will *always* update the pause number,
+- an _array_ of any type of indices to prevent the pause update.
+The specified indices are only for the current animation. For total number of frames needed to render all animation, Presentate will calculate it _automatically_.
 
+== Animate the inanimate: a custom way to hide
+Some packages do not provide their `hide` function to hide their elements. Presentate also has a function for handle that case, which is the `animate` function in the `animation` module. This `animate` create another function that _react_ with the current state `s`, so that the element will be shown one by one based on the current number of pauses, just like what normal pause do. To demonstrate this functionality, we will use an example to draw a chemical structure from #footlink("https://typst.app/universe/package/alchemist/")[Alchemist] package:
+#source-example("img/alchemist.typ")
+#render-pdf("img/alchemist.pdf", pages: 5)
+The animate function have a `modifier` argument that receives a function that will be called when the element is hidden. In this example, the single bond is hidden by setting its stroke to `none` and the atoms are hidden by setting their text color to white.  The animate can process multiple functions at the same time if those functions require the same modifier to be hidden, so `animate` will returns *an array* of _modified_ functions in the same order as specified, as shown when processing `alc.single` and `alc.double` with the same modifier.
+
+= Configuration Options
+You can set the following options to Presentate:
+- `handout: false` to create a handout version. This option will disable all of the animation and exposed all of the hidden content.
+- `drafted: false` to show the current subslide number.
+- `freeze-states: true` to freeze the states and counters. Note that this functionality was inherited from Touying package, and it will freeze only the specified states and counters, which can be set in `frozen-states-and-counters` option.
+- `frozen-states-and-counters` to indicate which states and counters do Presentate need to freeze. The default is
+  ```typc
+  (
+    counter(figure.where(kind: image)),
+    counter(figure.where(kind: table)),
+    counter(footnote),
+    counter(heading),
+    counter(math.equation),
+  )
+  ```
+All of these options can be set by
+```typ
+#set-options(..options)
+```
+where `options` are the options in the form `key: value`.
 = Exposed Utilities
 
-= Themes
 
+== Internal states
+Internally, Presentate store all of the slides information in a state in the `store` module. You can access this state by
+```typc
+context store.states.get()
+```
+The state's information will be an array of indices with the global info in the first member of this array. It is the same `s` as you can access from `render` or `motion` function.
+
+= Themes
+There are 2 types of themes that Presentate provides:
++ *normal type*, which is just a decoration of the slide,
+  - *default* theme, just a normal, plain presentation,
+  - *simple* theme, a decorative theme with auto heading continuation,
+  - *classic* theme, a plain theme that slides can inherit the same title from the current level 2 heading and auto fit-to-height image insertion.
++ *structured themes*, which contains a functionality from #footlink("https://typst.app/universe/package/navigator")[Navigator] package. These amazing themes are created by #link("https://github.com/eusebe")[David Hajage], which has a complete guide of how to use the themes in  #link("https://github.com/pacaunt/typst-presentate/blob/main/assets/manual/themes-guide.pdf")[theme guide].
+#let render-pdf = render-pdf.with(numbered: false)
+
+=== Default Theme
+#render-pdf("../examples/example-default-theme.pdf", pages: 3)
+#source-example("../examples/example-default-theme.typ")
+
+=== Simple Theme 
+#render-pdf("../examples/example-simple-theme.pdf", pages: 6)
+#source-example("../examples/example-simple-theme.typ")
+
+=== Classic Theme 
+#render-pdf("../examples/example-classic-theme.pdf", pages: 3)
+#source-example("../examples/example-classic-theme.typ")
+
+=== Structured Themes 
+#let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
+You can visit the examples of the structured themes here: 
+  - #link(home + "examples/example-minimal.pdf")[minimal] 
+  - #link(home + "examples/example-progressive-outline.pdf")[progressive-outline] 
+  - #link(home + "examples/example-sidebar.pdf")[sidebar]
+  - #link(home + "examples/example-split.pdf")[split] 
+  - #link(home + "examples/example-miniframes.pdf")[miniframes]
