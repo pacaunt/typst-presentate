@@ -9,6 +9,3 @@ repository = "https://github.com/pacaunt/typst-presentate"
 description = "Simple dynamic presentation with flexible package integration framework"
 keywords = ["presentation", "slide", "slides", "deck"]
 categories = ["presentation"]
-
-[dependencies]
-navigator = "0.1.3"
