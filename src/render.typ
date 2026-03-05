@@ -498,7 +498,7 @@
 
 /// Reveal the item group by group.
 /// -> content 
-#let step-item(
+#let reveal-item(
   /// start index of the animation 
   /// -> index 
   start: auto,

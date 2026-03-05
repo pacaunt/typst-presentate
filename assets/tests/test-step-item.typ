@@ -56,7 +56,7 @@
 ]
 
 #slide[
-  #step-item[
+  #reveal-item[
     - Show on first
       #step-item[
         - First Subitem 

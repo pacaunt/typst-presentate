@@ -4,7 +4,7 @@
 // start-example 
 #slide[
   The most known Newton's Law: 
-  #step-item[
+  #reveal-item[
     - $sum F = m a$, the second law,
   ][
     - $F_"reaction" = F_"action"$, the third law 
