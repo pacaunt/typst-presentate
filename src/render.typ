@@ -2,9 +2,21 @@
 #import "store.typ": is-kind, prefix, states
 #import "indices.typ"
 #import "animation.typ"
-/// This file is use to render in mark up mode [content output] only.
+// This file is use to render in mark up mode [content output] only.
 
-#let pause(body, hider: hide, update: true) = {
+/// Content that are wrapped in this function will be revealed one after another.
+/// -> content
+#let pause(
+  /// the content
+  /// -> content
+  body,
+  /// hiding function
+  /// -> function
+  hider: hide,
+  /// whether to update the number of pauses.
+  /// -> bool
+  update: true,
+) = {
   context {
     animation.pause(states.get() + (auto,), hider: hider, {
       if update { states.update(s => if update { s + (auto,) } else { s + ((auto,),) }) }
@@ -13,7 +25,28 @@
   }
 }
 
-#let uncover(..n, body, from: (), to: (), hider: hide, update-pause: false) = {
+/// Reveal content on specific subslide, with space preserved.
+/// -> content
+#let uncover(
+  /// indices to show the content.
+  /// -> index
+  ..n,
+  /// the content.
+  /// -> content
+  body,
+  /// index to start showing the content.
+  /// -> index
+  from: (),
+  /// index to stop showing the content.
+  /// -> index
+  to: (),
+  /// hiding function
+  /// -> function
+  hider: hide,
+  /// whether to update the current number of pauses.
+  /// -> bool
+  update-pause: false,
+) = {
   context {
     states.update(s => {
       let n = n.pos()
@@ -29,16 +62,50 @@
   }
 }
 
-#let only(..n, body, from: (), to: (), hider: it => none, update-pause: false) = {
+/// Show content on specific subslide without preserving space.
+/// -> content
+#let only(
+  /// indices to show the content.
+  /// -> index
+  ..n,
+  /// the content.
+  /// -> content
+  body,
+  /// index to start showing the content.
+  /// -> index
+  from: (),
+  /// index to stop showing the content.
+  /// -> index
+  to: (),
+  /// hiding function
+  /// -> function
+  hider: it => none,
+  /// whether to update the current number of pauses.
+  /// -> bool
+  update-pause: false,
+) = {
   uncover(..n, body, from: from, to: to, hider: hider, update-pause: update-pause)
 }
 
+/// Show the content one by one.
+/// -> content
 #let fragments(
+  /// animation start index
+  /// -> index
   start: auto,
+  /// contents to be revealed.
+  /// -> content
   ..bodies,
+  /// hiding function
+  /// -> function
   hider: hide,
+  /// whether to update the current number of pauses.
+  /// -> bool
   update-pause: true,
+  /// whether to update the current number of pauses for each content inside.
+  /// -> bool
   update-increment: true,
+  /// A function wrapper that can wrap the content.
   item-wrapper: it => it,
 ) = {
   let bodies = bodies.pos().map(item-wrapper)
@@ -67,15 +134,30 @@
     })
   }
 }
-}
 
+/// Transform a content by passing it to some functions.
+/// -> content
 #let transform(
+  /// start showing index
+  /// -> index
   start: auto,
+  /// the content
+  /// -> content
   body,
+  /// the functions,
+  /// -> function
   ..funcs,
+  /// whether to keep the last animated result when all of the animation has been shown.
+  /// -> bool
   repeat-last: true,
+  /// hiding function
+  /// -> function
   hider: hide,
+  /// whether to update the current number of pauses.
+  /// -> bool
   update-pause: true,
+  /// A function to apply before the start index
+  /// -> function
   before-func: hide,
 ) = {
   context animation.transform(
@@ -97,7 +179,28 @@
   })
 }
 
-#let alert(..n, from: (), to: (), body, func: emph, update-pause: false) = {
+/// Alert a text to make it pop.
+/// -> content
+#let alert(
+  /// indices to alert.
+  /// -> index
+  ..n,
+  /// start index to alert
+  /// -> index
+  from: (),
+  /// stop index to alert
+  /// -> index
+  to: (),
+  /// the content
+  /// -> content
+  body,
+  /// alerted function, default is Typst's emphasis function.
+  /// -> function
+  func: emph,
+  /// whether to update the current number of pauses
+  /// -> bool
+  update-pause: false,
+) = {
   let kwargs = n.named()
   let n = n.pos()
   if n.len() == 0 {
@@ -115,7 +218,21 @@
   }
 }
 
-#let render(start: auto, func) = {
+/// Workspace for creating animation by accessing Presentate's internal states. Use with the animation module.
+/// ```typ
+/// #render(s => ({
+///   import animation: *
+///   // your content
+/// }, s))
+/// ```
+#let render(
+  /// When to start showing the rendered content.
+  /// -> index
+  start: auto,
+  /// A function that returns an array of length two consisting of the rendered content and the updated state `s`.
+  /// -> function
+  func,
+) = {
   states.update(s => s + (start,))
   // func must return two things: display content and updated states.
   assert(
@@ -140,18 +257,62 @@
   states.update(s => func(s).at(-1, default: s))
 }
 
-#let tag = animation.tag
+/// Use with the `motion` function. Tagging the content into a group with a name for animating with `motion`'s `controls` rules.
+/// -> any
+#let tag(
+  /// Presentate's state. Must be from `motion` workspace.
+  /// -> presentate-state
+  s,
+  /// name of the group
+  /// -> str
+  name,
+  /// the content 
+  /// -> any 
+  body,
+  /// the hider used to hide the content. If this is set to `auto`, the hider will inherits from `motion` workspace. 
+  /// -> function | auto 
+  hider: auto,
+  /// default content wrapper
+  /// -> function
+  func: it => it,
+) = animation.tag(
+  s,
+  name,
+  body,
+  hider: hider,
+  func: func,
+)
 
+/// Motion workspace. This function allows user to control the presence and modify the content of each tags directly for each subslide. 
+/// ```typ
+/// #motion(s => [
+///   // your content with tags 
+/// ], controls: (
+///   .. // an array of rules indicating what to be shown
+/// ))
+/// ```
+/// -> content
 #let motion(
   // contains the tags.
+  /// A function that receives Presentate's state `s` and returns a content. 
+  /// -> function 
   func,
   /// This is an array of motion control.
-  /// (A, B, C) means show A then B then C.
-  /// (A, (B, C), C) means shown A, then B + C, and then C.
+  /// `(A, B, C)` means show `A` then `B` then `C`.
+  /// `(A, (B, C), C)` means show `A`, then `B` + `C`, and then `C`.
+  /// -> array
   controls: (),
+  /// default hider for contents in the tags
+  /// -> function
   hider: hide,
+  /// start index of the animation
+  /// -> index
   start: none,
+  /// whether to update the pauses after the animation
+  /// -> bool
   update-pause: false,
+  /// whether to show the content in the tags by default
+  /// -> bool
   is-shown: false,
 ) = {
   let n = controls.len()
@@ -269,32 +430,46 @@
   })
 }
 
-
+/// Incrementally show items in enums/lists. 
+/// This animation always update the current number of pauses. 
+/// -> content 
 #let step-item(
+  /// The list/enum. Must not contains any set/show rules. 
+  /// -> enum | list
   body,
+  /// start index of the animation 
+  /// -> index 
+  start: auto,
+  /// numbering for enums. `auto` means inherting from the current style of `enum`.
+  /// -> function | str
   numbering: auto,
+  /// marker for lists. `auto` means inheriting from the current style of `list`.
   marker: auto,
   body-wrapper: it => it,
-  marker-wrapper: it => it,
+  label-wrapper: it => it,
+  /// hider for the list/enums 
+  /// -> function
   hider: hide,
+  /// other styling arguments will be passed to enum/list set rules.
+  /// -> any 
   ..args,
 ) = context {
   if body.func() != [].func() {
     panic("Styling in step-list function is not supported.")
   }
 
-  let pause = pause.with(hider: hider)
-
+  let uncover = uncover.with(hider: hider)
   let numbering = if numbering == auto { enum.numbering }
   let marker = if marker == auto { list.marker }
 
-  let inside-wrapper(it) = pause({
+  let inside-wrapper(it) = uncover(from: auto, update-pause: true, {
     // revert to default
     set enum(numbering: numbering, ..args)
     set list(marker: marker, ..args)
     body-wrapper(it)
   })
 
+  uncover((rel: -1, to: start), [], update-pause: true)
   let children = body.children.map(i => {
     if i.func() == enum.item {
       let fields = i.fields()
@@ -310,7 +485,7 @@
       list.item(inside-wrapper(body))
     } else { i }
   })
-  let label-cover(it) = pause(update: false, marker-wrapper(it))
+  let label-cover(it) = uncover(update-pause: false, from: auto, label-wrapper(it))
 
   let new-marker = if type(marker) == array { marker.map(label-cover) } else { label-cover(marker) }
   let new-numbering = (..n) => label-cover(std.numbering(numbering, ..n))
@@ -321,13 +496,27 @@
   children.sum()
 }
 
-#let reveal-item(
-  marker: auto,
+/// Reveal the item group by group.
+/// -> content 
+#let step-item(
+  /// start index of the animation 
+  /// -> index 
+  start: auto,
+  /// numbering for enums. `auto` means inherting from the current style of `enum`.
+  /// -> function | str
   numbering: auto,
+  /// marker for lists. `auto` means inheriting from the current style of `list`.
+  marker: auto,
   body-wrapper: it => it,
   label-wrapper: it => it,
+  /// hider for the list/enums 
+  /// -> function
   hider: hide,
+  /// whether to show the shown list/enum items. If set to `false`, each list/enum item will be shown only once per animation. 
+  /// -> bool
   accumulated: true,
+  /// the enum/list 
+  /// -> enum | list
   ..args,
 ) = context {
   let bodies = args.pos()
@@ -346,5 +535,6 @@
       indices += (auto,) + (none,) * (items.len() - 1)
     }
   }
-  return display-item(..indices, bodies.sum())
+  uncover((rel: -1, to: start), [], update-pause: true)
+  display-item(..indices, bodies.sum())
 }

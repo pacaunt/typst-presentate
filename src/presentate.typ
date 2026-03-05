@@ -1,4 +1,4 @@
-#import "freeze_counters.typ": freeze-states-mark, start-location
+#import "freeze-counters.typ": freeze-states-mark, start-location
 #import "utils.typ"
 #import "indices.typ"
 #import "animation.typ": pdfpc-slide-markers
@@ -41,11 +41,23 @@
   pagebreak(weak: true)
 }
 
+/// Presentate slide function 
+/// -> content 
 #let slide(
+  /// the content on the slide 
+  /// -> content 
   body,
+  /// Total number of subslides needed. `auto` means detecting automatically. 
+  /// -> auto | int 
   steps: auto,
+  /// function that wraps only the content. 
+  /// -> function 
   body-fn: it => it,
+  /// function that wraps the whole slide. 
+  /// -> function 
   preamble: it => it,
+  /// whether this should be counted as a logical slide. This effects page numbering as non-logical slide will have a skipped page number. 
+  /// -> bool
   logical-slide: true,
 ) = {
   // Save the location, idea from Touying.

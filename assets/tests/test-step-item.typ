@@ -1,5 +1,5 @@
 #import "../../src/export.typ": * 
-#import "../../src/render.typ": reveal-item
+#import "../../src/render.typ": step-item
 #import themes.classic: template, slide
 
 #show: template 
@@ -7,11 +7,11 @@
 == Test `#step-item` 
 #slide[
   *The Current Hack*
-  #reveal-item[
+  #step-item(start: none)[
     - First 
-      #reveal-item[
+      #step-item[
         - First 
-          #reveal-item[
+          #step-item[
             - First 
           ]
       ]
@@ -56,9 +56,9 @@
 ]
 
 #slide[
-  #reveal-item[
+  #step-item[
     - Show on first
-      #reveal-item[
+      #step-item[
         - First Subitem 
         - Second Subitem
       ]
@@ -69,5 +69,14 @@
   ][
     - Show on third
     - Show on third
+  ]
+]
+
+== New Test of `step-item` 
+#slide[
+  #step-item(start: none)[
+    - He 
+    - Second 
+    - Last 
   ]
 ]

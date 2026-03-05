@@ -27,7 +27,7 @@
         ref = pauses + 1
       } else if ref == none {
         ref = pauses
-      } else {
+      } else if type(ref) != int {
         panic("Cannot resolve relative index.")
       }
       let idx = ref + idx.at("rel")

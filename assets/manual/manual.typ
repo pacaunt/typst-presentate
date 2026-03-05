@@ -1,6 +1,7 @@
 #import "@preview/muchpdf:0.1.2": muchpdf
 #import "@preview/zebraw:0.6.1": zebraw
 #import "@preview/oxifmt:1.0.0": strfmt
+#import "@preview/tidy:0.4.3"
 
 #let info = toml("../../typst.toml")
 
@@ -92,7 +93,10 @@
 
 // Document
 #set page(numbering: "1")
-#set heading(numbering: "1.1 ")
+#show selector.or(
+  heading.where(level: 1),
+  heading.where(level: 2),
+): set heading(numbering: "1.1 ")
 #show heading: set block(above: 1.4em, below: 1em)
 #show heading.where(level: 3): set heading(numbering: none)
 #set par(justify: true, first-line-indent: 1.2em)
@@ -219,11 +223,15 @@ If you want to reveal the items chunk by chunk, Presentate also have the `reveal
 #source-example("img/reveal-item.typ")
 #render-pdf("img/reveal-item.pdf", pages: 3)
 
+Note that both `step-item` and `reveal-item` function receive `start: auto` argument, which indicates when will the first item (or item group) be revealed.
+
 = Advanced Usage
 == Groupping pauses: the `fragments` function
 This function works like a shorthand for multiple pause/uncover calls. Moreover, you can choose whether to make it update the current pause by `update-pause` argument.
 #source-example("img/fragments.typ")
 #render-pdf("img/fragments.pdf", pages: 5)
+
+You can indicate when to start the animation by specifying `start: {index}`, which is `auto` by default.
 
 == Change the hiding method: the `hider` argument
 Every animation function in Presentation has a named argument `hider`, which is a function that used internally to _hide_ the content. For example,
@@ -366,19 +374,48 @@ There are 2 types of themes that Presentate provides:
 #render-pdf("../examples/example-default-theme.pdf", pages: 3)
 #source-example("../examples/example-default-theme.typ")
 
-=== Simple Theme 
+=== Simple Theme
 #render-pdf("../examples/example-simple-theme.pdf", pages: 6)
 #source-example("../examples/example-simple-theme.typ")
 
-=== Classic Theme 
+=== Classic Theme
 #render-pdf("../examples/example-classic-theme.pdf", pages: 3)
 #source-example("../examples/example-classic-theme.typ")
 
-=== Structured Themes 
+=== Structured Themes
 #let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
-You can visit the examples of the structured themes here: 
-  - #link(home + "examples/example-minimal.pdf")[minimal] 
-  - #link(home + "examples/example-progressive-outline.pdf")[progressive-outline] 
-  - #link(home + "examples/example-sidebar.pdf")[sidebar]
-  - #link(home + "examples/example-split.pdf")[split] 
-  - #link(home + "examples/example-miniframes.pdf")[miniframes]
+You can visit the examples of the structured themes here:
+- #strong[minimal]
+  #render-pdf("../examples/example-minimal.pdf", pages: 6)
+  #link(home + "examples/example-minimal.typ")[Source]
+- #strong[progressive-outline]
+  #render-pdf("../examples/example-progressive-outline.pdf", pages: 6)
+  #link(home + "examples/example-progressive-outline.typ")[Source]
+- #strong[sidebar]
+  #render-pdf("../examples/example-sidebar.pdf", pages: 6)
+  #link(home + "examples/example-sidebar.typ")[Source]
+- #strong[split]
+  #render-pdf("../examples/example-split.pdf", pages: 6)
+  #link(home + "examples/example-split.typ")[Source]
+- #strong[miniframes]
+  #render-pdf("../examples/example-miniframes.pdf", pages: 6)
+  #link(home + "examples/example-miniframes.typ")[Source]
+
+= References
+#set par(first-line-indent: 0em)
+#show heading.where(level: 3): it => {
+  set text(size: 1.2em)
+  set align(center)
+  set text(font: "JetBrainsMono NF")
+  rect(it) 
+}
+#let render-info = tidy.parse-module(read("../../src/render.typ"))
+
+== Animation Functions 
+#tidy.show-module(render-info)
+
+== Presentate Slide Function 
+#tidy.show-module(tidy.parse-module(read("../../src/presentate.typ")))
+
+== Special Function in `animation` module 
+#tidy.show-module(tidy.parse-module(read("../../src/animation.typ")))

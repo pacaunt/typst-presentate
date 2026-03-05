@@ -108,13 +108,20 @@
   uncover(s, ..n, func(body), hider: it => body, from: from, to: to)
 }
 
-// Modify the function so that it can react to the state variable `s`
-// Default behaviour is like `pause`
+/// Modify the function so that it can react to the state variable `s`
+/// Default behaviour is like `pause`
 #let animate(
+  /// The orignial functions
+  /// -> function
   ..funcs,
   wrapper: pause,
+  /// hiding function
+  /// -> function
   hider: it => none,
-  modifier: none, // if it is not `none` then it must be `(func, ..args) => ..`
+  /// modifier for hiding the content.
+  /// if it is not `none` then it must be `(func, ..args) => ..`
+  /// -> function | none
+  modifier: none, 
 ) = {
   funcs
     .pos()
