@@ -6,7 +6,7 @@ For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-present
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.2.5": *
+#import "@preview/presentate:0.2.6": *
 ```
 and then, the functions are automatically available. 
 
