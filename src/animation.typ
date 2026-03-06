@@ -5,7 +5,7 @@
 // show only when the number of pauses are less than or equal to the subslide number.
 #let pause(s, body, hider: it => none) = {
   let (info, ..idx) = s
-  let (pauses,) = indices.resolve-indices(s)
+  let (pauses,) = indices.resolve(s)
   if pauses <= info.subslide or info.handout {
     body
   } else { hider(body) }
@@ -14,7 +14,7 @@
 
 #let uncover(s, ..n, body, hider: hide, from: (), to: ()) = {
   let (info, ..x) = s
-  let (pauses, results: (..n)) = indices.resolve-indices(s, ..n)
+  let (pauses, results: (..n)) = indices.resolve(s, ..n)
 
   //  Show only when the subslides are in the specified indices, or in the range of from-to.
   // Minideck's original
@@ -26,7 +26,7 @@
     }
     if to != () { tmp.push(to) }
 
-    let (results: tmp) = indices.resolve-indices(s, ..tmp)
+    let (results: tmp) = indices.resolve(s, ..tmp)
 
     if tmp.len() == 1 {
       let (from,) = tmp
@@ -59,7 +59,7 @@
   item-wrapper: it => it,
 ) = {
   let (info, ..x) = s
-  let (results: (start,)) = indices.resolve-indices(s, start)
+  let (results: (start,)) = indices.resolve(s, start)
   bodies = bodies.pos().map(item-wrapper)
   let last-index = if not repeat-last { start + bodies.len() - 1 } else { () }
 
@@ -83,7 +83,7 @@
   hider: it => none,
 ) = {
   let (info, ..x) = s
-  let (results: (start,)) = indices.resolve-indices(s, start)
+  let (results: (start,)) = indices.resolve(s, start)
   funcs = funcs
     .pos()
     .map(f => {
@@ -171,7 +171,7 @@
   start: none,
 ) = {
   let (info, ..x) = s
-  let (pauses, results: (start,)) = indices.resolve-indices(s, start)
+  let (pauses, results: (start,)) = indices.resolve(s, start)
   let n = info.subslide
 
   // Rules

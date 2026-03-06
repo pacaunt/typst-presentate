@@ -1,5 +1,5 @@
 #import "utils.typ"
-#import "store.typ": is-kind, prefix, states
+#import "store.typ": prefix, states
 #import "indices.typ"
 #import "animation.typ"
 // This file is use to render in mark up mode [content output] only.
@@ -114,7 +114,7 @@
     context {
       states.update(s => s + (start,))
       let s = states.get()
-      let (pauses, results: (start,)) = indices.resolve-indices(s, start)
+      let (pauses, results: (start,)) = indices.resolve(s, start)
       for (i, body) in bodies.enumerate() {
         if i > 0 { states.update(s => s + (auto,)) }
 
@@ -170,7 +170,7 @@
     repeat-last: repeat-last,
   )
   states.update(s => {
-    let (pauses, results: (start,)) = indices.resolve-indices(s, start)
+    let (pauses, results: (start,)) = indices.resolve(s, start)
     if update-pause {
       s + (start + funcs.pos().len() - 1,)
     } else {

@@ -83,7 +83,7 @@
     let s = states.get()
     let (info, ..x) = s
     if steps == auto {
-      (steps,) = indices.resolve-indices(s)
+      (steps,) = indices.resolve(s)
     }
     if not info.handout {
       // Polylux's originals
