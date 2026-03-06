@@ -401,7 +401,7 @@ You can visit the examples of the structured themes here:
   #render-pdf("../examples/example-miniframes.pdf", pages: 6)
   #link(home + "examples/example-miniframes.typ")[Source]
 
-= References
+= Function Reference
 #set par(first-line-indent: 0em)
 #show heading.where(level: 3): it => {
   set text(size: 1.2em)
