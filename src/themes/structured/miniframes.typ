@@ -24,7 +24,11 @@
   if nav-opts.position == "bottom" { st-inset.insert("top", 1.5em) }
   let st = slide-title(resolve-slide-title(title), size: 1.2em, weight: "bold", inset: st-inset)
 
-  let bar = render-miniframes()
+  let nav-config = navigator-config.get()
+  let sel = nav-config.at("slide-selector", default: metadata.where(value: (t: "Miniframes_Normal")))
+  let s = get-structure(slide-selector: sel, all-shorts: query(<short>))
+  let n = get-current-logical-slide-number(slide-selector: sel)
+  let bar = render-miniframes(s, n)
 
   // Style global de la slide (on force la police/taille du thème)
   set text(weight: "regular", fill: black, size: config.text-size, font: config.text-font)
