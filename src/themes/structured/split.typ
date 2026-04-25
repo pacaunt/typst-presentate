@@ -3,6 +3,7 @@
 #import "../../components/components.typ": progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "../../components/title.typ": slide-title
+#import "shared.typ": apply-heading-numbering, apply-transition-rule
 
 // State to share configuration
 #let config-state = state("split-config", none)
@@ -184,56 +185,8 @@
 
   show heading: set text(size: 1em, weight: "regular")
   
-  // Wrap the document to ensure heading numbering is global
-  show: doc => {
-    if show-heading-numbering {
-      if numbering-format != auto {
-        set heading(outlined: true, numbering: (..nums) => {
-          let lvl = nums.pos().len()
-          if lvl in mapping.values() {
-            numbering(numbering-format, ..nums)
-          }
-        })
-        doc
-      } else {
-        set heading(outlined: true)
-        doc
-      }
-    } else {
-      set heading(numbering: none)
-      doc
-    }
-  }
-  
-  // Unified Transition Rule
-  show heading: h => {
-    let hook = none
-      if is-role(mapping, h.level, "part") { hook = on-part-change }
-      else if is-role(mapping, h.level, "section") { hook = on-section-change }
-      else if is-role(mapping, h.level, "subsection") { hook = on-subsection-change }
-
-      if hook != none {
-        hook(h)
-      } else {
-        let final-trans = transitions
-        if show-all-sections-in-transition {
-          let all-vis = (part: "all", section: "all", subsection: "all")
-          let override = (parts: (visibility: all-vis), sections: (visibility: all-vis), subsections: (visibility: all-vis))
-          if type(transitions) == dictionary {
-            final-trans = p.utils.merge-dicts(base: transitions, override)
-          } else {
-            final-trans = override
-          }
-        }
-
-        render-transition(
-          h,
-          transitions: final-trans,
-          use-short-title: false,
-          max-length: none,
-        )
-      }
-    }
+  show: apply-heading-numbering.with(mapping, show-heading-numbering, numbering-format)
+  show heading: apply-transition-rule.with(mapping, transitions, show-all-sections-in-transition, on-part-change, on-section-change, on-subsection-change)
 
   // --- Title Slide ---
   empty-slide(fill: primary, text-size: text-size, text-font: text-font, {
