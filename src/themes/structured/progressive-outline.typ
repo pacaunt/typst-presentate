@@ -57,9 +57,6 @@
   ..options,
 ) = {
   
-  let trans-opts = (enabled: true, level: 2)
-  if type(transitions) == dictionary { trans-opts = p.utils.merge-dicts(base: trans-opts, transitions) }
-
   // Synchronisation avec navigator-config
   navigator-config.update(c => {
     c.mapping = mapping
