@@ -231,6 +231,7 @@
 
         render-transition(
           h,
+          transitions: final-trans,
           use-short-title: false,
           max-length: none,
         )
