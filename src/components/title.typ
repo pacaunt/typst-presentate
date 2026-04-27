@@ -1,1 +1,1 @@
-#import "@preview/navigator:0.1.4": slide-title
+#import "@preview/navigator:0.1.5": slide-title
