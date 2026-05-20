@@ -112,6 +112,10 @@
     #parse-a-rule(("good.apply", text))
     #parse-a-rule(("good.stop", hide))
     #parse-a-rule("good.revert")
+    #parse-a-rule((
+      ("good.apply", hide), 
+      ("bad.apply", figure)
+    ))
   ]
 
   let status(
@@ -156,19 +160,19 @@
         if command.name == "clear" {
           element-status.at(command.target).history = ()
         }
+        // inherit the modifier
+        if command.inherited {
+          element-status.at(command.target).func = element-status.at(command.target).history + (command.func,)
+        }
+        // send the animation to other steps
+        if command.leftover {
+          element-status.at(command.target).history += (command.func,)
+        }
         // process the current animation
         current-status = element-status
         // reset the visibility if there is nothing to show when `once` is called
         if command.name == "once" and element-status.at(command.target).history == () {
           element-status.at(command.target).visible = false
-        }
-        // inherit the modifier
-        if command.inherited {
-          current-status.at(command.target).func = current-status.at(command.target).history + (command.func,)
-        }
-        // send the animation to other steps
-        if command.leftover {
-          element-status.at(command.target).history += (command.func,)
         }
       }
 
@@ -182,11 +186,22 @@
   // TEST 4 -- process
   [
     = RESOLVE
+    // #resolve((
+    //   "good",
+    //   (),
+    //   ("good.apply", text),
+    //   (),
+    // ))
+  
     #resolve((
-      "good",
-      (),
-      ("good.apply", text),
-      ()
+      ("c.start", "d.start"),
+      (
+        (
+          "c.apply",
+          figure
+        ),
+        ("d.apply", text),
+      ),
     ))
   ]
 }
