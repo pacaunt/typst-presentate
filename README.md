@@ -263,7 +263,7 @@ Presentate now includes a suite of **structured themes** designed to automatical
 Structured themes are located in the `themes` namespace. They are applied via a `show` rule:
 
 ```typ
-#import "@preview/presentate:0.2.6": themes
+#import "@preview/presentate:0.2.6": *
 #show: themes.sidebar.template.with(
   title: [My Presentation],
   author: [pacaunt],
@@ -288,7 +288,7 @@ You can find full implementations of these themes in the `assets/examples/` dire
 - [Minimal demo](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/themes/example-minimal.typ)
 - [Custom transition hooks demo](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/themes/example-minimal-custom-transition.typ)
 
-For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features//assets/manual/themes-guide.pdf).
+For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/manual/themes-guide.pdf).
 
 ## Versions
 ### 0.2.6 
