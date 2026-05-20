@@ -2,15 +2,14 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 // start-example
-#import "@preview/alchemist:0.1.8" as alc 
+#import "@preview/alchemist:0.1.9" as alc
 
-#let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
-#let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
-#let (fragment,) = animation.animate(
-  // set atom colors to white
-  modifier: (func, ..args) => func(colors: (white,),..args), 
+#let (single, double, fragment) = animation.animate(
+  hider: alc.hide, 
+  alc.single, 
+  alc.double, 
   alc.fragment
-) 
+)
 
 #slide[
   = Alchemist Molecules

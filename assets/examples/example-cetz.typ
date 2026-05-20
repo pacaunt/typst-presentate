@@ -1,6 +1,6 @@
 #import "../../src/export.typ": *
 
-#import "@preview/cetz:0.4.2": canvas, draw
+#import "@preview/cetz:0.5.2": canvas, draw
 #import "@preview/fletcher:0.5.8": diagram, edge, node
 
 #set page(paper: "presentation-16-9")

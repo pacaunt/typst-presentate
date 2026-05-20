@@ -2,7 +2,7 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 // start-example
-#import "@preview/cetz:0.4.2": canvas, draw 
+#import "@preview/cetz:0.5.2": canvas, draw 
 // create a custom pause function for CeTZ package's elements
 #let cetz-pause = animation.pause.with(hider: draw.hide.with(bounds: true))
 #slide[
