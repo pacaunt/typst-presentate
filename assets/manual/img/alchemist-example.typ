@@ -6,11 +6,13 @@
 #set text(size: 40pt)
 
 // start-example
-#let (single, double, fragment) = animation.animate(
-  hider: alc.hide,
-  alc.single,
-  alc.double,
-  alc.fragment,
+// set stroke to `gray`
+#let modifier(func, ..args) = func(stroke: gray + 1pt, ..args) 
+#let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
+#let (fragment,) = animation.animate(
+  // set atom color to gray
+  modifier: (func, ..args) => func(colors: (gray,), ..args), 
+  alc.fragment
 )
 
 #slide[

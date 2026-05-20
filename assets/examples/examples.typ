@@ -1,6 +1,6 @@
 #import "@preview/muchpdf:0.1.2": muchpdf
 
-#let file-name = sys.inputs.at("name", default: "example-pdf-animation.pdf")
+#let file-name = sys.inputs.at("name", default: "features/example-pdf-animation.pdf")
 
 #let imgs = read(file-name, encoding: none)
 

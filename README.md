@@ -213,10 +213,12 @@ For example, this molecule animation is created compatible with [Alchemist](http
 ```typst
 #import "@preview/alchemist:0.1.9" as alc
 
-#let (single, double, fragment) = animation.animate(
-  hider: alc.hide, 
-  alc.single, 
-  alc.double, 
+// set stroke to `gray`
+#let modifier(func, ..args) = func(stroke: gray + 1pt, ..args) 
+#let (single, double) = animation.animate(modifier: modifier, alc.single, alc.double)
+#let (fragment,) = animation.animate(
+  // set atom color to gray
+  modifier: (func, ..args) => func(colors: (gray,), ..args), 
   alc.fragment
 )
 
