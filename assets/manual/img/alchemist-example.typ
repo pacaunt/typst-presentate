@@ -1,14 +1,17 @@
-#import "../../../src/export.typ": * 
+#import "../../../src/export.typ": *
 
-#import "@preview/alchemist:0.1.8" as alc
+#import "@preview/alchemist:0.1.9" as alc
 
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 
 // start-example
-#let modifier(func, ..args) = func(stroke: none, ..args) // set stroke to `none`
-#let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // set atom colors to white
+#let (single, double, fragment) = animation.animate(
+  hider: alc.hide,
+  alc.single,
+  alc.double,
+  alc.fragment,
+)
 
 #slide[
   #set align(center + horizon)

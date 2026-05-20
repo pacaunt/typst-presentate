@@ -2,7 +2,7 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 // start-example
-#import "@preview/cetz:0.4.2": canvas, draw
+#import "@preview/cetz:0.5.2": canvas, draw
 
 #slide[
   #set align(center + horizon)

@@ -136,7 +136,7 @@ One application is for showing contents in sync:
 You can have a precise control on what should be shown on each subslide relatively without worring about their order in definition code by using `#motion` function, and tag by a unique name for each contents in `#tag` function. For example, 
 
 ```typst
-#import "@preview/cetz:0.4.2": canvas, draw
+#import "@preview/cetz:0.5.2": canvas, draw
 
 #slide[
   = Drawing A Fan
@@ -172,7 +172,7 @@ In this example, featured with CeTZ package, each element is drawn normally, whi
 Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
 For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
 ```typst
-#import "@preview/cetz:0.4.2": canvas, draw
+#import "@preview/cetz:0.5.2": canvas, draw
 #import "@preview/fletcher:0.5.8": diagram, edge, node
 
 #slide[
@@ -211,11 +211,14 @@ You can incrementally show the content from other package by wrap the functions 
 For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
 
 ```typst
-#import "@preview/alchemist:0.1.8" as alc
+#import "@preview/alchemist:0.1.9" as alc
 
-#let modifier(func, ..args) = func(stroke: none, ..args) // hide the bonds with `stroke: none`
-#let (single,) = animation.animate(modifier: modifier, alc.single)
-#let (fragment,) = animation.animate(modifier: (func, ..args) => func(colors: (white,),..args), alc.fragment) // set atom colors to white
+#let (single, double, fragment) = animation.animate(
+  hider: alc.hide, 
+  alc.single, 
+  alc.double, 
+  alc.fragment
+)
 
 #slide[
   = Alchemist Molecules
@@ -258,7 +261,7 @@ Presentate now includes a suite of **structured themes** designed to automatical
 Structured themes are located in the `themes` namespace. They are applied via a `show` rule:
 
 ```typ
-#import "@preview/presentate:0.2.5": themes
+#import "@preview/presentate:0.2.6": themes
 #show: themes.sidebar.template.with(
   title: [My Presentation],
   author: [pacaunt],
