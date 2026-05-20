@@ -37,14 +37,3 @@
     return s
   })
 }
-
-#let is-kind(thing, kind) = {
-  if (
-    type(thing) == content
-      and thing.func() == metadata
-      and type(thing.value) == dictionary
-      and thing.value.kind == prefix + kind
-  ) {
-    true
-  } else { false }
-}

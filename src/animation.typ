@@ -5,7 +5,7 @@
 // show only when the number of pauses are less than or equal to the subslide number.
 #let pause(s, body, hider: it => none) = {
   let (info, ..idx) = s
-  let (pauses,) = indices.resolve-indices(s)
+  let (pauses,) = indices.resolve(s)
   if pauses <= info.subslide or info.handout {
     body
   } else { hider(body) }
@@ -14,7 +14,7 @@
 
 #let uncover(s, ..n, body, hider: hide, from: (), to: ()) = {
   let (info, ..x) = s
-  let (pauses, results: (..n)) = indices.resolve-indices(s, ..n)
+  let (pauses, results: (..n)) = indices.resolve(s, ..n)
 
   //  Show only when the subslides are in the specified indices, or in the range of from-to.
   // Minideck's original
@@ -26,7 +26,7 @@
     }
     if to != () { tmp.push(to) }
 
-    let (results: tmp) = indices.resolve-indices(s, ..tmp)
+    let (results: tmp) = indices.resolve(s, ..tmp)
 
     if tmp.len() == 1 {
       let (from,) = tmp
@@ -59,7 +59,7 @@
   item-wrapper: it => it,
 ) = {
   let (info, ..x) = s
-  let (results: (start,)) = indices.resolve-indices(s, start)
+  let (results: (start,)) = indices.resolve(s, start)
   bodies = bodies.pos().map(item-wrapper)
   let last-index = if not repeat-last { start + bodies.len() - 1 } else { () }
 
@@ -83,7 +83,7 @@
   hider: it => none,
 ) = {
   let (info, ..x) = s
-  let (results: (start,)) = indices.resolve-indices(s, start)
+  let (results: (start,)) = indices.resolve(s, start)
   funcs = funcs
     .pos()
     .map(f => {
@@ -108,22 +108,27 @@
   uncover(s, ..n, func(body), hider: it => body, from: from, to: to)
 }
 
-// Modify the function so that it can react to the state variable `s`
-// Default behaviour is like `pause`
+/// Modify the function so that it can react to the state variable `s`
+/// Default behaviour is like `pause`
 #let animate(
+  /// The orignial functions
+  /// -> function
   ..funcs,
   wrapper: pause,
+  /// hiding function
+  /// -> function
   hider: it => none,
-  modifier: none, // if it is not `none` then it must be `(func, ..args) => ..`
+  /// modifier for hiding the content.
+  /// if it is not `none` then it must be `(func, ..args) => ..`
+  /// -> function | none
+  modifier: none,
 ) = {
   funcs
     .pos()
     .map(func => (s, ..args) => {
       if type(s) != array or type(s.at(0, default: none)) != dictionary {
         panic(
-          "Did you forget to put the state `s` in the argument of the function `"
-            + repr(func)
-            + "` ?",
+          "Did you forget to put the state `s` in the argument of the function `" + repr(func) + "` ?",
         )
       }
       wrapper(
@@ -143,11 +148,20 @@
 #let tag(s, name, body, hider: auto, func: it => it) = {
   let (info, ..x) = s
   let display-info = info.motion.rule.at(name, default: info.motion.default-info)
+  // resolve hider
   if hider == auto {
     if display-info.hider == auto { hider = info.tag-hider } else { hider = display-info.hider }
   }
-  if display-info.func != auto { func = display-info.func }
-  if display-info.status == "revealed" { func(body) } else { hider(body) }
+  // resolve modifier
+  if display-info.func != auto {
+    let funcs = display-info.func
+    if type(funcs) != array {
+      funcs = (funcs,)
+    }
+    func = utils.pipe(..funcs.map(f => if f == auto { func } else { f }))
+  }
+  
+  if display-info.visible { func(body) } else { hider(body) }
 }
 
 #let motion(
@@ -164,7 +178,7 @@
   start: none,
 ) = {
   let (info, ..x) = s
-  let (pauses, results: (start,)) = indices.resolve-indices(s, start)
+  let (pauses, results: (start,)) = indices.resolve(s, start)
   let n = info.subslide
 
   // Rules
@@ -190,109 +204,146 @@
     )
   }
 
-  let default-element-info = (
-    name: none,
-    status: if is-shown { "revealed" } else { "hidden" },
-    func: auto,
-    hider: auto,
+
+  // `active` means ability to change the showing status of an element,
+  // `inherited` means ability to receive the previous modifiers
+  // `leftover` means ability to send the modifiers to next steps
+  let command-info = (
+    "start": (active: true, inherited: true, leftover: true),
+    "stop": (active: false, inherited: false, leftover: false),
+    "revert": (active: auto, inherited: false, leftover: true),
+    "apply": (active: auto, inherited: true, leftover: true),
+    "clear": (active: true, inherited: false, leftover: true),
+    "once": (active: true, inherited: true, leftover: false),
   )
 
-  let parse-str-status(string, info: default-element-info) = {
-    info.name = string
+  let default-command-info = (
+    target: str,
+    name: str,
+    func: auto,
+    hider: auto,
+    active: bool,
+    inherited: bool,
+    leftover: bool,
+  )
+
+  let parse-str-command(string, default: default-command-info) = {
+    let command = default
+    command.target = string
     if not string.contains(".") {
-      info.status = "once"
+      command.name = "once"
     } else {
-      (info.name, info.status) = string.split(".")
+      (command.target, command.name) = string.split(".")
       assert(
-        info.status
-          in (
-            "start",
-            "stop",
-            "apply",
-            "revert",
-          ),
-        message: "Unknown status `"
-          + info.status
-          + "`, the available statuses are `start`, `stop`, `apply`, and `revert`.",
+        command.name in command-info.keys(),
+        message: "Unknown command `"
+          + command.name
+          + "`, the available statuses are "
+          + command-info.keys().map(k => "`" + k + "`").join(", "),
       )
     }
-    return info
+    return command + command-info.at(command.name)
   }
-  // panic(parse-str-status("good"))
+
   // controls: (..rules)
   // rule = (..commands)
   // command -> info
-  let generate-status(command, info: default-element-info) = {
+  let generate-command(raw-command, default: default-command-info) = {
     assert(
-      is-command(command),
-      message: "The array command must be in the form `(status, function)`.",
+      is-command(raw-command),
+      message: "The command should be either a `name`, a `name.command`, or an array. The array command must be in the form `(command-name, function)`.",
     )
-    info.name = command
-    if type(command) == str {
-      info = parse-str-status(command, info: info)
-      if info.status == "revert" {
-        info.func = auto
-      }
+    let command = default
+    if type(raw-command) == str {
+      command = parse-str-command(raw-command, default: default)
     } else {
-      info = parse-str-status(command.first())
-      if info.status == "stop" { info.hider = command.last() } else {
-        info.func = command.last()
+      command = parse-str-command(raw-command.first(), default: default)
+      // handle the function from `stop` command
+      if command.name == "stop" {
+        command.hider = raw-command.last()
+      } else {
+        command.func = raw-command.last()
       }
     }
-    return info
-  }
-  // panic(generate-status(("good", it => it)))
 
-  let parse-a-rule(commands, info: default-element-info) = {
+    return command
+  }
+
+  let parse-a-rule(commands, default: default-command-info) = {
     if is-command(commands) {
       commands = (commands,)
     }
-    commands.map(generate-status.with(info: info))
+    commands.map(generate-command.with(default: default))
   }
 
-  let resolve(rules, info: default-element-info) = {
-    let raw-rules = rules.map(parse-a-rule.with(info: info))
+  let status(
+    // whether to show the element
+    visible: is-shown,
+    // keep track of previous modifiers
+    history: (),
+    // current modifier to use
+    func: auto,
+    // current hider to use
+    hider: auto,
+  ) = (
+    visible: visible,
+    history: history,
+    func: func,
+    hider: hider,
+  )
+
+  // Expected result:
+  // (
+  //  (:),
+  //  ("element-1": (..properties)),
+  //  ("element-1": (..properties), "element-2": (..properties)),
+  // )
+  let resolve(rules) = {
+    let rules = rules.map(parse-a-rule)
     let result = ()
-    let all-state = (:)
-    let resolved-state = (:)
-    for rule in raw-rules {
-      // save the current resolved state 
-      resolved-state = all-state
+    let element-status = (:)
+
+    for rule in rules {
+      let current-status = element-status
       for command in rule {
-        let name = command.remove("name")
-        if command.status == "stop" { command.status = "hidden" }
-        if command.status == "start" { command.status = "revealed" }
-        if command.status in ("revert", "apply") {
-          if all-state.at(name, default: info).status == "revealed" {
-            command.status = "revealed"
-          } else {
-            command.status = "hidden"
-          }
+        // initialize the status
+        if command.target not in element-status {
+          element-status.insert(command.target, status())
         }
-        // resolve the `once` status
-        let resolved-command = command
-        if command.status == "once" {
-          if command.func == auto { resolved-command.status = "revealed" } else {
-            resolved-command.status = all-state.at(name, default: info).status
-          }
+        // resolve visibility
+        if command.active != auto {
+          element-status.at(command.target).visible = command.active
         }
-        resolved-state.insert(name, resolved-command)
-        if command.status == "once" {
-          if command.func == auto { resolved-command.status = "hidden" } else {
-            resolved-command.status = all-state.at(name, default: info).status
-            resolved-command.func = auto
-          }
+        // clear the history
+        if command.name == "clear" {
+          element-status.at(command.target).history = ()
         }
-        // for resetting the `once` specification.
-        all-state.insert(name, resolved-command)
+        // process the current animation
+        current-status = element-status
+        // reset the visibility if there is nothing to show when `once` is called
+        if command.name == "once" and element-status.at(command.target).history == () {
+          element-status.at(command.target).visible = false
+        }
+        // inherit the modifier
+        if command.inherited {
+          current-status.at(command.target).func = current-status.at(command.target).history + (command.func,)
+        }
+        // send the animation to other steps
+        if command.leftover {
+          element-status.at(command.target).history += (command.func,)
+        }
       }
-      result.push(resolved-state)
+
+      result.push(current-status)
     }
+
+
     return result
   }
 
-  let resolved-rules = resolve(controls, info: default-element-info)
-  let current-rule = if n < start { () } else if n - start >= controls.len() {
+  let resolved-rules = resolve(controls)
+
+  let current-rule = if n < start { (:) } else if n - start >= controls.len() {
     resolved-rules.at(-1, default: (:))
   } else {
     resolved-rules.at(n - start)
@@ -302,7 +353,7 @@
   if info.handout { info.tag-hider = it => it }
   info.motion = (:)
   info.motion.rule = current-rule
-  info.motion.default-info = default-element-info
+  info.motion.default-info = status()
   func((info,))
 }
 
