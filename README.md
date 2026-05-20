@@ -1,6 +1,6 @@
 # Presentate
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
-For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features//assets/manual/manual.pdf)
+For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/manual/manual.pdf)
 
 
 ## Simple Usage 
