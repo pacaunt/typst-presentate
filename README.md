@@ -211,7 +211,7 @@ You can incrementally show the content from other package by wrap the functions 
 For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
 
 ```typst
-#import "@preview/alchemist:0.1.9" as alc
+#import "@preview/alchemist:0.2.0" as alc
 
 // set stroke to `gray`
 #let modifier(func, ..args) = func(stroke: gray + 1pt, ..args) 

@@ -2,7 +2,7 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 // start-example
-#import "@preview/alchemist:0.1.9" as alc
+#import "@preview/alchemist:0.2.0" as alc
 
 // set stroke to `gray`
 #let modifier(func, ..args) = func(stroke: gray + 1pt, ..args) 
