@@ -18,8 +18,8 @@
   update: true,
 ) = {
   context {
+    if update { states.update(s => if update { s + (auto,) } else { s + ((auto,),) }) }
     animation.pause(states.get() + (auto,), hider: hider, {
-      if update { states.update(s => if update { s + (auto,) } else { s + ((auto,),) }) }
       body
     })
   }
@@ -123,15 +123,15 @@
     }
   } else {
     context {
+      states.update(s => {
+        if update-pause {
+          s + (start,) + (auto,) * (n - 1)
+        } else {
+          s + ((start,) + (auto,) * (n - 1),)
+        }
+      })
       animation.fragments(states.get(), start: start, ..bodies, hider: hider, item-wrapper: item-wrapper)
     }
-    states.update(s => {
-      if update-pause {
-        s + (start,) + (auto,) * (n - 1)
-      } else {
-        s + ((start,) + (auto,) * (n - 1),)
-      }
-    })
   }
 }
 
@@ -160,23 +160,25 @@
   /// -> function
   before-func: hide,
 ) = {
-  context animation.transform(
-    states.get(),
-    start: start,
-    body,
-    ..funcs,
-    hider: hider,
-    before-func: before-func,
-    repeat-last: repeat-last,
-  )
-  states.update(s => {
-    let (pauses, results: (start,)) = indices.resolve(s, start)
-    if update-pause {
-      s + (start + funcs.pos().len() - 1,)
-    } else {
-      s + ((start + funcs.pos().len() - 1,),)
-    }
-  })
+  context {
+    states.update(s => {
+      let (pauses, results: (start,)) = indices.resolve(s, start)
+      if update-pause {
+        s + (start + funcs.pos().len() - 1,)
+      } else {
+        s + ((start + funcs.pos().len() - 1,),)
+      }
+    })
+    animation.transform(
+      states.get(),
+      start: start,
+      body,
+      ..funcs,
+      hider: hider,
+      before-func: before-func,
+      repeat-last: repeat-last,
+    )
+  }
 }
 
 /// Alert a text to make it pop.
@@ -266,11 +268,11 @@
   /// name of the group
   /// -> str
   name,
-  /// the content 
-  /// -> any 
+  /// the content
+  /// -> any
   body,
-  /// the hider used to hide the content. If this is set to `auto`, the hider will inherits from `motion` workspace. 
-  /// -> function | auto 
+  /// the hider used to hide the content. If this is set to `auto`, the hider will inherits from `motion` workspace.
+  /// -> function | auto
   hider: auto,
   /// default content wrapper
   /// -> function
@@ -283,10 +285,10 @@
   func: func,
 )
 
-/// Motion workspace. This function allows user to control the presence and modify the content of each tags directly for each subslide. 
+/// Motion workspace. This function allows user to control the presence and modify the content of each tags directly for each subslide.
 /// ```typ
 /// #motion(s => [
-///   // your content with tags 
+///   // your content with tags
 /// ], controls: (
 ///   .. // an array of rules indicating what to be shown
 /// ))
@@ -294,8 +296,8 @@
 /// -> content
 #let motion(
   // contains the tags.
-  /// A function that receives Presentate's state `s` and returns a content. 
-  /// -> function 
+  /// A function that receives Presentate's state `s` and returns a content.
+  /// -> function
   func,
   /// This is an array of motion control.
   /// `(A, B, C)` means show `A` then `B` then `C`.
@@ -430,15 +432,15 @@
   })
 }
 
-/// Incrementally show items in enums/lists. 
-/// This animation always update the current number of pauses. 
-/// -> content 
+/// Incrementally show items in enums/lists.
+/// This animation always update the current number of pauses.
+/// -> content
 #let step-item(
-  /// The list/enum. Must not contains any set/show rules. 
+  /// The list/enum. Must not contains any set/show rules.
   /// -> enum | list
   body,
-  /// start index of the animation 
-  /// -> index 
+  /// start index of the animation
+  /// -> index
   start: auto,
   /// numbering for enums. `auto` means inherting from the current style of `enum`.
   /// -> function | str
@@ -447,11 +449,11 @@
   marker: auto,
   body-wrapper: it => it,
   label-wrapper: it => it,
-  /// hider for the list/enums 
+  /// hider for the list/enums
   /// -> function
   hider: hide,
   /// other styling arguments will be passed to enum/list set rules.
-  /// -> any 
+  /// -> any
   ..args,
 ) = context {
   if body.func() != [].func() {
@@ -497,10 +499,10 @@
 }
 
 /// Reveal the item group by group.
-/// -> content 
+/// -> content
 #let reveal-item(
-  /// start index of the animation 
-  /// -> index 
+  /// start index of the animation
+  /// -> index
   start: auto,
   /// numbering for enums. `auto` means inherting from the current style of `enum`.
   /// -> function | str
@@ -509,13 +511,13 @@
   marker: auto,
   body-wrapper: it => it,
   label-wrapper: it => it,
-  /// hider for the list/enums 
+  /// hider for the list/enums
   /// -> function
   hider: hide,
-  /// whether to show the shown list/enum items. If set to `false`, each list/enum item will be shown only once per animation. 
+  /// whether to show the shown list/enum items. If set to `false`, each list/enum item will be shown only once per animation.
   /// -> bool
   accumulated: true,
-  /// the enum/list 
+  /// the enum/list
   /// -> enum | list
   ..args,
 ) = context {

@@ -27,7 +27,7 @@ Presentate provides two categories of themes:
 All structured themes follow a consistent API pattern and are located in the `themes.structured` namespace. They are invoked using a `template` function through a show rule.
 
 ```typ
-#import "@preview/presentate:0.2.6": themes
+#import "@preview/presentate:0.2.7": themes
 #show: themes.structured.sidebar.template.with(
   title: [My Presentation],
   author: [John Doe],

@@ -26,3 +26,11 @@ cd ../..
 for file in assets/tests/*.typ; do
     [ -f "$file" ] && typst compile --root .. "$file"
 done
+
+for file in assets/manual/img/*.typ; do
+    [ -f "$file" ] && typst compile --root ../.. "$file"
+done
+
+for file in assets/manual/*.typ; do
+    [ -f "$file" ] && typst compile --root .. "$file"
+done

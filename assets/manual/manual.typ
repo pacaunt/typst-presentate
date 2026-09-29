@@ -1,4 +1,3 @@
-#import "@preview/muchpdf:0.1.2": muchpdf
 #import "@preview/zebraw:0.6.1": zebraw
 #import "@preview/oxifmt:1.0.0": strfmt
 #import "@preview/tidy:0.4.3"
@@ -119,7 +118,7 @@
 `Presentate` is a Typst package for creating _dynamic_ PDF presentation that is compatible with other packages. The word _dynamic_ means the compiled PDF contains _animated_ content. But PDF is a static document format, how can it contains animations? Presentate will look into the content, and create a set of pages that reveal or hide some content based on the current number of frames called _subslides_, so that when going through the pages, it seems like the content is showing or hiding like a simple animation.
 
 #figure(
-  image("../examples/example-pdf-animation.png"),
+  image("img/example-pdf-animation.png"),
   caption: [Example of fake animation in PDF format. Each page contains its own content and rules controlling them to hide, show, or decorated in some ways.],
 )
 
@@ -371,35 +370,35 @@ There are 2 types of themes that Presentate provides:
 #let render-pdf = render-pdf.with(numbered: false)
 
 === Default Theme
-#render-pdf("../examples/example-default-theme.pdf", pages: 3)
-#source-example("../examples/example-default-theme.typ")
+#render-pdf("../examples/themes/example-default-theme.pdf", pages: 3)
+#source-example("../examples/themes/example-default-theme.typ")
 
 === Simple Theme
-#render-pdf("../examples/example-simple-theme.pdf", pages: 6)
-#source-example("../examples/example-simple-theme.typ")
+#render-pdf("../examples/themes/example-simple-theme.pdf", pages: 6)
+#source-example("../examples/themes/example-simple-theme.typ")
 
 === Classic Theme
-#render-pdf("../examples/example-classic-theme.pdf", pages: 3)
-#source-example("../examples/example-classic-theme.typ")
+#render-pdf("../examples/themes/example-classic-theme.pdf", pages: 3)
+#source-example("../examples/themes/example-classic-theme.typ")
 
 === Structured Themes
 #let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
 You can visit the examples of the structured themes here:
 - #strong[minimal]
-  #render-pdf("../examples/example-minimal.pdf", pages: 6)
-  #link(home + "examples/example-minimal.typ")[Source]
+  #render-pdf("../examples/themes/example-minimal.pdf", pages: 6)
+  #link(home + "examples/themes/example-minimal.typ")[Source]
 - #strong[progressive-outline]
-  #render-pdf("../examples/example-progressive-outline.pdf", pages: 6)
-  #link(home + "examples/example-progressive-outline.typ")[Source]
+  #render-pdf("../examples/themes/example-progressive-outline.pdf", pages: 6)
+  #link(home + "examples/themes/example-progressive-outline.typ")[Source]
 - #strong[sidebar]
-  #render-pdf("../examples/example-sidebar.pdf", pages: 6)
-  #link(home + "examples/example-sidebar.typ")[Source]
+  #render-pdf("../examples/themes/example-sidebar.pdf", pages: 6)
+  #link(home + "examples/themes/example-sidebar.typ")[Source]
 - #strong[split]
-  #render-pdf("../examples/example-split.pdf", pages: 6)
-  #link(home + "examples/example-split.typ")[Source]
+  #render-pdf("../examples/themes/example-split.pdf", pages: 6)
+  #link(home + "examples/themes/example-split.typ")[Source]
 - #strong[miniframes]
-  #render-pdf("../examples/example-miniframes.pdf", pages: 6)
-  #link(home + "examples/example-miniframes.typ")[Source]
+  #render-pdf("../examples/themes/example-miniframes.pdf", pages: 6)
+  #link(home + "examples/themes/example-miniframes.typ")[Source]
 
 = Function Reference
 #set par(first-line-indent: 0em)

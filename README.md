@@ -6,7 +6,7 @@ For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-present
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.2.6": *
+#import "@preview/presentate:0.2.7": *
 ```
 and then, the functions are automatically available. 
 
@@ -263,7 +263,7 @@ Presentate now includes a suite of **structured themes** designed to automatical
 Structured themes are located in the `themes` namespace. They are applied via a `show` rule:
 
 ```typ
-#import "@preview/presentate:0.2.6": *
+#import "@preview/presentate:0.2.7": *
 #show: themes.sidebar.template.with(
   title: [My Presentation],
   author: [pacaunt],
@@ -291,6 +291,8 @@ You can find full implementations of these themes in the `assets/examples/` dire
 For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/manual/themes-guide.pdf).
 
 ## Versions
+### 0.2.7 
+- Fix bugs where nested `pause` does not interact properly.
 ### 0.2.6 
 - added `start` argument to `reveal-item` and `step-item` function.
 - added reference section to the manual.
