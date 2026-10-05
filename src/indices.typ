@@ -8,49 +8,60 @@
 /// - dictionary: in the form `(rel: int, to: indices)`
 
 // resolve current index
-#let _resolve(idx, pauses: 1) = {
+#let _resolve(idx, info: (pauses: 1, waypoints: (:))) = {
   if type(idx) == int {
     return idx
   }
   if idx == auto {
-    return pauses + 1
+    return info.pauses + 1
   }
   if idx == none or idx == () {
-    return pauses
+    return info.pauses
+  }
+  if type(idx) in (str, label) {
+    return info.waypoints.at(str(idx))
   }
   if type(idx) == dictionary {
-    let ref = _resolve(idx.at("to", default: none), pauses: pauses)
+    let ref = _resolve(idx.at("to", default: none), info: info)
     return ref + idx.at("rel")
   } else {
     panic("Unsupport index " + repr(idx))
   }
 }
 
-#let _get-pauses-and-max(indices, max: (1,), pauses: 1) = {
+#let _get-pauses-max-waypoints(indices, info: (max: (1,), pauses: 1, waypoints: (:))) = {
   for idx in indices {
-    if type(idx) != array {
-      idx = _resolve(idx, pauses : pauses)
-      pauses = idx
-      max.push(idx)
+    if type(idx) == dictionary and "name" in idx.keys() {
+      info.waypoints.insert(str(idx.name), _resolve(idx.at("at", default: none), info: info))
+    } else if type(idx) != array {
+      idx = _resolve(idx, info: info)
+      info.pauses = idx
+      info.max.push(idx)
     } else {
-      (_, max) = _get-pauses-and-max(idx, max: max, pauses: pauses)
+      let new-info = _get-pauses-max-waypoints(idx, info: info)
+      info.max = new-info.max
     }
   }
-  return (pauses, max)
+  return info
 }
 
 
 #let resolve(s, ..inputs) = {
   let inputs = inputs.pos()
-  let (info, ..idx) = s
-  let pauses = 1
-  let max = (1,)
+  let (_, ..idx) = s
+  let waypoints = s.at(0).at("waypoints", default: (:))
+  let info = (pauses: 1, max: (1,), waypoints: waypoints)
 
-  (pauses, max) = _get-pauses-and-max(idx, max: max, pauses: pauses)
+  let info = _get-pauses-max-waypoints(idx, info: info)
 
-  let results = inputs.map(_resolve.with(pauses: pauses))
-  
-  return (pauses: pauses, steps: calc.max(..max, ..results), results: results)
+  let results = inputs.map(_resolve.with(info: info))
+
+  return (
+    pauses: info.pauses,
+    steps: calc.max(..info.max, ..results),
+    results: results,
+    waypoints: info.waypoints,
+  )
 }
 
 tests
@@ -60,3 +71,5 @@ tests
 #let s1 = ((pauses: 1), auto, auto, auto, (rel: -1))
 This is #resolve(s1, (rel: -1))
 
+#let s = ((pauses: 1), auto, (name: <here>, at: (rel: -1)), auto, (<here>,), auto, (rel: -1))
+Named test #resolve(s, <here>)

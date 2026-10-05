@@ -1,3 +1,5 @@
+#import "@preview/oxifmt:1.0.0": strfmt
+
 #let merge-dicts(dictA, base: (:)) = {
   for (key, val) in dictA {
     if type(val) == dictionary and key in base.keys() {
@@ -15,3 +17,5 @@
 #let pipe(..funcs) = {
   return (base) => funcs.pos().fold(base, (acc, f) => f(acc))
 }
+
+#let map-dict-values(dict, func) = dict.pairs().map(((k, v)) => (k, func(v))).to-dict()

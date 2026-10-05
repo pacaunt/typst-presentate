@@ -11,10 +11,10 @@
   } else { hider(body) }
 }
 
-
-#let uncover(s, ..n, body, hider: hide, from: (), to: ()) = {
+#let uncover(s, ..n, body, hider: auto, from: (), to: ()) = {
   let (info, ..x) = s
   let (pauses, results: (..n)) = indices.resolve(s, ..n)
+  let hider = if hider == auto { s.at(0).default-hider } else { hider }
 
   //  Show only when the subslides are in the specified indices, or in the range of from-to.
   // Minideck's original
@@ -38,7 +38,7 @@
       false
     }
   }
-  if logic(info.subslide) or info.handout {
+  if logic(info.subslide) {
     body
   } else { hider(body) }
 }
@@ -102,9 +102,6 @@
 
 #let alert(s, ..n, from: auto, to: (), body, func: emph) = {
   let (info, ..x) = s
-  if info.handout {
-    func = it => it
-  }
   uncover(s, ..n, func(body), hider: it => body, from: from, to: to)
 }
 
@@ -354,7 +351,6 @@
   }
 
   info.tag-hider = hider
-  if info.handout { info.tag-hider = it => it }
   info.motion = (:)
   info.motion.rule = current-rule
   info.motion.default-info = status()
@@ -372,8 +368,8 @@
 }
 
 // Touying and Polylux's Idea.
-#let pdfpc-slide-markers(i) = context [
-  #let (info, ..x) = store.states.get()
+#let pdfpc-slide-markers(s, i) = context [
+  #let (info, ..x) = s
   #if not info.logical-slide { info.add-page-index += 1 }
   #metadata((t: "NewSlide")) <pdfpc>
   #metadata((t: "Idx", v: here().page() - 1)) <pdfpc>

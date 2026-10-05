@@ -1,29 +1,24 @@
 #import "utils.typ"
-#import "store.typ": prefix, states
+#import "store.typ": prefix
+#import "element.typ" as element: applier, getter, updater
 #import "indices.typ"
 #import "animation.typ"
-// This file is use to render in mark up mode [content output] only.
 
-/// Content that are wrapped in this function will be revealed one after another.
-/// -> content
-#let pause(
-  /// the content
-  /// -> content
-  body,
-  /// hiding function
-  /// -> function
-  hider: hide,
-  /// whether to update the number of pauses.
-  /// -> bool
-  update: true,
-) = {
-  context {
-    animation.pause(states.get() + (auto,), hider: hider, {
-      if update { states.update(s => if update { s + (auto,) } else { s + ((auto,),) }) }
-      body
-    })
-  }
-}
+#let jump(idx, hider: auto, mode: "content") = updater(mode: mode, s => {
+  s.push(idx)
+  let (pauses,) = indices.resolve(s)
+  if hider != auto { s.at(0).pause-state.hider = hider }
+  s.at(0).pause-state.hidden = pauses > s.at(0).subslide
+  return s
+})
+
+#let pause = jump(auto)
+
+#let meanwhile = jump(1)
+
+#let waypoint(name, mode: "content", at: none) = updater(mode: mode, s => {
+  s + ((name: name, at: at),)
+})
 
 /// Reveal content on specific subslide, with space preserved.
 /// -> content
@@ -42,13 +37,16 @@
   to: (),
   /// hiding function
   /// -> function
-  hider: hide,
+  hider: auto,
   /// whether to update the current number of pauses.
   /// -> bool
   update-pause: false,
-) = {
-  context {
-    states.update(s => {
+  /// mode of using this function
+  /// -> "content" | "array"
+  mode: "content",
+) = applier(
+  {
+    updater(mode: mode, s => {
       let n = n.pos()
       if update-pause {
         s + (..n, from, to)
@@ -56,11 +54,13 @@
         s + ((..n, from, to),)
       }
     })
-    animation.uncover(states.get(), ..n, hider: hider, from: from, to: to, {
-      body
-    })
-  }
-}
+    body
+  },
+  mode: mode,
+  contextual: true,
+  (s, body) => animation.uncover(s, ..n, hider: hider, from: from, to: to, body),
+)
+
 
 /// Show content on specific subslide without preserving space.
 /// -> content
@@ -83,9 +83,10 @@
   /// whether to update the current number of pauses.
   /// -> bool
   update-pause: false,
-) = {
-  uncover(..n, body, from: from, to: to, hider: hider, update-pause: update-pause)
-}
+  /// mode of using this function
+  /// -> "content" | "array"
+  mode: "content",
+) = uncover(..n, body, from: from, to: to, hider: hider, update-pause: update-pause, mode: mode)
 
 /// Show the content one by one.
 /// -> content
@@ -107,31 +108,37 @@
   update-increment: true,
   /// A function wrapper that can wrap the content.
   item-wrapper: it => it,
+  /// mode of using this function
+  /// -> "content" | "array"
+  mode: "content",
 ) = {
   let bodies = bodies.pos().map(item-wrapper)
   let n = bodies.len()
   if update-pause and update-increment {
-    context {
-      states.update(s => s + (start,))
-      let s = states.get()
-      let (pauses, results: (start,)) = indices.resolve(s, start)
-      for (i, body) in bodies.enumerate() {
-        if i > 0 { states.update(s => s + (auto,)) }
-
-        animation.uncover(s, from: start + i, body, hider: hider)
+    for (i, body) in bodies.enumerate() {
+      if i == 0 {
+        uncover(from: start, body, hider: hider, update-pause: update-pause, mode: mode)
+      } else {
+        uncover(from: auto, body, hider: hider, update-pause: update-pause, mode: mode)
       }
     }
   } else {
-    context {
-      animation.fragments(states.get(), start: start, ..bodies, hider: hider, item-wrapper: item-wrapper)
-    }
-    states.update(s => {
-      if update-pause {
-        s + (start,) + (auto,) * (n - 1)
-      } else {
-        s + ((start,) + (auto,) * (n - 1),)
-      }
-    })
+    applier(
+      mode: mode,
+      template: element.collect,
+      contexual: true,
+      {
+        bodies
+        updater(mode: "array", s => {
+          if update-pause {
+            s + (start,) + (auto,) * (n - 1)
+          } else {
+            s + ((start,) + (auto,) * (n - 1),)
+          }
+        })
+      },
+      (s, ..children) => { animation.fragments(s, start: start, ..bodies, hider: hider, item-wrapper: item-wrapper) },
+    )
   }
 }
 
@@ -159,24 +166,36 @@
   /// A function to apply before the start index
   /// -> function
   before-func: hide,
+  /// mode of using this function
+  /// -> "content" | "array"
+  mode: "content",
 ) = {
-  context animation.transform(
-    states.get(),
-    start: start,
-    body,
-    ..funcs,
-    hider: hider,
-    before-func: before-func,
-    repeat-last: repeat-last,
+  applier(
+    mode: mode,
+    contextual: true,
+    {
+      body
+      updater(mode: mode, s => {
+        let (pauses, results: (start,)) = indices.resolve(s, start)
+        if update-pause {
+          s + (start + funcs.pos().len() - 1,)
+        } else {
+          s + ((start + funcs.pos().len() - 1,),)
+        }
+      })
+    },
+    (s, body) => {
+      animation.transform(
+        s,
+        start: start,
+        body,
+        ..funcs,
+        hider: hider,
+        before-func: before-func,
+        repeat-last: repeat-last,
+      )
+    },
   )
-  states.update(s => {
-    let (pauses, results: (start,)) = indices.resolve(s, start)
-    if update-pause {
-      s + (start + funcs.pos().len() - 1,)
-    } else {
-      s + ((start + funcs.pos().len() - 1,),)
-    }
-  })
 }
 
 /// Alert a text to make it pop.
@@ -200,22 +219,31 @@
   /// whether to update the current number of pauses
   /// -> bool
   update-pause: false,
+  /// mode of using this function
+  /// -> "content" | "array"
+  mode: "content",
 ) = {
   let kwargs = n.named()
   let n = n.pos()
   if n.len() == 0 {
     n = (auto,)
   }
-  context {
-    states.update(s => {
-      if update-pause {
-        s + (..n, from, to)
-      } else {
-        s + ((..n, from, to),)
-      }
-    })
-    animation.alert(states.get(), ..n, body, from: from, to: to, func: func)
-  }
+
+  applier(
+    mode: mode,
+    contextual: true,
+    {
+      updater(mode: mode, s => {
+        if update-pause {
+          s + (..n, from, to)
+        } else {
+          s + ((..n, from, to),)
+        }
+      })
+      body
+    },
+    (s, body) => { animation.alert(s, ..n, body, from: from, to: to, func: func) },
+  )
 }
 
 /// Workspace for creating animation by accessing Presentate's internal states. Use with the animation module.
@@ -233,15 +261,16 @@
   /// -> function
   func,
 ) = {
-  states.update(s => s + (start,))
+  let mode = "content" // Forced content mode...
   // func must return two things: display content and updated states.
   assert(
     type(func) == function,
     message: "`render` accepts only a function that returns an array of length two consisting of body and updated states.",
   )
 
-  context {
-    let result = func(states.get())
+  updater(mode: mode, s => s + (start,))
+  getter(mode: mode, s => {
+    let result = func(s)
 
     let message = "Returning value from the render function must be an array of length 2: one for the content, and the other for updated states."
 
@@ -251,10 +280,10 @@
       type(result.at(-1)) == array and type(result.at(-1).at(0)) == dictionary,
       message: "Invalid State Modification. The state `s` is an array of indices. You must update the array with the array methods.",
     )
-    result.at(0)
-  }
 
-  states.update(s => func(s).at(-1, default: s))
+    result.first()
+  })
+  updater(mode: mode, s => func(s).at(-1, default: s))
 }
 
 /// Use with the `motion` function. Tagging the content into a group with a name for animating with `motion`'s `controls` rules.
@@ -266,11 +295,11 @@
   /// name of the group
   /// -> str
   name,
-  /// the content 
-  /// -> any 
+  /// the content
+  /// -> any
   body,
-  /// the hider used to hide the content. If this is set to `auto`, the hider will inherits from `motion` workspace. 
-  /// -> function | auto 
+  /// the hider used to hide the content. If this is set to `auto`, the hider will inherits from `motion` workspace.
+  /// -> function | auto
   hider: auto,
   /// default content wrapper
   /// -> function
@@ -283,10 +312,10 @@
   func: func,
 )
 
-/// Motion workspace. This function allows user to control the presence and modify the content of each tags directly for each subslide. 
+/// Motion workspace. This function allows user to control the presence and modify the content of each tags directly for each subslide.
 /// ```typ
 /// #motion(s => [
-///   // your content with tags 
+///   // your content with tags
 /// ], controls: (
 ///   .. // an array of rules indicating what to be shown
 /// ))
@@ -294,8 +323,8 @@
 /// -> content
 #let motion(
   // contains the tags.
-  /// A function that receives Presentate's state `s` and returns a content. 
-  /// -> function 
+  /// A function that receives Presentate's state `s` and returns a content.
+  /// -> function
   func,
   /// This is an array of motion control.
   /// `(A, B, C)` means show `A` then `B` then `C`.
@@ -317,212 +346,173 @@
 ) = {
   let n = controls.len()
   if n == 0 { n = 1 }
-  context {
-    states.update(s => {
-      if update-pause {
-        s + (start,) + (auto,) * (n - 1)
-      } else {
-        s + ((start,) + (auto,) * (n - 1),)
+
+  applier(
+    mode: mode,
+    contextual: true,
+    {
+      updater(mode: mode, s => {
+        if update-pause {
+          s + (start,) + (auto,) * (n - 1)
+        } else {
+          s + ((start,) + (auto,) * (n - 1),)
+        }
+      })
+    },
+    (s, body) => {
+      body
+      animation.motion(
+        s,
+        func,
+        controls: controls,
+        hider: hider,
+        start: start,
+        is-shown: is-shown,
+      )
+    },
+  )
+}
+
+/// Incrementally show items in enums/lists.
+/// This animation always update the current number of pauses.
+/// -> content
+#let step-item(
+  /// The list/enum. Must not contains any set/show rules.
+  /// -> enum | list
+  body,
+  /// start index of the animation
+  /// -> index
+  start: auto,
+  /// numbering for enums. `auto` means inherting from the current style of `enum`.
+  /// -> function | str
+  numbering: auto,
+  /// marker for lists. `auto` means inheriting from the current style of `list`.
+  marker: auto,
+  /// hider for the list/enums
+  /// -> function
+  hider: hide,
+  /// other styling arguments will be passed to enum/list set rules.
+  /// -> any
+  ..args,
+  lead-parbreak: false,
+) = {
+  let mode = "content"
+  updater(mode: mode, s => s + ((rel: -1, to: start),))
+
+  if body.func() not in ([].func(), [ ].func()) {
+    panic("Styling in step-item function is not supported.")
+  }
+
+  let children = body.children
+  let is-tight = not children.any(c => c == parbreak())
+  let items = children.filter(c => c not in ([], [ ], parbreak()))
+  let last-i = items.len() - 1
+
+  set enum(numbering: numbering) if numbering != auto
+  set list(marker: marker) if marker != auto
+
+  set enum(..args)
+  set list(..args)
+
+  for (i, item) in items.enumerate() {
+    uncover(mode: mode, from: auto, item, update-pause: true, hider: body => context {
+      if not is-tight { hider(block(item)) } else {
+        if i == 0 {
+          hider(block(
+            body,
+            above: if lead-parbreak { par.spacing } else { par.leading },
+          ))
+        } else if i < last-i {
+          hider(block(spacing: par.leading, item))
+        } else {
+          hider(block(above: par.leading, item))
+        }
       }
     })
-    animation.motion(
-      states.get(),
-      func,
-      controls: controls,
-      hider: hider,
-      start: start,
-      is-shown: is-shown,
-    )
+    if not is-tight and i == 0 { parbreak() }
   }
 }
 
 #let display-item(
-  numbering: auto,
-  marker: auto,
-  body-wrapper: it => it,
-  label-wrapper: it => it,
-  // default hider
-  hider: hide,
-  // arguments and indices
-  ..args,
+  ..indices,
   body,
-) = context {
-  if body.func() != [].func() {
-    panic("Styling in step-list function is not supported.")
-  }
+  hider: hide,
+  lead-parbreak: false,
+) = {
+  let mode = "content"
 
-  let styles = args.named()
-  let indices = args.pos()
-  let numbering = if numbering == auto { enum.numbering }
-  let marker = if marker == auto { list.marker }
-  let uncover = uncover.with(hider: hider)
+  indices = indices.pos()
   let covers = indices.map(i => {
     if type(i) not in (array, dictionary) { i = (i,) }
-    uncover.with(..i)
+    uncover.with(..i, mode: mode, update-pause: true)
   })
 
   let children = body.children
-  let items = children.filter(i => i not in ([], [ ], parbreak()))
-  let is-tight = children.any(c => c == parbreak())
-  let n-child = children.len()
+  let is-tight = not children.any(c => c == parbreak())
+  let items = children.filter(c => c not in ([], [ ], parbreak()))
+  let n-items = items.len()
   let n-covers = covers.len()
-  if n-covers < n-child {
+
+  if n-covers < n-items {
     // default cover is pause.
-    if covers == () { covers = (uncover.with(from: auto),) * n-child } else {
+    if covers == () { covers = (uncover.with(from: auto),) * n-items } else {
       // broadcast the last function.
-      covers += (n-child - n-covers) * (covers.last(),)
+      covers += (n-items - n-covers) * (covers.last(),)
     }
   }
 
-  covers = covers.map(f => f.with(update-pause: false))
-  let cover-state = state(prefix + "_step-item-cover-state", ())
-  cover-state.update(c => c + (covers,))
-
-  let inside-wrapper(it, func) = func(body-wrapper({
-    // revert to default
-    set enum(numbering: numbering, ..styles)
-    set list(marker: marker, ..styles)
-    it
-  }))
-
-  // parse the items
-  let result = ()
-  for (item, cover) in items.zip(covers) {
-    cover = cover.with(update-pause: true)
-    if item.func() == enum.item {
-      let fields = item.fields()
-      let body = item.body
-      let number = fields.at("number", default: auto)
-      if number == auto {
-        result.push(enum.item(inside-wrapper(body, cover)))
-      } else {
-        result.push(enum.item(number, inside-wrapper(body, cover)))
-      }
-    } else if item.func() == list.item {
-      let body = item.body
-      result.push(list.item(inside-wrapper(body, cover)))
-    } else { result.push(item) }
-  }
-  if is-tight { result.insert(1, parbreak()) }
-
-  // HACK: a function that makes enum and list markers react to states.
-  let react(it) = label-wrapper({
-    context {
-      let func = cover-state.get().last().first()
-      func(it)
+  for (i, (item, cover)) in items.zip(covers).enumerate() {
+    if item.func() in (enum.item, list.item) {
+      cover(item, hider: body => context {
+        if not is-tight { hider(block(item)) } else {
+          if i == 0 {
+            hider(block(
+              body,
+              above: if lead-parbreak { par.spacing } else { par.leading },
+            ))
+          } else if i < n-items - 1 {
+            hider(block(spacing: par.leading, item))
+          } else {
+            hider(block(above: par.leading, item))
+          }
+        }
+      })
+    } else {
+      item
     }
-    cover-state.update(c => {
-      let _ = c.last().remove(0)
-      return c
-    })
-  })
-
-  let new-marker = if type(marker) == array { marker.map(react) } else { react(marker) }
-  let new-numbering = (..n) => react(std.numbering(numbering, ..n))
-
-  set enum(numbering: new-numbering, ..styles)
-  set list(marker: new-marker, ..styles)
-
-  result.sum()
-  cover-state.update(c => {
-    let _ = c.pop()
-    c
-  })
-}
-
-/// Incrementally show items in enums/lists. 
-/// This animation always update the current number of pauses. 
-/// -> content 
-#let step-item(
-  /// The list/enum. Must not contains any set/show rules. 
-  /// -> enum | list
-  body,
-  /// start index of the animation 
-  /// -> index 
-  start: auto,
-  /// numbering for enums. `auto` means inherting from the current style of `enum`.
-  /// -> function | str
-  numbering: auto,
-  /// marker for lists. `auto` means inheriting from the current style of `list`.
-  marker: auto,
-  body-wrapper: it => it,
-  label-wrapper: it => it,
-  /// hider for the list/enums 
-  /// -> function
-  hider: hide,
-  /// other styling arguments will be passed to enum/list set rules.
-  /// -> any 
-  ..args,
-) = context {
-  if body.func() != [].func() {
-    panic("Styling in step-list function is not supported.")
+    if not is-tight and i == 0 { parbreak() }
   }
-
-  let uncover = uncover.with(hider: hider)
-  let numbering = if numbering == auto { enum.numbering }
-  let marker = if marker == auto { list.marker }
-
-  let inside-wrapper(it) = uncover(from: auto, update-pause: true, {
-    // revert to default
-    set enum(numbering: numbering, ..args)
-    set list(marker: marker, ..args)
-    body-wrapper(it)
-  })
-
-  uncover((rel: -1, to: start), [], update-pause: true)
-  let children = body.children.map(i => {
-    if i.func() == enum.item {
-      let fields = i.fields()
-      let body = i.body
-      let number = fields.at("number", default: auto)
-      if number == auto {
-        enum.item(inside-wrapper(body))
-      } else {
-        enum.item(number, inside-wrapper(body))
-      }
-    } else if i.func() == list.item {
-      let body = i.body
-      list.item(inside-wrapper(body))
-    } else { i }
-  })
-  let label-cover(it) = uncover(update-pause: false, from: auto, label-wrapper(it))
-
-  let new-marker = if type(marker) == array { marker.map(label-cover) } else { label-cover(marker) }
-  let new-numbering = (..n) => label-cover(std.numbering(numbering, ..n))
-
-  set enum(numbering: new-numbering, ..args)
-  set list(marker: new-marker, ..args)
-
-  children.sum()
 }
 
 /// Reveal the item group by group.
-/// -> content 
+/// -> content
 #let reveal-item(
-  /// start index of the animation 
-  /// -> index 
+  /// start index of the animation
+  /// -> index
   start: auto,
   /// numbering for enums. `auto` means inherting from the current style of `enum`.
   /// -> function | str
   numbering: auto,
   /// marker for lists. `auto` means inheriting from the current style of `list`.
   marker: auto,
-  body-wrapper: it => it,
-  label-wrapper: it => it,
-  /// hider for the list/enums 
+  /// hider for the list/enums
   /// -> function
   hider: hide,
-  /// whether to show the shown list/enum items. If set to `false`, each list/enum item will be shown only once per animation. 
+  /// whether to show the shown list/enum items. If set to `false`, each list/enum item will be shown only once per animation.
   /// -> bool
   accumulated: true,
-  /// the enum/list 
+  /// the enum/list
   /// -> enum | list
   ..args,
-) = context {
+) = {
+  let mode = "content"
+  set enum(numbering: numbering) if numbering != auto
+  set list(marker: marker) if marker != auto
+
   let bodies = args.pos()
   assert(
-    bodies.all(body => body.func() == [].func()),
-    message: "Styling in `step-item` function is not supported.",
+    bodies.all(body => body.func() in ([].func(), [ ].func())),
+    message: "Styling in `reveal-item` function is not supported.",
   )
 
   let indices = ()
@@ -535,6 +525,15 @@
       indices += (auto,) + (none,) * (items.len() - 1)
     }
   }
-  uncover((rel: -1, to: start), [], update-pause: true)
-  display-item(..indices, bodies.sum())
+
+  // panic(indices)
+
+  set enum(numbering: numbering) if numbering != auto
+  set list(marker: marker) if marker != auto
+
+  set enum(..args.named())
+  set list(..args.named())
+
+  updater(mode: mode, s => s + ((rel: -1, to: start),))
+  display-item(..indices, bodies.sum(), hider: hider)
 }

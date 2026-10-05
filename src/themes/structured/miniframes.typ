@@ -1,5 +1,5 @@
 #import "../../presentate.typ" as p
-#import "../../store.typ": states, set-options
+#import "../../store.typ": set-options
 #import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
 #import "../../components/structure.typ": empty-slide
 #import "shared.typ": apply-heading-numbering, apply-transition-rule
