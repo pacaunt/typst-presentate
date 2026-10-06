@@ -35,8 +35,13 @@
   ),
 )
 
-#let set-options(..options, mode: "content") = element.updater(mode: mode, s => {
-  s.at(0) = utils.merge-dicts(base: s.at(0), options.named())
-  return s
-})
+#let states = state(prefix + "_states", default-states)
+
+#let set-options(..options) = {
+  options = options.named()
+  states.update(s => {
+    s.at(0) = utils.merge-dicts(base: s.at(0), options)
+    return s
+  })
+}
 

@@ -2,10 +2,10 @@
 #import "utils.typ"
 #import "indices.typ"
 #import "animation.typ": pdfpc-slide-markers
-#import "element.typ": make-tree, applier, updater, mode-wrapper, object, reconstruct
+#import "element.typ": applier, make-tree, mode-wrapper, object, reconstruct, updater
 #import "store.typ"
 
-#let subslide(s, i, tree, logical-slide: true) = {
+#let subslide(s, i, tree) = {
   // set states to originals.
   s.at(0).subslide = i
   s.at(0).pause-state.hidden = false
@@ -22,7 +22,7 @@
 
   v(0pt)
   // freeze page number, tricks from minideck.
-  if i > 1 or not logical-slide {
+  if i > 1 or not s.at(0).logical-slide {
     counter(page).update(x => x - 1)
   }
 
@@ -57,57 +57,38 @@
   /// -> bool
   logical-slide: true,
 ) = {
+  show: preamble
   // Save the location, idea from Touying.
   context start-location.update(here())
-  // Resolve page index for pdfpc
-  updater(s => {
-    let (info, ..x) = s
-    if not info.logical-slide {
-      info.add-page-index += 1
+  context {
+    let states = store.states.get()
+    // Resolve page index for pdfpc
+    if not states.at(0).logical-slide {
+      states.at(0).add-page-index += 1
     }
-    info.logical-slide = logical-slide
-    (info,)
-  })
-
-  let subslide = subslide.with(logical-slide: logical-slide)
-
-  mode-wrapper("content", object("slide", caller: s => {
+    states.at(0).logical-slide = logical-slide
     // The main body's tree
-    let (s, tree) = make-tree(applier(body, body-fn), states: s)
+    let (states, tree) = make-tree(applier(body, body-fn), states: states)
+    let animation-info = indices.resolve(states)
     let steps = steps
-    let (info, ..x) = s
-    let animation-info = indices.resolve(s)
     if steps == auto {
       (steps,) = animation-info
     }
 
-    s.at(0).steps = steps 
-    s.at(0).waypoints = animation-info.waypoints
+    states.at(0).steps = steps
+    states.at(0).waypoints = animation-info.waypoints
+    // main slide content
 
-    let result = context {
-      if not info.handout {
-        for i in range(1, steps + 1) {
-          freeze-states-mark(s)
-          subslide(s, i, tree)
-        }
-      } else {
-        freeze-states-mark(s)
-        subslide(s, steps, tree)
+    if not states.at(0).handout {
+      for i in range(1, steps + 1) {
+        freeze-states-mark(states)
+        subslide(states, i, tree)
       }
+    } else {
+      freeze-states-mark(states)
+      subslide(states, steps, tree)
     }
-    // reset states
-    s.at(0).pause-state.hidden = false
-    s.at(0).waypoints = (:)
-
-    return (s, result)
-  }))
+  }
   // magic ???
   start-location.update(none)
-}
-
-#let init(body, ..options) = {
-  let defaults = store.default-states.first()
-  let states = (utils.merge-dicts(options.named(), base: defaults),)
-  let (final, tree) = make-tree(body, states: states)
-  return reconstruct(tree, states: states).last()
 }

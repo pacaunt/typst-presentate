@@ -1,13 +1,13 @@
 #import "../../src/export.typ": * 
 
-#show: init
-
 #set page(paper: "presentation-16-9") 
 #set text(size: 25pt)
 
+// CHORES: Check the compatibility of themes...
+
 #slide[
   = Welcome
-
+  #show: body => element.applier(body, it => context { it } )
   Hello, this is presentate. 
   #pause 
 
