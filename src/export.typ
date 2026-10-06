@@ -1,4 +1,4 @@
-#import "presentate.typ": slide
+#import "presentate.typ": slide, init
 #import "components/components.typ" as components: slide-title, structure-config, resolve-slide-title, is-role
 #import "animation.typ" 
 #import "indices.typ"

@@ -136,7 +136,7 @@
 
 #let getter(mode: "content", func) = mode-wrapper(mode, state-getter(func))
 
-#let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args)) 
+#let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args))
 
 #let interface(func, inner: "array", outer: "content", spread: false, hider: hide) = {
   let elem-func = if spread { collect } else { generic }
@@ -410,6 +410,20 @@
 // `metadata` function.
 #let make-tree(body, states: (), mode: "content") = {
   let make-tree = make-tree.with(mode: mode)
+  // resolve conditions
+  let conditions = states.at(0).saved.conditions
+  for cond in conditions {
+    if (cond.condition)(body) {
+      if cond.contextual {
+        cond.apply = cond.apply.with(states)
+      } 
+      if cond.modify-state {
+        (states, body) = (cond.apply)(body)
+      } else {
+        body = (cond.apply)(body)
+      }
+    }
+  }
 
   if type-of(body) == "state-updater" {
     states = (body.func)(states)

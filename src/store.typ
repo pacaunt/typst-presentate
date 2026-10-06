@@ -1,6 +1,6 @@
 #import "utils.typ"
 #import "indices.typ"
-#import "element.typ"
+#import "element.typ": updater
 
 #let prefix = "_presentate"
 
@@ -32,16 +32,14 @@
       hidden: false,
     ),
     parsing-state: (shown: false),
+    saved: (conditions: (), storage: (:))
   ),
 )
 
 #let states = state(prefix + "_states", default-states)
 
-#let set-options(..options) = {
-  options = options.named()
-  states.update(s => {
-    s.at(0) = utils.merge-dicts(base: s.at(0), options)
-    return s
-  })
-}
+#let set-options(..options) = element.updater(s => {
+  s.at(0) = utils.merge-dicts(options.named, base: default-states.first())
+  s
+})
 
