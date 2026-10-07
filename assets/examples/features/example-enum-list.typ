@@ -4,11 +4,10 @@
 #set text(size: 25pt)
 
 #slide[
-  = List Hacks with Relative Index
-  #set list(marker: uncover(from: auto, update-pause: false, [-]))
+  = List/Enum pauses
 
-  - #show: pause;First Item.
-  - #show: pause;Second Item.
-  - #show: pause;Third Item.
+  - First Item. #pause
+  - Second Item. #pause
+  - Third Item.
 
 ]

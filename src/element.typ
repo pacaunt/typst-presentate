@@ -3,6 +3,7 @@
 // the data is not a content. However, array mode assumes every element is an
 // array with only one member, which must not be an array or parsable.
 #import "utils.typ" as utils: strfmt
+#import "indices.typ"
 
 #let sequence = [].func()
 #let styled = [#set text(fill: red)].func()
@@ -66,8 +67,6 @@
 
 #let empty-content = ([], [ ], parbreak(), linebreak(), pagebreak(), colbreak())
 
-
-
 #let object(type, ..properties) = (
   __presentate-object-type__: type,
   ..properties.named(),
@@ -91,19 +90,13 @@
   func,
   fields: (:),
   positionals: (),
-  mode: "content",
-  contextual: false,
-  hidable: true,
-  real: true,
+  ..others,
 ) = object(
   "element",
   func: func,
-  fields: fields,
   positionals: positionals,
-  mode: mode,
-  contextual: contextual,
-  hidable: hidable,
-  real: real,
+  fields: fields,
+  ..others,
 )
 
 #let join(children, ..props) = element(
@@ -136,31 +129,27 @@
 
 #let getter(mode: "content", func) = mode-wrapper(mode, state-getter(func))
 
-#let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args)) 
+#let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args))
 
-#let interface(func, inner: "array", outer: "content", spread: false, hider: hide) = {
+#let interface(func, inner: "array", outer: "content", spread: true, hider: hide) = {
   let elem-func = if spread { collect } else { generic }
-  let hider-setter = state-updater(s => {
-    s.at(0).pause-state.hider = hider
-    s
-  })
-  let hider-reverter = state-updater(s => {
-    s.at(0).pause-state.hider = s.at(0).pause-state.default-hider
-    s
-  })
-  let updater = mode-wrapper.with(if spread { "array" } else { inner })
-  let scoped(body) = {
-    updater(hider-setter)
-    body
-    updater(hider-reverter)
+  return (..args) => {
+    updater(mode: outer, s => {
+      s.at(0).pause-state.previous-hider = s.at(0).pause-state.hider
+      s
+    })
+    mode-wrapper(outer, elem-func(
+      if spread { args.pos() } else { args.pos().first() },
+      func,
+      mode: inner,
+      named: args.named(),
+      inner-hider: hider,
+    ))
+    updater(mode: outer, s => {
+      s.at(0).pause-state.hider = s.at(0).pause-state.previous-hider
+      s
+    })
   }
-
-  return (..args) => mode-wrapper(outer, elem-func(
-    scoped(if spread { args.pos() } else { args.pos().first() }),
-    func,
-    mode: inner,
-    named: args.named(),
-  ))
 }
 
 #let custom(func, mode: "array", spread: false, ..props) = (..args) => mode-wrapper(mode, {
@@ -209,10 +198,10 @@
     }
   }
 
-  if elem.contextual { func = func.with(states) }
+  if elem.at("contextual", default: false) { func = func.with(states) }
   let restored = func(..restored-pos, ..named)
 
-  if elem.mode != "content" { return restored }
+  if elem.at("mode", default: auto) != "content" { return restored }
   if label != none { return [#restored#label] }
 
   return restored
@@ -228,6 +217,9 @@
     item-follow-parbreak: false,
   ),
 ) = {
+  // initializing, reset the parameters 
+  states.at(0).parsing-state.shown = false
+
   let item-funcs = (enum.item, list.item)
 
   if type-of(tree) == array {
@@ -324,7 +316,7 @@
     // If the visible state of any child in a children is changed, the parent
     // element will not be hidden -> parsing.state.shown = true
     if new-tree.any(it => type-of(it) == "state-updater") {
-      states.at(0).parsing-state.shown = false
+      states.at(0).parsing-state.shown = true
       // filtering out the updater
       new-tree = new-tree.filter(it => type-of(it) != "state-updater")
     }
@@ -339,10 +331,6 @@
 
   if type-of(tree) == "state-getter" {
     return reconstruct((tree.func)(states), states: states)
-  }
-
-  if type-of(tree) == "slide" {
-    return (tree.caller)(states)
   }
 
   if type-of(tree) != "element" {
@@ -387,29 +375,41 @@
       normal(body)
     }
   }
+
   let states-prior = states
+
+  if tree.at("inner-hider", default: auto) != auto {
+    states.at(0).pause-state.hider = tree.inner-hider
+  }
 
   for (k, v) in tree.fields.pairs() {
     (states, v) = reconstruct(v, states: states, scope: scope)
     tree.fields.at(k) = v
   }
+  // if tree.func == table.cell and states.at(0).parsing-state.shown  {
+  //   panic()
+  // }
   // context provided to the element must be prior to its children.
   let restored = reconstruct-one(tree, states: states-prior)
   // some intermediate elements are not hidable.
-  if tree.hidable { restored = wrapper(states, restored) }
-  // Once the parent element is restored, the parsing-state.shown is reset.
-  states.at(0).parsing-state.shown = false
+  if tree.at("hidable", default: true) { restored = wrapper(states, restored) }
 
   return (states, restored)
 }
 
-
-
 // Assume every element is a content, which can be destructed into its fields /
 // and element function. The native 'parsed' element will be stored in
 // `metadata` function.
-#let make-tree(body, states: (), mode: "content") = {
-  let make-tree = make-tree.with(mode: mode)
+#let make-tree(
+  body,
+  states: (),
+  scope: (
+    mode: "content",
+    semantic-array: false,
+  ),
+) = {
+  // if scope.mode == "array" { scope.semantic-array = true }
+  let make-tree = make-tree.with(scope: scope)
 
   if type-of(body) == "state-updater" {
     states = (body.func)(states)
@@ -417,16 +417,27 @@
   }
 
   if type-of(body) == "state-getter" {
-    let new-tree
-    (states, new-tree) = make-tree((body.func)(states), states: states)
-    new-tree = state-getter(s => new-tree)
-    return (states, new-tree)
+    (states, _) = make-tree((body.func)(states), states: states)
+    return (states, body)
   }
 
   if type-of(body) == "element" {
-    if body.real { mode = body.mode }
+    if body.at("mode", default: auto) != auto { scope.mode = body.mode }
     for (k, v) in body.fields.pairs() {
-      (states, v) = make-tree(v, states: states, mode: mode)
+      // (states, v) = make-tree(v, states: states, scope: scope)
+      // let sub-scope = scope
+      // this array is NOT a semantic array, it is just a container.
+      if { ".." + k } in body.positionals and scope.mode == "array" {
+        let new-v = ()
+        for sub-tree in v {
+          // panic(sub-tree)
+          (states, sub-tree) = make-tree(sub-tree, states: states, scope: scope)
+          new-v.push(sub-tree)
+          v = new-v
+        }
+      } else {
+        (states, v) = make-tree(v, states: states, scope: scope)
+      }
       body.fields.at(k) = v
     }
     return (states, body)
@@ -443,13 +454,16 @@
         sub-tree = sub-tree.value
       }
       // protect the inner element
-      if mode == "array" and not is-object(sub-tree) { sub-tree = generic(sub-tree, child => (child,), mode: mode) }
+      if scope.mode == "array" and not is-object(sub-tree) {
+        let make-array(it) = (it,)
+        sub-tree = generic(sub-tree, make-array, mode: scope.mode)
+      }
       // then generate tree
       (states, sub-tree) = make-tree(sub-tree, states: states)
 
       new-tree.push(sub-tree)
     }
-    if mode == "array" { new-tree = join(new-tree, mode: mode) }
+    if scope.mode == "array" { new-tree = join(new-tree, mode: scope.mode) }
     return (states, new-tree)
   }
 
@@ -458,7 +472,7 @@
   }
 
   if body.func() == metadata and is-object(body.value) {
-    return make-tree(body.value, states: states)
+    return make-tree(body.value, states: states, scope: scope)
   }
 
   if body in empty-content {
@@ -466,7 +480,8 @@
   }
 
   if body.func() in content-no-parse {
-    return (states, element(() => body))
+    let no-parse() = body
+    return (states, element(no-parse))
   }
 
   let func = body.func()

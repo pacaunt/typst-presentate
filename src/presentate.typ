@@ -81,11 +81,10 @@
 
     if not states.at(0).handout {
       for i in range(1, steps + 1) {
-        freeze-states-mark(states)
+        if i > 1 { freeze-states-mark(states) }
         subslide(states, i, tree)
       }
     } else {
-      freeze-states-mark(states)
       subslide(states, steps, tree)
     }
   }

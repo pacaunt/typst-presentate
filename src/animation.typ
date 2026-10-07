@@ -6,7 +6,7 @@
 #let pause(s, body, hider: it => none) = {
   let (info, ..idx) = s
   let (pauses,) = indices.resolve(s)
-  if pauses <= info.subslide or info.handout {
+  if pauses <= info.subslide {
     body
   } else { hider(body) }
 }
@@ -101,7 +101,6 @@
 }
 
 #let alert(s, ..n, from: auto, to: (), body, func: emph) = {
-  let (info, ..x) = s
   uncover(s, ..n, func(body), hider: it => body, from: from, to: to)
 }
 

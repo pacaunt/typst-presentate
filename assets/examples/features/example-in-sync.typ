@@ -8,25 +8,25 @@
   #table(columns: (1fr, 1fr), stroke: 1pt)[
     First
 
-    #show: pause;
+    #pause
     I am
 
-    #show: pause;
+    #pause 
 
     in sync.
-  ][
-    // `[]` is a dummy content.
-    #uncover(1, [], update-pause: true)
+  ][ 
+    // Use `meanwhile` to reset the pauses.
+    #meanwhile
     Second
 
-    #show: pause;
+    #pause
     I am
 
-    #show: pause;
+    #pause 
 
     in sync.
 
-    #show: pause
+    #pause 
     Heheh
   ]
 ]

@@ -1,6 +1,6 @@
 #import "../../../src/export.typ": *
 
-#import "@preview/alchemist:0.1.9" as alc
+#import "@preview/alchemist:0.2.0" as alc
 
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)

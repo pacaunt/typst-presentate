@@ -7,10 +7,9 @@
 #let start-location = state(prefix + "_start_location")
 
 #let freeze-states-mark(states) = {
-  let (info, ..x) = states
   let loc = start-location.get()
-  if info.freeze-states {
-    info.frozen-states-and-counters.map(c => c.update(c.at(loc))).join()
+  if states.at(0).freeze-states {
+    states.at(0).frozen-states-and-counters.map(c => c.update(c.at(loc))).join()
   }
 }
 

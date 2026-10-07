@@ -21,7 +21,6 @@
     hider: hide,
   ),
   parsing-state: (shown: false),
-  
 )
 
 /// ----------- APPLICATIONS --------------
@@ -161,9 +160,9 @@
 
 #import "@preview/cetz:0.5.2": canvas, draw
 
+#let join-canvas(..args) = canvas(args.pos().sum(), ..args.named())
 
-
-#let my-canvas = interface(canvas, inner: "array", outer: "content", hider: draw.hide.with(bounds: true))
+#let my-canvas = interface(canvas, inner: "array", outer: "content", hider: draw.hide.with(bounds: true), spread: true)
 
 // #let (sts, tree) = make-tree(((([A], [B]),),), mode: "array")
 
@@ -176,7 +175,7 @@
 //   circle((0, 0))
 // })
 
-#{ base-states.subslide = 3 }
+#{ base-states.subslide = 2 }
 
 #let body = [
   First #pause Second #pause
@@ -191,9 +190,9 @@
 ]
 
 #let (sts, tree) = make-tree(body, states: (base-states,))
-
 // #tree
 #reconstruct(tree, states: (base-states,)).last()
+
 
 #pagebreak()
 
@@ -231,9 +230,9 @@
 #let body = [#my-canvas({
   import draw: *
   let uncover = uncover.with(mode: "array", hider: hide.with(bounds: true))
-  let reveal = reveal.with(mode: "array", hider: hide.with(bounds: true))
+  // let reveal = reveal.with(mode: "array", hider: hide.with(bounds: true))
   line((0, 0), (1, 0))
-  reveal(from: 2, {
+  uncover(from: 2, {
     line((0, -1), (rel: (1, 0)))
     uncover(3, {
       line((0, -2), (rel: (1, 0)))
@@ -252,7 +251,7 @@
 = Fletcher Test
 
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
-#let my-diagram = interface(diagram, inner: "content", spread: true, hider: fletcher.hide)
+#let my-diagram = interface(diagram, inner: "content", hider: fletcher.hide)
 
 #{ base-states.subslide = 4 }
 
@@ -354,7 +353,7 @@
 
 - Malangua
 - End
-/ terms: item 
+/ terms: item
 / terms: item
 
 
@@ -384,23 +383,23 @@ Hello
 
 #reconstruct(tree, states: (base-states,)).last()
 
-#pagebreak() 
+#pagebreak()
 
-= Test Item 
+= Test Item
 
 #{ base-states.subslide = 4 }
 
 #let body = [
   H
   #step-item(hider: text.with(fill: red), start: none)[
-    + First 
-    + Second 
+    + First
+    + Second
     + Third
   ]
   ---
   #reveal-item[
-    + First 
-    + Second 
+    + First
+    + Second
   ][
     + Third
   ]
@@ -415,13 +414,13 @@ Hello
 
 #reconstruct(tree, states: (base-states,)).last()
 
-= Waypoints 
+= Waypoints
 
 #{ base-states.subslide = 1 }
 
 #let body = [
-  Hi #pause Hello #waypoint(<first>) 
-  #pause Third 
+  Hi #pause Hello #waypoint(<first>)
+  #pause Third
   // #meanwhile
   #uncover(<first>)[with hello!]
   #link("https://typst.app/docs/reference/visualize/curve/")
@@ -429,4 +428,30 @@ Hello
 
 #let (sts, tree) = make-tree(body, states: (base-states,))
 
+#reconstruct(tree, states: (base-states,)).last()
+
+
+#pagebreak() 
+
+= Test Children 
+
+#let my-join-canvas = interface(join-canvas, inner: "array", hider: draw.hide.with(bounds: true), spread: true)
+
+#{ base-states.subslide = 2 }
+
+#let body = [
+  #my-join-canvas({
+    import draw: * 
+    circle((0, 0))
+    (pause,)
+  }, {
+    import draw: *
+    circle((1, 0))
+  })
+  #pause
+  After
+]
+
+#let (sts, tree) = make-tree(body, states: (base-states,))
+#tree
 #reconstruct(tree, states: (base-states,)).last()
