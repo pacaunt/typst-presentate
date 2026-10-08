@@ -70,6 +70,7 @@
 
 #context {
   let body = [
+    #pause
     #grid(columns: (1fr, 1fr), gutter: 1em)[
       A
       #pause
@@ -77,9 +78,13 @@
     ][
       // #meanwhile
       // #pause
+      #rect[
       #uncover((rel: -1))[It's 5 choose 3.]
+      ]
       D
+      // #pause
     ]
+    E
   ]
 
   let s = store.states.get()
@@ -88,3 +93,10 @@
   // [#tree]
   [#reconstruct(tree, states: s)]
 }
+
+#pagebreak()
+
+#slide[
+  = Test Visibility
+  A #pause B 
+]

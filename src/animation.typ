@@ -12,33 +12,31 @@
 }
 
 #let uncover(s, ..n, body, hider: auto, from: (), to: ()) = {
-  let (info, ..x) = s
-  let (pauses, results: (..n)) = indices.resolve(s, ..n)
   let hider = if hider == auto { s.at(0).default-hider } else { hider }
-
   //  Show only when the subslides are in the specified indices, or in the range of from-to.
   // Minideck's original
-  let logic(i) = {
-    if i in n { return true }
-    let tmp = ()
-    if from != () { tmp.push(from) } else if to != () {
-      panic("`from` must be specified in order to use `to`.")
-    }
-    if to != () { tmp.push(to) }
+  let logic(s, n: n.pos(), from: from, to: to) = {
+    let i = s.at(0).subslide
+    let in-group = if n != () {
+      (results: (..n)) = indices.resolve(s, ..n)
+      i in n
+    } else { false }
 
-    let (results: tmp) = indices.resolve(s, ..tmp)
+    let in-range = if from != () and to != () {
+      let (results: (from, to)) = indices.resolve(s, from, to)
+      from <= i and i <= to
+    } else if from != () {
+      let (results: (from,)) = indices.resolve(s, from)
+      from <= i
+    } else if to != () {
+      let (results: (to,)) = indices.resolve(s, to)
+      i <= to
+    } else { false }
 
-    if tmp.len() == 1 {
-      let (from,) = tmp
-      return i >= from
-    } else if tmp.len() == 2 {
-      let (from, to) = tmp
-      return from <= i and i <= to
-    } else {
-      false
-    }
+    return in-group or in-range
   }
-  if logic(info.subslide) {
+
+  if logic(s) {
     body
   } else { hider(body) }
 }
@@ -200,7 +198,6 @@
     )
   }
 
-
   // `active` means ability to change the showing status of an element,
   // `inherited` means ability to receive the previous modifiers
   // `leftover` means ability to send the modifiers to next steps
@@ -336,7 +333,6 @@
 
       result.push(current-status)
     }
-
 
     return result
   }

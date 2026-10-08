@@ -68,6 +68,8 @@
 #let containers = (
   sequence,
   styled,
+  grid.cell, 
+  table.cell,
 )
 
 #let empty-content = ([], [ ], parbreak(), linebreak(), pagebreak(), colbreak())
@@ -90,7 +92,8 @@
   if mode == "content" { return [#metadata(info)<__presentate-mark__>] }
   panic(strfmt("Unknown mode `{}`, expected: \"array\" or \"content\".", mode))
 }
-/// Presentate's element constructor
+
+// Presentate's element constructor
 #let element(
   func,
   fields: (:),
@@ -136,10 +139,20 @@
 
 #let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args))
 
+/// A custom interface that makes Presentate reach the content inside.
+/// -> function
 #let interface(
+  /// The environment function. Such as `cetz.canvas`. 
+  /// -> function
   func,
+  /// Inner mode of parsing 
+  /// -> "array" | "content"
   inner: "array",
+  /// Outer mode of parsing, i.e. the environment surrounding this element.
+  /// -> "array" | "content"
   outer: "content",
+  /// Default hider used by `pause`
+  /// -> function
   hider: hide,
 ) = (..args) => mode-wrapper(outer, collect(
   args.pos(),
@@ -149,8 +162,16 @@
   inner-hider: hider,
 ))
 
-#let custom(
+/// Another custom interface, used within the `interface`, i.e. 
+/// when the inner and outer mode is the same. You can use this to wraps around `context` in content mode.
+/// 
+/// -> function
+#let adapt(
+  /// The sub-environment function, such as `group()` in CeTZ or `branch()` in alchemist package. 
+  /// -> function
   func,
+  /// Mode of parsing, which determines the 'kind' of content inside. 
+  /// -> "array" | "content"
   mode: "array",
   ..props,
 ) = (..args) => applier(
@@ -209,7 +230,7 @@
   return restored
 }
 
-/// Main element reconstruction function.
+// Main element reconstruction function.
 #let reconstruct(
   tree,
   states: (),
@@ -221,10 +242,14 @@
   ),
 ) = {
   states.at(0).parsing-state.shown = false
-  // initializing, reset the parameters
+
   let hider = if scope.hider == auto {
     states.at(0).pause-state.hider
   } else { scope.hider }
+
+  let visible(s) = {
+    not s.at(0).pause-state.hidden or s.at(0).parsing-state.shown
+  }
 
   let item-funcs = (enum.item, list.item)
 
@@ -313,6 +338,7 @@
             scope.item-counter += 1
           }
           (states, item) = reconstruct(item, states: states, scope: scope)
+          if visible(states) { shown-tag = true }
           new-tree.push(item)
         }
         // reset item counter
@@ -320,10 +346,8 @@
       } else {
         // Elements-other-than-items' reconstruction.
         (states, sub-tree) = reconstruct(sub-tree, states: states, scope: scope)
+        if visible(states) { shown-tag = true }
         new-tree.push(sub-tree)
-      }
-      if type-of(sub-tree) == "state-updater" {
-        if not states.at(0).pause-state.hidden { shown-tag = true }
       }
     }
     // If the visible state of any child in a children is 'shown', the parent
@@ -383,8 +407,8 @@
 
     // Only when the parent element does not contain any state update will the
     // element be hidden.
-    if not s.at(0).parsing-state.shown {
-      if states.at(0).pause-state.hidden { hider(body) } else { normal(body) }
+    if not s.at(0).parsing-state.shown and states.at(0).pause-state.hidden {
+      hider(body)
     } else {
       normal(body)
     }

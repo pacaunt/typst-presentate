@@ -104,11 +104,11 @@
 ]
 
 #slide[Timeline Synchronization][
-  Use `update-pause: true` to make subsequent pauses "aware" of the subslides added by `uncover` or `only`.
+  Use `update: true` to make subsequent pauses "aware" of the subslides added by `uncover` or `only`.
   
   1. Regular Step #pause
-  2. Hidden Step #uncover(auto, [SURPRISE!], update-pause: true) #pause
-  3. This step waits for the surprise because of `update-pause`.
+  2. Hidden Step #uncover(auto, [SURPRISE!], update: true) #pause
+  3. This step waits for the surprise because of `update`.
 ]
 
 = Content Transformations

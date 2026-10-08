@@ -7,7 +7,7 @@
   #pause It will be shown once. // first pause 
   + #uncover(none)[Bird] 
   + #uncover(auto)[Ant]
-  + #uncover((rel: 1), update-pause: true)[Bees] // update the last animation
-  + #uncover((rel: -1))[Monkey] 
+  + #uncover((rel: 1), update: true)[Bees] // update the last animation
+  + #uncover((rel: 2))[Monkey] 
   #pause What was the third animal? // so this shows later
 ]

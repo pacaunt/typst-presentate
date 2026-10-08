@@ -189,14 +189,24 @@ In the example, `alert` function accepted an integer and it made the text red on
 - It can be multiple integers like `alert(1, 4, 5, body)` to only alert on subslide 1, 4, and 5.
 - It can be _both_ integers and `from: int`, to show the modified content on the specified subslide and after the `int` subslide specified by the `from` argument.
 _added in 0.3.0: following Touying's functionality_ 
-- It can be a string/label, specifying the index at which the label is present in `waypoint` marker. See @waypoints.
+- It can be a string/label, specifying the index at which the label is present in `marker`. See @markers.
 
 Apart from `alert`, if you have ever used `beamer` in LaTeX before, you probably know the `uncover` and `only` functions. The `uncover` only _uncover_ the content on the spcified subslides, and hide the content otherwise, with _space preserved_, while `only` function also works with the same logic, but its hiding method is to completely remove the content out, so no space is preserved.
 
 #source-example("img/simple-only-uncover.typ")
 #render-pdf("img/simple-only-uncover.pdf", pages: 4)
 
-== Jumping and Waypoints <waypoints> 
+== Jumps and Markers <markers>
+`jump(indices)` was introduced in 0.3.0, importing the functionality by Touying. 
+This function returns a pause-like marker that set the current number of pauses to the specified `indices`.
+```typ
+A            // shown on subslide 1 
+#pause B     // shown on subslide 2 
+#jump(1) C   // shown on subslide 1
+```
+Moreover, you can mark a progress according to the current number of pauses by using `marker(<name>)`. This name can be used like the other indices. 
+#source-example("img/marker-example.typ")
+#render-pdf("img/marker-example.pdf", pages: 5, columns: 2)
 
 == Time traveling with relative indices
 Most of the time when creating presentation, the step of revealing the content is either
@@ -209,14 +219,16 @@ Presentate have a special type of index called *relative indices*, which are ind
 For example,
 #source-example("img/relative-indices.typ")
 #render-pdf("img/relative-indices.pdf", pages: 4)
-As you can see, the last text that was shown on subslide 4 was a little bit inconvenient to write `(rel: 2)` to make it shown when every animation was finished. It would be nice if we can use `pause` at the end and make it 'see' the previous `uncover`s. You can make the next pause reveal a content after (almost) any animation functions by specifying `update-pause: true` into its argument.
+As you can see, the last text that was shown on subslide 4 was a little bit inconvenient to write `(rel: 2)` to make it shown when every animation was finished. It would be nice if we can use `pause` at the end and make it 'see' the previous `uncover`s. You can make the next pause reveal a content after (almost) any animation functions by specifying `update: true` into its argument.
 #source-example("img/update-pause.typ")
-// #render-pdf("img/update-pause.pdf", pages: 4)
-With this interaction between the current number of pauses and the `update-pause` argument, you can set the pauses to _any_ number to modify the animation. For example, making the content shown in sync side by side:
+#render-pdf("img/update-pause.pdf", pages: 4)
+With this interaction between the current number of pauses and the `update` argument, you can set the pauses to _any_ number to modify the animation. For example, making the content shown in sync side by side:
 #source-example("img/in-sync.typ")
 #render-pdf("img/in-sync.pdf", pages: 3)
 
 == Specific functions for `list` and `enum`
+_In presentate 0.3.0, `list` and `enum`'s markers are already hidden by `pause` or `jump`, so the following function is not needed._
+
 In the last example, you can see that the number in `enum` did not hide properly. Since Typst treats the marker of `list` and number label of `enum` in different context from its body, Presentate implements some (hacky) way to properly hide them without wiggling. To show the list/enum item by item, Presentate provides a function called `step-item`:
 #source-example("img/step-item.typ")
 #render-pdf("img/step-item.pdf", pages: 6)
@@ -292,42 +304,25 @@ Here is an example of using this functionality: to annotate a mathematical expre
 #source-example("img/motion-func.typ")
 #render-pdf("img/motion-func.pdf", pages: 3)
 
-= Package Intregration Framework
-Since each package has their own element and data types, to interact with them, Presentate must provide some functions that leave no trace to ensure there will be no conflict between packages. This functionality has been proposed in some ways before in the recent examples: changing the `hider` method of each animation functions.  The later functions that will be shown use a similar logic; you have to specify how to _hide_ the content from each packages _manually_. Moreover, since the functions leave no trace, Presentate cannot know what animation you have used, so you have to update each animation to Presentate _manually_.
-== The `render` workspace
-`render` is a function that accepts another function that returns *an array of length two, containing the content and a state*. The syntax is as follows:
-```typ
-#render(s => ([
-  #import animation: *
-  // your content
-], s))
-```
-where `s` is the *Presentate's state*, which is an array containing
-- a dictionary of current presentation infomation, it is the first member of this array,
-  - you can access the current subslide number by `s.at(0).subslide`,
-  - the curent number of pauses by `s.at(0).pauses`, for example.
-- the indices of the animation from each Presentate's animation functions.
-The content inside `render` can be anything, but it needs to be a `content` data type. The state `s` here will be used by the functions in `animation` module, as will be presented in the next section.
+= Package Integration Framework
+Presentate's animation relies on parsing data in two formats: 
+_content_ and _array_, which are only two data types that can be joined intrinsically.
+Every parsable data, in Presentate's view, must be 1) reachable, meaning that *animation cannot be used in show-rules nor in `context` calls*, 2) recognizable, such as integer, content, string, etc. By design, Presentate transforms all contents into internal representation called `element`, the animation calls are just these elements wrapped by `metadata` or `array` so that they can join with the surrounding contents. From the limitation of 'reachable', Presentate overcomes this by introducing element constructors that can natively supports parsing of `array` and custom `content` datatypes: `interface` and `adapt`. 
 
-== `animation` module
-To fully use the animation in `render` with other packages, you can import the `animation` module inside the render call as shown in the last code listing.  This module provides a similar set of functions like `pause`, `uncover`, `only`, and others, but all of them will be called a little bit different from the normal usage, as you have to put the state `s` *as the first positional argument* in the function _every time_, like
-```typ
-#render(s => ({
-  import animation: *
-  pause(s, { /* your content */  })
-}, s))
-```
-Moreover, to make Presentate aware of the animation, you have to update the state `s` manually. Since `s` is an array, you can update by using `s.push(idx)` call, where `idx` is the indices that are required for the last animation to perform. For example, the `pause` function needs an additional new subslide, so we update `s` by `s.push(auto)` like in the following example.
-#source-example("img/animation-pause.typ")
-#render-pdf("img/animation-pause.pdf", pages: 4)
-You can see that the diagram is jiggling, because by default, all functions in the `animation` module uses `it => none` as hider function. You can change it to suit the package's hide function, for example,
-#source-example("img/cetz-animation.typ")
-#render-pdf("img/cetz-animation.pdf", pages: 3)
-Not only you can specify `auto` as update indices, in fact, you can put
-- an integer like `s.push(1)`, `s.push(2)` to *set* the current pause to that subslide number,
-- relative indices like normal, but each index will *always* update the pause number,
-- an _array_ of any type of indices to prevent the pause update.
-The specified indices are only for the current animation. For total number of frames needed to render all animation, Presentate will calculate it _automatically_.
+== Integration by parsing: `interface` and `adapt` functions 
+To make Presentate reach the animation functions inside non-content environment, you must use `interface`, which splits the data and sends them to Presentate to process before rendering them back to its original environment. 
+#source-example("img/cetz-interface.typ")
+#render-pdf("img/cetz-interface.pdf", pages: 3)
+
+All animation functions (except `pause` and `meanwhile` which are handled automatically) that are usable in non-content environment have a `mode` argument, accepting either `"content"` or `"array"`. `"content"` is default, but you can change it so that the functions are able to join inside `array` environment, like CeTZ and Alchemist's frameworks. 
+
+However, this still has a limitation, it cannot process nested elements like in `draw.group()` of CeTZ or `cycle()` of alchemist. So, another interface, which is just a shorthand for `interface()` with the same mode of both inner data and outer environment, is introduced: `adapt()` function (because it adapts the wrapped function to work): 
+
+#source-example("img/alchemist-adapt.typ")
+#render-pdf("img/alchemist-adapt.pdf", pages: 3)
+
+
+
 
 == Animate the inanimate: a custom way to hide
 Presentate also has a function for handle a custom way to hide elements from other packages, which is the `animate` function in the `animation` module. This `animate` create another function that _react_ with the current state `s`, so that the element will be shown one by one based on the current number of pauses, just like what normal pause do, and hidden with the specified `modifier`. To demonstrate this functionality, we will use an example to draw a chemical structure from #footlink("https://typst.app/universe/package/alchemist/")[Alchemist] package:
@@ -360,6 +355,10 @@ where `options` are the options in the form `key: value`.
 
 == Internal states
 Internally, Presentate store all of the slides information in a state in the `store` module. You can access this state by
+```typc
+store.getter(states => { .. })
+```
+or if you are outside of `slide()`, 
 ```typc
 context store.states.get()
 ```
@@ -417,6 +416,9 @@ You can visit the examples of the structured themes here:
 
 == Animation Functions 
 #tidy.show-module(render-info)
+
+== Package Integration Interface 
+#tidy.show-module(tidy.parse-module(read("../../src/element.typ")))
 
 == Presentate Slide Function 
 #tidy.show-module(tidy.parse-module(read("../../src/presentate.typ")))

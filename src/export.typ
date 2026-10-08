@@ -2,9 +2,9 @@
 #import "components/components.typ" as components: slide-title, structure-config, resolve-slide-title, is-role
 #import "animation.typ" 
 #import "indices.typ"
-#import "render.typ": pause, only, uncover, fragments, transform, render, alert, motion, tag, step-item, reveal-item, display-item, jump, meanwhile, waypoint
+#import "render.typ": pause, only, uncover, fragments, transform, render, alert, motion, tag, step-item, reveal-item, display-item, jump, meanwhile, marker
 #import "pdfpc.typ"
 #import "utils.typ"
 #import "store.typ" as store: set-options
 #import "themes/themes.typ" 
-#import "element.typ" as element: custom, interface, getter, updater
+#import "element.typ" as element: adapt, interface, getter, updater

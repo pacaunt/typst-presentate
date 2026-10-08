@@ -6,7 +6,7 @@ For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-present
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.2.6": *
+#import "@preview/presentate:0.3.0": *
 ```
 and then, the functions are automatically available. 
 
@@ -19,7 +19,7 @@ The easiest is to type `#show: pause`. For example,
 
 #slide[
   Hello World!
-  #show: pause;
+  #pause;
 
   This is `presentate`.
 ]
@@ -51,10 +51,10 @@ You can style the slides as you would do with normal Typst document. For example
   #set align(horizon)
   Do you know that $pi != 3.141592$?
 
-  #show: pause 
+  #pause
   Yeah. Certainly.
 
-  #show: pause 
+  #pause
   Also $pi != 22/7$.
 ]
 ```
@@ -67,68 +67,37 @@ You can use `none` and `auto`, or even `(rel: int)` to specify the index as *wit
 // Set the cover functions to see the effect better.
 #let grayed = text.with(fill: gray.transparentize(50%))
 
-#let pause = pause.with(hider: grayed)
+#let pause = jump(auto, hider: grayed)
 #let uncover = uncover.with(hider: grayed)
 
 #slide[
   = Relative `auto`, `none`, and `(rel: int)` Indices
-
   This is present first
 
-  #show: pause
-
+  #pause
   #only(auto)[This came later, but *not* preserve space.]
   _This will shift. $->$_
 
   #uncover(none)[This comes with current `pause`.]
 
-  #pause[This is the second `pause`.]
+  #pause This is the second `pause`.
 
-  #pause[This is the third `pause`]
+  #pause This is the third `pause`
 
-  #uncover((rel: -1), [But This come before.])
+  #jump((rel: -1), hider: grayed)
+
+  But this come before.
 ]
 ```
 
 ![relative index specification example](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-relative-indices.png)
 
 ### Varying Timeline
-You can specify the `update-pause` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
+You can specify the `update` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
 
 This is useful for modifying steps of the animation so that some contents appear with or after another. 
-One application is for showing contents in sync: 
 
-```typst
-#slide[
-  = Content in Sync
-  #table(columns: (1fr, 1fr), stroke: 1pt)[
-    First
-
-    #show: pause;
-    I am
-
-    #show: pause;
-
-    in sync.
-  ][
-    // `[]` is a dummy content.
-    #uncover(1, [], update-pause: true)
-    Second
-
-    #show: pause;
-    I am
-
-    #show: pause;
-
-    in sync.
-    
-    #show: pause 
-    Heheh
-  ]
-]
-```
-
-![Hack for in-sync content showing using update-pause](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-in-sync.png)
+<-- NEED A NEW EXAMPLE -->
 
 
 ### Motion Control
@@ -168,6 +137,8 @@ In this example, featured with CeTZ package, each element is drawn normally, whi
 
 
 ### Package Integration 
+
+<-- EXAMPLE OF INTERFACE AND ADAPT -->
 
 Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
 For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
@@ -211,7 +182,7 @@ You can incrementally show the content from other package by wrap the functions 
 For example, this molecule animation is created compatible with [Alchemist](https://typst.app/universe/package/alchemist) package: 
 
 ```typst
-#import "@preview/alchemist:0.1.9" as alc
+#import "@preview/alchemist:0.2.0" as alc
 
 // set stroke to `gray`
 #let modifier(func, ..args) = func(stroke: gray + 1pt, ..args) 

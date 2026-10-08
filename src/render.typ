@@ -16,7 +16,7 @@
 
 #let meanwhile = jump(1)
 
-#let waypoint(name, mode: "content", at: none) = updater(mode: mode, s => {
+#let marker(name, mode: "content", at: none, advances: false) = updater(mode: mode, s => {
   s + ((name: name, at: at),)
 })
 
@@ -40,27 +40,21 @@
   hider: auto,
   /// whether to update the current number of pauses.
   /// -> bool
-  update-pause: false,
+  update: false,
   /// mode of using this function
   /// -> "content" | "array"
   mode: "content",
 ) = applier(
   {
     updater(mode: mode, s => {
-      s.at(0).pause-state.previous-hidden = s.at(0).pause-state.hidden
-      s.at(0).pause-state.hidden = false
       let n = n.pos()
-      if update-pause {
+      if update {
         s + (..n, from, to)
       } else {
         s + ((..n, from, to),)
       }
     })
     body
-    updater(s => {
-      s.at(0).pause-state.hidden = s.at(0).pause-state.previous-hidden
-      s
-    })
   },
   mode: mode,
   contextual: true,
@@ -89,11 +83,11 @@
   hider: it => none,
   /// whether to update the current number of pauses.
   /// -> bool
-  update-pause: false,
+  update: false,
   /// mode of using this function
   /// -> "content" | "array"
   mode: "content",
-) = uncover(..n, body, from: from, to: to, hider: hider, update-pause: update-pause, mode: mode)
+) = uncover(..n, body, from: from, to: to, hider: hider, update: update, mode: mode)
 
 /// Show the content one by one.
 /// -> content
@@ -109,7 +103,7 @@
   hider: hide,
   /// whether to update the current number of pauses.
   /// -> bool
-  update-pause: true,
+  update: true,
   /// whether to update the current number of pauses for each content inside.
   /// -> bool
   update-increment: true,
@@ -121,12 +115,12 @@
 ) = {
   let bodies = bodies.pos().map(item-wrapper)
   let n = bodies.len()
-  if update-pause and update-increment {
+  if update and update-increment {
     for (i, body) in bodies.enumerate() {
       if i == 0 {
-        uncover(from: start, body, hider: hider, update-pause: update-pause, mode: mode)
+        uncover(from: start, body, hider: hider, update: update, mode: mode)
       } else {
-        uncover(from: auto, body, hider: hider, update-pause: update-pause, mode: mode)
+        uncover(from: auto, body, hider: hider, update: update, mode: mode)
       }
     }
   } else {
@@ -137,7 +131,7 @@
       {
         bodies
         updater(mode: "array", s => {
-          if update-pause {
+          if update {
             s + (start,) + (auto,) * (n - 1)
           } else {
             s + ((start,) + (auto,) * (n - 1),)
@@ -169,7 +163,7 @@
   hider: hide,
   /// whether to update the current number of pauses.
   /// -> bool
-  update-pause: true,
+  update: true,
   /// A function to apply before the start index
   /// -> function
   before-func: hide,
@@ -184,7 +178,7 @@
       body
       updater(mode: mode, s => {
         let (pauses, results: (start,)) = indices.resolve(s, start)
-        if update-pause {
+        if update {
           s + (start + funcs.pos().len() - 1,)
         } else {
           s + ((start + funcs.pos().len() - 1,),)
@@ -225,7 +219,7 @@
   func: emph,
   /// whether to update the current number of pauses
   /// -> bool
-  update-pause: false,
+  update: false,
   /// mode of using this function
   /// -> "content" | "array"
   mode: "content",
@@ -240,7 +234,7 @@
     contextual: true,
     {
       updater(mode: mode, s => {
-        if update-pause {
+        if update {
           s + (..n, from, to)
         } else {
           s + ((..n, from, to),)
@@ -345,7 +339,7 @@
   start: none,
   /// whether to update the pauses after the animation
   /// -> bool
-  update-pause: false,
+  update: false,
   /// whether to show the content in the tags by default
   /// -> bool
   is-shown: false,
@@ -359,7 +353,7 @@
     contextual: true,
     {
       updater(mode: mode, s => {
-        if update-pause {
+        if update {
           s + (start,) + (auto,) * (n - 1)
         } else {
           s + ((start,) + (auto,) * (n - 1),)
@@ -423,7 +417,7 @@
   set list(..args)
 
   for (i, item) in items.enumerate() {
-    uncover(mode: mode, from: auto, item, update-pause: true, hider: body => context {
+    uncover(mode: mode, from: auto, item, update: true, hider: body => context {
       if not is-tight { hider(block(body)) } else {
         if i == 0 {
           hider(block(
@@ -452,7 +446,7 @@
   indices = indices.pos()
   let covers = indices.map(i => {
     if type(i) not in (array, dictionary) { i = (i,) }
-    uncover.with(..i, mode: mode, update-pause: true)
+    uncover.with(..i, mode: mode, update: true)
   })
 
   let children = body.children

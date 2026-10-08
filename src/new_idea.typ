@@ -301,7 +301,7 @@
 // ))
 
 
-#let my-branch = custom(alchemist.branch)
+#let my-branch = adapt(alchemist.branch)
 
 // #let my-branch(body, ..args) = mode-wrapper("array", element(
 //   fields: (
@@ -419,7 +419,7 @@ Hello
 #{ base-states.subslide = 1 }
 
 #let body = [
-  Hi #pause Hello #waypoint(<first>)
+  Hi #pause Hello #marker(<first>)
   #pause Third
   // #meanwhile
   #uncover(<first>)[with hello!]
