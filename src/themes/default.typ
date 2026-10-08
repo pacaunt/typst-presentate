@@ -8,7 +8,6 @@
 
 #let template(
   aspect-ratio: "16-9",
-  author: none, 
   body,
 ) = {
   set page(paper: "presentation-" + aspect-ratio)
@@ -16,15 +15,11 @@
   show math.equation: set text(font: "Lete Sans Math")
   show heading.where(level: 1): it => {
     set align(center + horizon)
-    empty-slide(it)
+    empty-slide(it, animated: false)
   }
   body
 }
 
 #let slide = slide.with(
   body-fn: block.with(width: 100%, height: 1fr),
-  preamble: body => {
-    set page()
-    body
-  },
 )

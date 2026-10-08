@@ -162,7 +162,7 @@
 
 #let join-canvas(..args) = canvas(args.pos().sum(), ..args.named())
 
-#let my-canvas = interface(canvas, inner: "array", outer: "content", hider: draw.hide.with(bounds: true), spread: true)
+#let my-canvas = interface(canvas, inner: "array", outer: "content", hider: draw.hide.with(bounds: true), )
 
 // #let (sts, tree) = make-tree(((([A], [B]),),), mode: "array")
 
@@ -175,7 +175,7 @@
 //   circle((0, 0))
 // })
 
-#{ base-states.subslide = 2 }
+#{ base-states.subslide = 4 }
 
 #let body = [
   First #pause Second #pause
@@ -435,7 +435,7 @@ Hello
 
 = Test Children 
 
-#let my-join-canvas = interface(join-canvas, inner: "array", hider: draw.hide.with(bounds: true), spread: true)
+#let my-join-canvas = interface(join-canvas, inner: "array", hider: draw.hide.with(bounds: true), )
 
 #{ base-states.subslide = 2 }
 
@@ -454,4 +454,21 @@ Hello
 
 #let (sts, tree) = make-tree(body, states: (base-states,))
 #tree
+#reconstruct(tree, states: (base-states,)).last()
+
+#pagebreak()
+
+= Test Nested Items and uncover 
+
+#{ base-states.subslide = 4 }
+
+#let body = [
+  #step-item[
+    - First Item 
+    - #uncover(auto, [Alert])
+    - Second Item
+  ]
+]
+#let (sts, tree) = make-tree(body, states: (base-states,))
+
 #reconstruct(tree, states: (base-states,)).last()

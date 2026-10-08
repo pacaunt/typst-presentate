@@ -38,8 +38,8 @@
         #set align(left)
         #text(size: 0.8em, weight: "bold", luma(150), [OUTLINE])
         #v(1.5em)
-        #context {
-          let sub = store.states.get().at(0).subslide
+        #store.getter(s => context {
+          let sub = s.at(0).subslide
           let show-highlight = not (is-first and sub == 1)
           progressive-outline(
             level-1-mode: "none", level-2-mode: "current-parent",
@@ -52,7 +52,7 @@
             )),
             spacing: (v-between-2-2: 1em)
           )
-        }
+        })
       ],
       block(stroke: (left: 2pt + luma(220)), inset: (left: 2.5em, right: 2cm))[
         #set align(left)

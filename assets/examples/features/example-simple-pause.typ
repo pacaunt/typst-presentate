@@ -4,7 +4,7 @@
 
 #slide[
   Hello World!
-  #show: pause;
+  #pause
 
   This is `presentate`.
 ]

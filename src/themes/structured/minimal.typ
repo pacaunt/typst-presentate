@@ -54,10 +54,11 @@
 
   p.slide(
     ..kwargs,
-    apply-layout(title: manual-title, {
+    body-fn: body => apply-layout(title: manual-title, {
       set std.align(align)
       body
     }),
+    body
   )
 }
 

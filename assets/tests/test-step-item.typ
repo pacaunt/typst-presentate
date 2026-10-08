@@ -75,7 +75,7 @@
 == New Test of `step-item` 
 #slide[
   #step-item(start: none)[
-    - He 
+    - First
     - Second 
     - Last 
   ]

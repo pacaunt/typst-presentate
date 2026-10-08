@@ -1,6 +1,9 @@
 #import "../../presentate.typ" as p
 #import "../../store.typ": set-options
-#import "../../components/components.typ": get-structure, get-current-logical-slide-number, render-miniframes, progressive-outline, get-active-headings, structure-config, resolve-slide-title, is-role, render-transition, navigator-config
+#import "../../components/components.typ": (
+  get-active-headings, get-current-logical-slide-number, get-structure, is-role, navigator-config, progressive-outline,
+  render-miniframes, render-transition, resolve-slide-title, structure-config,
+)
 #import "../../components/structure.typ": empty-slide
 #import "shared.typ": apply-heading-numbering, apply-transition-rule
 #import "../../components/title.typ": slide-title
@@ -12,12 +15,12 @@
 #let apply-layout(title: none, body) = context {
   let config = config-state.get()
   if config == none { return body }
-  
+
   let nav-opts = config.nav-opts
   let margin-x = config.margin-x
   let gap-zone = config.gap-zone
   let footer-content = config.footer-content
-  
+
   let footer-size = 0.75em
 
   // Gestion du titre manuel / auto
@@ -41,9 +44,16 @@
       dir: ttb,
       // 1. Zone Haute: BARRE DE MINIFRAMES (TOUT EN HAUT)
       if nav-opts.position == "top" {
-        stack(dir: ttb, block(width: 100%, { set text(weight: "regular"); bar }), v(gap-zone))
+        stack(
+          dir: ttb,
+          block(width: 100%, {
+            set text(weight: "regular")
+            bar
+          }),
+          v(gap-zone),
+        )
       } else { none },
-      
+
       // 2. Zone Milieu: TITRE + CORPS
       block(width: 100%, inset: (x: margin-x), {
         st
@@ -51,19 +61,19 @@
         show heading: none
         body
       }),
-      
+
       v(1fr),
-      
+
       // 3. Zone Basse: FOOTER / BARRE BASSE
       {
         set text(size: footer-size, fill: gray, weight: "regular")
         let footer-block = block(width: 100%, inset: (x: margin-x, bottom: 1em), footer-content)
         if nav-opts.position == "bottom" {
-          stack(dir: ttb, footer-block, v(gap-zone/2), bar)
+          stack(dir: ttb, footer-block, v(gap-zone / 2), bar)
         } else {
           footer-block
         }
-      }
+      },
     )
   })
 }
@@ -72,9 +82,9 @@
   let pos = args.pos()
   let named = args.named()
   if pos.len() == 1 {
-    p.slide(..named, apply-layout(pos.at(0)))
+    p.slide(..named, body-fn: apply-layout, pos.at(0))
   } else {
-    p.slide(..named, apply-layout(title: pos.at(0), pos.at(1)))
+    p.slide(..named, body-fn: apply-layout.with(title: pos.at(0)), pos.at(1))
   }
 }
 
@@ -109,21 +119,33 @@
   ..options,
 ) = {
   let nav-opts = (
-    position: "top", fill: color, text-color: white, text-size: 0.6em,
-    font: none, active-color: white, inactive-color: white.transparentize(60%),
-    marker-shape: "circle", marker-size: 4pt, style: "compact",
-    align-mode: "left", dots-align: "left", 
+    position: "top",
+    fill: color,
+    text-color: white,
+    text-size: 0.6em,
+    font: none,
+    active-color: white,
+    inactive-color: white.transparentize(60%),
+    marker-shape: "circle",
+    marker-size: 4pt,
+    style: "compact",
+    align-mode: "left",
+    dots-align: "left",
     show-level1-titles: show-level1-titles,
     show-level2-titles: show-level2-titles,
-    gap: 2em, line-spacing: 0.8em,
-    inset: (x: 1.5em, y: 1.2em), radius: 0pt, width: 100%, outset-x: 0pt,
+    gap: 2em,
+    line-spacing: 0.8em,
+    inset: (x: 1.5em, y: 1.2em),
+    radius: 0pt,
+    width: 100%,
+    outset-x: 0pt,
   )
-  if type(navigation) == dictionary { 
+  if type(navigation) == dictionary {
     // Handle both 'align' and 'align-mode' for convenience
     if "align" in navigation and "align-mode" not in navigation {
       navigation.insert("align-mode", navigation.align)
     }
-    nav-opts = p.utils.merge-dicts(base: nav-opts, navigation) 
+    nav-opts = p.utils.merge-dicts(base: nav-opts, navigation)
   }
 
   navigator-config.update(c => {
@@ -147,13 +169,15 @@
   })
 
   config-state.update((
-    nav-opts: nav-opts, margin-x: 2.5em, gap-zone: 1.5em,
+    nav-opts: nav-opts,
+    margin-x: 2.5em,
+    gap-zone: 1.5em,
     footer-content: context grid(
       columns: (1fr, 1fr, 1fr),
       align(left, if author != none { author }),
       align(center, if title != none { title }),
-      align(right, counter(page).display("1 / 1", both: true))
-    ), 
+      align(right, counter(page).display("1 / 1", both: true)),
+    ),
     color: color,
     text-size: text-size,
     text-font: text-font,
@@ -165,9 +189,9 @@
   set text(size: text-size, font: text-font)
 
   show heading: set text(size: 1em, weight: "regular")
-  
+
   show: apply-heading-numbering.with(mapping, show-heading-numbering, numbering-format)
-  
+
   // Title slide
   p.slide[
     #set align(center + horizon)
@@ -175,26 +199,26 @@
       #block(fill: color, inset: (x: 2em, y: 1.5em), radius: 15pt, width: 100%)[
         #set text(fill: white)
         #if title != none { text(size: 2.2em, weight: "bold", title) }
-        #if subtitle != none { 
+        #if subtitle != none {
           v(0.6em)
           line(length: 30%, stroke: 1pt + white.transparentize(50%))
           v(0.6em)
-          text(size: 1.3em, style: "italic", subtitle) 
+          text(size: 1.3em, style: "italic", subtitle)
         }
       ]
     ]
     #v(2em)
     #pad(x: 12%)[
       #grid(
-        columns: (1fr, 1fr), 
-        align(left, if author != none { 
+        columns: (1fr, 1fr),
+        align(left, if author != none {
           set text(size: 1.1em)
           strong(author)
-        }), 
+        }),
         align(right, if date != none {
           set text(fill: gray)
           date
-        })
+        }),
       )
     ]
   ]
@@ -210,7 +234,14 @@
     ])
   }
 
-  show heading: apply-transition-rule.with(mapping, transitions, show-all-sections-in-transition, on-part-change, on-section-change, on-subsection-change)
+  show heading: apply-transition-rule.with(
+    mapping,
+    transitions,
+    show-all-sections-in-transition,
+    on-part-change,
+    on-section-change,
+    on-subsection-change,
+  )
 
   set-options(..options)
   body

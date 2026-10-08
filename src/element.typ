@@ -31,7 +31,7 @@
   // Math functions
   (math.attach, "base"),
   ($a$.body.func(), "text"),
-  (math.frac, "numerator", "denominator"),
+  (math.frac, "num", "denom"),
   (math.accent, "base", "accent"),
   (math.binom, "upper", "lower"),
   (math.class, "class", "body"),
@@ -61,6 +61,7 @@
   outline,
   cite,
   text,
+  heading,
   h,
   v,
 )
@@ -131,37 +132,31 @@
 
 #let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args))
 
-#let interface(func, inner: "array", outer: "content", spread: true, hider: hide) = {
-  let elem-func = if spread { collect } else { generic }
-  return (..args) => {
-    updater(mode: outer, s => {
-      s.at(0).pause-state.previous-hider = s.at(0).pause-state.hider
-      s
-    })
-    mode-wrapper(outer, elem-func(
-      if spread { args.pos() } else { args.pos().first() },
-      func,
-      mode: inner,
-      named: args.named(),
-      inner-hider: hider,
-    ))
-    updater(mode: outer, s => {
-      s.at(0).pause-state.hider = s.at(0).pause-state.previous-hider
-      s
-    })
-  }
-}
+#let interface(
+  func,
+  inner: "array",
+  outer: "content",
+  hider: hide,
+) = (..args) => mode-wrapper(outer, collect(
+  args.pos(),
+  func,
+  mode: inner,
+  named: args.named(),
+  inner-hider: hider,
+))
 
-#let custom(func, mode: "array", spread: false, ..props) = (..args) => mode-wrapper(mode, {
-  let elem-func = if spread { collect } else { generic }
-  elem-func(
-    if spread { args.pos() } else { args.pos().first() },
-    func,
-    mode: mode,
-    named: args.named(),
-    ..props,
-  )
-})
+#let custom(
+  func,
+  mode: "array",
+  ..props,
+) = (..args) => applier(
+  args.pos(),
+  func,
+  mode: mode,
+  named: args.named(),
+  template: collect,
+  ..props,
+)
 
 // Assume that every content can be deconstructed to a dictionary containing 1)
 // its element function, 2) its reconstructed fields dictionary. The field
@@ -215,10 +210,14 @@
     item-counter: 0,
     item-lead-parbreak: false,
     item-follow-parbreak: false,
+    hider: auto,
   ),
 ) = {
-  // initializing, reset the parameters 
+  // initializing, reset the parameters
   states.at(0).parsing-state.shown = false
+  let hider = if scope.hider == auto {
+    states.at(0).pause-state.hider
+  } else { scope.hider }
 
   let item-funcs = (enum.item, list.item)
 
@@ -248,7 +247,11 @@
     let this-item = item-object
     let item-count = 0
     let inter-tree = ()
-    // Get properties about items
+    // Get properties about items. This `inter-tree` parsing must not
+    // remove/insert any elements. All elements can be categorized into 3
+    // groups: 1) the allowed between items, but present before the items, 2)
+    // the allowed between items, and 3) the not-allowed between items. This
+    // loop will handle all of these cases.
     for (i, sub-tree) in tree.enumerate() {
       if type-of(sub-tree) == "element" {
         if sub-tree.func in item-funcs {
@@ -258,34 +261,35 @@
           }
         }
       }
-
+      // The allowed between items, after the first item.
       if item-count > 0 and allowed-between-item(sub-tree) {
         this-item.group.push(sub-tree)
         if sub-tree == parbreak() { this-item.tight = false }
       }
-
+      // The not-allowed between items, after the first item. This will
+      // terminates item groupping.
       if not allowed-between-item(sub-tree) and item-count > 0 {
         item-count = 0
         this-item.follow-parbreak = true
         inter-tree.push(this-item)
         this-item = item-object
       }
-
+      // The other not-allowed between items
       if not allowed-between-item(sub-tree) {
         inter-tree.push(sub-tree)
       }
-
+      // The allowed between items, but present before the items.
       if item-count == 0 and allowed-empty-between-item(sub-tree) {
         inter-tree.push(sub-tree)
       }
     }
-
+    // Collect the leftover.
     if item-count > 0 { inter-tree.push(this-item) }
     // length of the array must be preserved to ensure no element is dropped.
     if inter-tree.map(it => if type-of(it) == "item" { it.group } else { (it,) }).sum(default: ()).len() != tree.len() {
       panic(strfmt("Intermediate parsing of items failed, inter-tree={}, tree={}", inter-tree.len(), tree.len()))
     }
-
+    // main reconstruction loop.
     let new-tree = ()
     for sub-tree in inter-tree {
       // Force realization of tight or non-tight items, which will be important
@@ -295,7 +299,7 @@
         scope.item-lead-parbreak = sub-tree.lead-parbreak
         scope.item-follow-parbreak = sub-tree.follow-parbreak
         scope.item-tight = sub-tree.tight
-
+        // The loop is important to see the states' updates sequentially.
         for item in sub-tree.group {
           if type-of(item) == "element" and item.func in item-funcs {
             scope.item-counter += 1
@@ -303,16 +307,15 @@
           (states, item) = reconstruct(item, states: states, scope: scope)
           new-tree.push(item)
         }
-
+        // reset item counter
         scope.item-counter = 0
 
         continue
       }
-      // main reconstruction
+      // Elements-other-than-items' reconstruction.
       (states, sub-tree) = reconstruct(sub-tree, states: states, scope: scope)
       new-tree.push(sub-tree)
     }
-
     // If the visible state of any child in a children is changed, the parent
     // element will not be hidden -> parsing.state.shown = true
     if new-tree.any(it => type-of(it) == "state-updater") {
@@ -337,8 +340,8 @@
     return (states, tree)
   }
 
-  let wrapper(s, body) = {
-    let hider = states.at(0).pause-state.hider
+   let wrapper(s, body) = {
+    let hider = hider
     let normal = identity
     // Resolving spacing between items. This will break the items but force the
     // label to be hidden.
@@ -367,6 +370,7 @@
         block(..style, it)
       })
     }
+ 
     // Only when the parent element does not contain any state update will the
     // element be hidden.
     if not s.at(0).parsing-state.shown {
@@ -377,18 +381,15 @@
   }
 
   let states-prior = states
-
+  // scoped hider for inner element if specified.
   if tree.at("inner-hider", default: auto) != auto {
-    states.at(0).pause-state.hider = tree.inner-hider
+    scope.hider = tree.inner-hider
   }
 
   for (k, v) in tree.fields.pairs() {
     (states, v) = reconstruct(v, states: states, scope: scope)
     tree.fields.at(k) = v
   }
-  // if tree.func == table.cell and states.at(0).parsing-state.shown  {
-  //   panic()
-  // }
   // context provided to the element must be prior to its children.
   let restored = reconstruct-one(tree, states: states-prior)
   // some intermediate elements are not hidable.
@@ -424,21 +425,19 @@
   if type-of(body) == "element" {
     if body.at("mode", default: auto) != auto { scope.mode = body.mode }
     for (k, v) in body.fields.pairs() {
-      // (states, v) = make-tree(v, states: states, scope: scope)
-      // let sub-scope = scope
+      let new-value
       // this array is NOT a semantic array, it is just a container.
-      if { ".." + k } in body.positionals and scope.mode == "array" {
-        let new-v = ()
+      if { ".." + k } in body.positionals {
+        new-value = ()
         for sub-tree in v {
-          // panic(sub-tree)
           (states, sub-tree) = make-tree(sub-tree, states: states, scope: scope)
-          new-v.push(sub-tree)
-          v = new-v
+          new-value.push(sub-tree)
         }
       } else {
-        (states, v) = make-tree(v, states: states, scope: scope)
+        (states, new-value) = make-tree(v, states: states, scope: scope)
       }
-      body.fields.at(k) = v
+      // set the new, parsed value to the fields.
+      body.fields.at(k) = new-value
     }
     return (states, body)
   }
@@ -463,6 +462,7 @@
 
       new-tree.push(sub-tree)
     }
+    // This `join` will cancels the splitted sub-arrays of the assumed elements.
     if scope.mode == "array" { new-tree = join(new-tree, mode: scope.mode) }
     return (states, new-tree)
   }

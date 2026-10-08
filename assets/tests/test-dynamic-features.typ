@@ -29,20 +29,20 @@
 = Basic Flow Control
 
 #slide[Using `#pause`][
-  The `#pause` function (or `#show: pause`) allows you to reveal content in chunks.
+  The `#pause` marker allows you to reveal content in chunks.
   
-  #show: pause
+ #pause
   Chunk 1: First, this line appears.
   
-  #show: pause
+ #pause
   Chunk 2: Then, this second line is revealed.
   
-  #show: pause
+ #pause
   Chunk 3: Finally, you see this one.
   
-  #show: pause
+ #pause
   You can even pause inside math:
-  $ (a + b)^2 pause( = a^2 + 2 a b + b^2 ) $
+  $ (a + b)^2 pause = a^2 + 2 a b + b^2 $
 ]
 
 #slide[Using `#fragments`][
@@ -96,7 +96,7 @@
 #slide[Relative Indices: `auto`, `none`, `rel`][
   Instead of hardcoding subslide numbers, use relative indices.
   
-  - Current pause state: Content A #show: pause; Content B
+  - Current pause state: Content A #pause; Content B
   
   - #uncover(auto)[`auto`]: Shown *after* the current pause (next step).
   - #only(none)[`none`]: Shown *at* the same time as the current pause.
@@ -106,8 +106,8 @@
 #slide[Timeline Synchronization][
   Use `update-pause: true` to make subsequent pauses "aware" of the subslides added by `uncover` or `only`.
   
-  1. Regular Step #show: pause;
-  2. Hidden Step #uncover(auto, [SURPRISE!], update-pause: true)
+  1. Regular Step #pause
+  2. Hidden Step #uncover(auto, [SURPRISE!], update-pause: true) #pause
   3. This step waits for the surprise because of `update-pause`.
 ]
 
@@ -118,11 +118,11 @@
   
   #step-item[
     - Item 1
-    - #alert(auto)[Item 2 (Alerted!)]
+    - #alert(auto)[Item 2 (Alerted!)] 
     - Item 3
   ]
   
-  #show: pause
+  #pause
   You can customize the alert function:
   #alert(auto, func: text.with(fill: red))[DANGER ALERT]
 ]
@@ -174,6 +174,6 @@
     - Hooking into external drawing libraries.
   ]
   
-  #show: pause
+  #pause
   Happy Presenting!
 ]

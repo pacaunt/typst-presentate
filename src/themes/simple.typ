@@ -124,6 +124,7 @@
         set text(size: 1.5em, weight: "bold", fill: white)
         h
       },
+      animated: false
     )
   }
 

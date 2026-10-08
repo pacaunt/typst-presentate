@@ -1,6 +1,6 @@
 #import "utils.typ"
 #import "indices.typ"
-#import "element.typ"
+#import "element.typ": getter, updater
 
 #let prefix = "_presentate"
 

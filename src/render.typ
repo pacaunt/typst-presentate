@@ -228,7 +228,6 @@
   if n.len() == 0 {
     n = (auto,)
   }
-
   applier(
     mode: mode,
     contextual: true,
@@ -343,6 +342,7 @@
   /// whether to show the content in the tags by default
   /// -> bool
   is-shown: false,
+  mode: "content",
 ) = {
   let n = controls.len()
   if n == 0 { n = 1 }
@@ -358,6 +358,7 @@
           s + ((start,) + (auto,) * (n - 1),)
         }
       })
+      []
     },
     (s, body) => {
       body
@@ -416,16 +417,16 @@
 
   for (i, item) in items.enumerate() {
     uncover(mode: mode, from: auto, item, update-pause: true, hider: body => context {
-      if not is-tight { hider(block(item)) } else {
+      if not is-tight { hider(block(body)) } else {
         if i == 0 {
           hider(block(
             body,
             above: if lead-parbreak { par.spacing } else { par.leading },
           ))
         } else if i < last-i {
-          hider(block(spacing: par.leading, item))
+          hider(block(spacing: par.leading, body))
         } else {
-          hider(block(above: par.leading, item))
+          hider(block(above: par.leading, body))
         }
       }
     })
