@@ -47,6 +47,8 @@
 ) = applier(
   {
     updater(mode: mode, s => {
+      s.at(0).pause-state.previous-hidden = s.at(0).pause-state.hidden
+      s.at(0).pause-state.hidden = false
       let n = n.pos()
       if update-pause {
         s + (..n, from, to)
@@ -55,9 +57,14 @@
       }
     })
     body
+    updater(s => {
+      s.at(0).pause-state.hidden = s.at(0).pause-state.previous-hidden
+      s
+    })
   },
   mode: mode,
   contextual: true,
+  hidable: false,
   (s, body) => animation.uncover(s, ..n, hider: hider, from: from, to: to, body),
 )
 

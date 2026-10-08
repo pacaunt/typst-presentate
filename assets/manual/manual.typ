@@ -1,4 +1,3 @@
-#import "@preview/muchpdf:0.1.2": muchpdf
 #import "@preview/zebraw:0.6.1": zebraw
 #import "@preview/oxifmt:1.0.0": strfmt
 #import "@preview/tidy:0.4.3"
@@ -119,7 +118,7 @@
 `Presentate` is a Typst package for creating _dynamic_ PDF presentation that is compatible with other packages. The word _dynamic_ means the compiled PDF contains _animated_ content. But PDF is a static document format, how can it contains animations? Presentate will look into the content, and create a set of pages that reveal or hide some content based on the current number of frames called _subslides_, so that when going through the pages, it seems like the content is showing or hiding like a simple animation.
 
 #figure(
-  image("../examples/example-pdf-animation.png"),
+  render-pdf("../examples/features/example-pdf-animation.pdf", pages: 3),
   caption: [Example of fake animation in PDF format. Each page contains its own content and rules controlling them to hide, show, or decorated in some ways.],
 )
 
@@ -138,7 +137,7 @@ Note that the gray text represents the subslide (frame) of that page.
 The package was created by mixing my original motivation and insprations from many existing presentation packages.
 Thanks to:
 - #footlink("https://github.com/polylux-typ/polylux", [Polylux]) for  `subslide` implementation and pdfpc support, \
-- #footlink("https://github.com/touying-typ/touying")[Touying] for idea of render frame, fake frozen states, and \
+- #footlink("https://github.com/touying-typ/touying")[Touying] for idea of content-parsing, render frame, fake frozen states, and \
 - #footlink("https://github.com/knuesel/typst-minideck")[Minideck] for `only`, and `uncover` functions.
 - #footlink("https://github.com/eusebe/typst-navigator")[Navigator] for the navigation system, progressive-outline, and the structured themes.
 
@@ -170,12 +169,13 @@ A slide can be created by using the `slide` function. For example,
 ]
 ```
 == Simple animation
-In the slide function, you can use the animation functions to control the behavior of the content on the slide. The simplest animation is to show some content after another content, this can be done by `pause` function:
+In the slide function, you can use the animation functions to control the behavior of the content on the slide. The simplest animation is to show some content after another content, this can be done by using `pause` marker:
 
 #source-example("img/hello-world.typ")
 yields
 #render-pdf("img/hello-world.pdf", pages: 2)
-Each content wrapped by the `pause` function will be revealed one by one on each frame. This function can be used in `math.equation` as well:
+`#pause` mark hides all the content coming after it, and incrementally reveal them frame-by-frame. It can be used in `math.equation` too.
+
 #source-example("img/math-pause.typ")
 #render-pdf("img/math-pause.pdf", pages: 3)
 
@@ -188,11 +188,15 @@ In the example, `alert` function accepted an integer and it made the text red on
 - It can be `from: int`, to start alerting since the `int`#super[th] subslide.
 - It can be multiple integers like `alert(1, 4, 5, body)` to only alert on subslide 1, 4, and 5.
 - It can be _both_ integers and `from: int`, to show the modified content on the specified subslide and after the `int` subslide specified by the `from` argument.
+_added in 0.3.0: following Touying's functionality_ 
+- It can be a string/label, specifying the index at which the label is present in `waypoint` marker. See @waypoints.
 
 Apart from `alert`, if you have ever used `beamer` in LaTeX before, you probably know the `uncover` and `only` functions. The `uncover` only _uncover_ the content on the spcified subslides, and hide the content otherwise, with _space preserved_, while `only` function also works with the same logic, but its hiding method is to completely remove the content out, so no space is preserved.
 
 #source-example("img/simple-only-uncover.typ")
 #render-pdf("img/simple-only-uncover.pdf", pages: 4)
+
+== Jumping and Waypoints <waypoints> 
 
 == Time traveling with relative indices
 Most of the time when creating presentation, the step of revealing the content is either
@@ -371,35 +375,35 @@ There are 2 types of themes that Presentate provides:
 #let render-pdf = render-pdf.with(numbered: false)
 
 === Default Theme
-#render-pdf("../examples/example-default-theme.pdf", pages: 3)
-#source-example("../examples/example-default-theme.typ")
+#render-pdf("../examples/themes/example-default-theme.pdf", pages: 3)
+#source-example("../examples/themes/example-default-theme.typ")
 
 === Simple Theme
-#render-pdf("../examples/example-simple-theme.pdf", pages: 6)
-#source-example("../examples/example-simple-theme.typ")
+#render-pdf("../examples/themes/example-simple-theme.pdf", pages: 6)
+#source-example("../examples/themes/example-simple-theme.typ")
 
 === Classic Theme
-#render-pdf("../examples/example-classic-theme.pdf", pages: 3)
-#source-example("../examples/example-classic-theme.typ")
+#render-pdf("../examples/themes/example-classic-theme.pdf", pages: 3)
+#source-example("../examples/themes/example-classic-theme.typ")
 
 === Structured Themes
 #let home = "https://github.com/pacaunt/typst-presentate/blob/main/assets/"
 You can visit the examples of the structured themes here:
 - #strong[minimal]
-  #render-pdf("../examples/example-minimal.pdf", pages: 6)
-  #link(home + "examples/example-minimal.typ")[Source]
+  #render-pdf("../examples/themes/example-minimal.pdf", pages: 6)
+  #link(home + "examples/themes/example-minimal.typ")[Source]
 - #strong[progressive-outline]
-  #render-pdf("../examples/example-progressive-outline.pdf", pages: 6)
-  #link(home + "examples/example-progressive-outline.typ")[Source]
+  #render-pdf("../examples/themes/example-progressive-outline.pdf", pages: 6)
+  #link(home + "examples/themes/example-progressive-outline.typ")[Source]
 - #strong[sidebar]
-  #render-pdf("../examples/example-sidebar.pdf", pages: 6)
-  #link(home + "examples/example-sidebar.typ")[Source]
+  #render-pdf("../examples/themes/example-sidebar.pdf", pages: 6)
+  #link(home + "examples/themes/example-sidebar.typ")[Source]
 - #strong[split]
-  #render-pdf("../examples/example-split.pdf", pages: 6)
-  #link(home + "examples/example-split.typ")[Source]
+  #render-pdf("../examples/themes/example-split.pdf", pages: 6)
+  #link(home + "examples/themes/example-split.typ")[Source]
 - #strong[miniframes]
-  #render-pdf("../examples/example-miniframes.pdf", pages: 6)
-  #link(home + "examples/example-miniframes.typ")[Source]
+  #render-pdf("../examples/themes/example-miniframes.pdf", pages: 6)
+  #link(home + "examples/themes/example-miniframes.typ")[Source]
 
 = Function Reference
 #set par(first-line-indent: 0em)

@@ -5,15 +5,15 @@
 #slide[
   Pros and Cons of Banana
   #grid(columns: (1fr,) * 2)[
-    *Pros* #show: pause 
+    *Pros* #pause 
     + energy 
-    #show: pause 
+    #pause 
     + tasty
-  ][ // [] is the dummy content.
-    #uncover(1, [], update-pause: true)
-    *Cons* #show: pause
+  ][ 
+    #meanwhile
+    *Cons* #pause
     + high sugar 
-    #show: pause
+    #pause
     + smelly
   ]
 ]

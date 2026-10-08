@@ -1,5 +1,5 @@
 #import "../../src/themes/structured/progressive-outline.typ": template, slide, empty-slide
-#import "../../src/render.typ": pause, uncover, only, fragments, step-item, alert, transform, render
+#import "../../src/render.typ": pause, uncover, only, fragments, step-item, alert, transform, render, meanwhile
 #import "../../src/animation.typ"
 #import "../../src/utils.typ"
 

@@ -59,12 +59,32 @@
   post.at(0).steps = indices.resolve(post).steps
   // raw(repr(tree), lang: "typc")
   // for i in range(1, post.at(0).steps + 1) {
-    s.at(0).subslide = 1
-    let (_, new-body) = reconstruct(tree, states: s) 
-    new-body
-    repr(new-body)
-    pagebreak()
-    // subslide(s, i, tree)
+  s.at(0).subslide = 1
+  let (_, new-body) = reconstruct(tree, states: s)
+  new-body
+  repr(new-body)
+  pagebreak()
+  // subslide(s, i, tree)
   // }
 }
-  #context { query(<__presentate-mark__>) }
+
+#context {
+  let body = [
+    #grid(columns: (1fr, 1fr), gutter: 1em)[
+      A
+      #pause
+      B
+    ][
+      // #meanwhile
+      // #pause
+      #uncover((rel: -1))[It's 5 choose 3.]
+      D
+    ]
+  ]
+
+  let s = store.states.get()
+  s.at(0).subslide = 1
+  let (sts, tree) = make-tree(body, states: s)
+  // [#tree]
+  [#reconstruct(tree, states: s)]
+}

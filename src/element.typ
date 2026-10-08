@@ -37,8 +37,7 @@
   (math.class, "class", "body"),
   (math.mat, "..rows"),
   (math.primes, "count"),
-  (math.root, "index", "radicand"),
-  (math.sqrt, "radicand"),
+  (math.root, (index: "2"), "radicand"),
   (math.underbrace, "body", "annotation"),
   (math.overbrace, "body", "annotation"),
   (math.underbracket, "body", "annotation"),
@@ -64,6 +63,11 @@
   heading,
   h,
   v,
+)
+
+#let containers = (
+  sequence,
+  styled,
 )
 
 #let empty-content = ([], [ ], parbreak(), linebreak(), pagebreak(), colbreak())
@@ -166,36 +170,39 @@
   if type-of(elem) != "element" { return elem }
 
   let (positionals, fields, func) = elem
-  let pos = (empty-object,) * positionals.len()
-  let pos-names = positionals.map(name => name.trim(".."))
-  let named = (:)
+  let named = fields
+  let pos = ()
   let label
-
-  // Arrange the positional arguments
-  for (k, v) in fields.pairs() {
-    if k in pos-names {
-      pos.at(pos-names.position(name => name == k)) = v
-    } else if k == "label" {
-      label = v
+  // restore the positional arguments.
+  for arg in positionals {
+    let value = empty-object
+    let name = arg
+    if type(arg) == dictionary {
+      value = arg.values().first()
+      name = arg.keys().first()
+    }
+    // Extract from the fields
+    if name.trim("..") in fields.keys() {
+      value = named.remove(name.trim(".."))
+    }
+    // Spread
+    if name.starts-with("..") {
+      pos += value
     } else {
-      named.insert(k, v)
+      pos.push(value)
     }
   }
+
+  if "label" in named.keys() {
+    label = named.remove("label")
+  }
+
   pos = pos.filter(it => not type-of(it) == "empty")
 
-  // Spread the ..children positional args
-  let restored-pos = ()
-  for (name, val) in positionals.zip(pos) {
-    if name.starts-with("..") {
-      restored-pos += val
-    } else {
-      restored-pos.push(val)
-    }
-  }
-
   if elem.at("contextual", default: false) { func = func.with(states) }
-  let restored = func(..restored-pos, ..named)
-
+  // restored element
+  let restored = func(..pos, ..named)
+  // returning phase...
   if elem.at("mode", default: auto) != "content" { return restored }
   if label != none { return [#restored#label] }
 
@@ -213,8 +220,8 @@
     hider: auto,
   ),
 ) = {
-  // initializing, reset the parameters
   states.at(0).parsing-state.shown = false
+  // initializing, reset the parameters
   let hider = if scope.hider == auto {
     states.at(0).pause-state.hider
   } else { scope.hider }
@@ -291,6 +298,7 @@
     }
     // main reconstruction loop.
     let new-tree = ()
+    let shown-tag = false
     for sub-tree in inter-tree {
       // Force realization of tight or non-tight items, which will be important
       // for determining item spacing later.
@@ -309,20 +317,22 @@
         }
         // reset item counter
         scope.item-counter = 0
-
-        continue
+      } else {
+        // Elements-other-than-items' reconstruction.
+        (states, sub-tree) = reconstruct(sub-tree, states: states, scope: scope)
+        new-tree.push(sub-tree)
       }
-      // Elements-other-than-items' reconstruction.
-      (states, sub-tree) = reconstruct(sub-tree, states: states, scope: scope)
-      new-tree.push(sub-tree)
+      if type-of(sub-tree) == "state-updater" {
+        if not states.at(0).pause-state.hidden { shown-tag = true }
+      }
     }
-    // If the visible state of any child in a children is changed, the parent
+    // If the visible state of any child in a children is 'shown', the parent
     // element will not be hidden -> parsing.state.shown = true
-    if new-tree.any(it => type-of(it) == "state-updater") {
-      states.at(0).parsing-state.shown = true
-      // filtering out the updater
-      new-tree = new-tree.filter(it => type-of(it) != "state-updater")
+    if shown-tag {
+      states.at(0).parsing-state.shown = shown-tag
     }
+    // filtering out the updater
+    new-tree = new-tree.filter(it => type-of(it) != "state-updater")
 
     return (states, new-tree)
   }
@@ -340,7 +350,7 @@
     return (states, tree)
   }
 
-   let wrapper(s, body) = {
+  let wrapper(s, body) = {
     let hider = hider
     let normal = identity
     // Resolving spacing between items. This will break the items but force the
@@ -370,7 +380,7 @@
         block(..style, it)
       })
     }
- 
+
     // Only when the parent element does not contain any state update will the
     // element be hidden.
     if not s.at(0).parsing-state.shown {
@@ -423,6 +433,7 @@
   }
 
   if type-of(body) == "element" {
+    // change the mode according to the element. Important for `interface`.
     if body.at("mode", default: auto) != auto { scope.mode = body.mode }
     for (k, v) in body.fields.pairs() {
       let new-value
@@ -502,7 +513,12 @@
   }
 
   return make-tree(
-    element(func, fields: body.fields(), positionals: positionals),
+    element(
+      func,
+      fields: body.fields(),
+      positionals: positionals,
+      hidable: not func in containers,
+    ),
     states: states,
   )
 }
