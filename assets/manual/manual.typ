@@ -322,8 +322,6 @@ However, this still has a limitation, it cannot process nested elements like in 
 #render-pdf("img/alchemist-adapt.pdf", pages: 3)
 
 
-
-
 == Animate the inanimate: a custom way to hide
 Presentate also has a function for handle a custom way to hide elements from other packages, which is the `animate` function in the `animation` module. This `animate` create another function that _react_ with the current state `s`, so that the element will be shown one by one based on the current number of pauses, just like what normal pause do, and hidden with the specified `modifier`. To demonstrate this functionality, we will use an example to draw a chemical structure from #footlink("https://typst.app/universe/package/alchemist/")[Alchemist] package:
 #source-example("img/alchemist.typ")

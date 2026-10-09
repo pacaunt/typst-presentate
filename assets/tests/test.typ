@@ -96,7 +96,15 @@
 
 #pagebreak()
 
-#slide[
-  = Test Visibility
-  A #pause B 
-]
+#import "@preview/touying:0.8.0": * 
+#import themes.simple: * 
+
+#show: simple-theme 
+
+= Topic 
+
+== Sample 
+
+#pause 
+
+#table([A], [B #uncover(1)[X]])

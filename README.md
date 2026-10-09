@@ -24,7 +24,6 @@ The easiest is to type `#show: pause`. For example,
   This is `presentate`.
 ]
 ```
-
 which results in 
 
 ![simple pause animation](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-simple-pause.png)
@@ -97,8 +96,27 @@ You can specify the `update` argument of dynamic functions to tell if that funct
 
 This is useful for modifying steps of the animation so that some contents appear with or after another. 
 
-<-- NEED A NEW EXAMPLE -->
+```typst
+#slide[
+  = Combination
+  Derive an equation of displacement vs time for a free-falling object from height $h$ at initial velocity of $u$.
+  #pause #marker(<solution>)
 
+  *Solution.* #pause
+  $
+    v = u - g t quad "and" quad s = ((u + v)/2) t \
+    #pause
+    s = ((u + (u - g t))/2) t quad pause => quad s = u t - 1/2 g t^2
+    #marker(<end>)
+  $
+  #jump(<solution>)
+  #uncover(from: (to:<solution>, rel: 1), to: <end>)[_Comments:_]
+  #only(auto, update: true)[From definitions.]
+  #only(auto, update: true)[Distribute the terms.]
+  #only(<end>)[That's it.]
+]
+```
+![Example of using marker and relative indices to synchronize the animation](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-marker.png)
 
 ### Motion Control
 
@@ -138,10 +156,73 @@ In this example, featured with CeTZ package, each element is drawn normally, whi
 
 ### Package Integration 
 
-<-- EXAMPLE OF INTERFACE AND ADAPT -->
+For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher) can be done by using `interface` and modify hider and wrapper mode:
 
-Use can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
-For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) and [Fletcher](https://typst.app/universe/package/fletcher)  
+```typst
+#import "@preview/cetz:0.5.2": canvas, draw
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+
+#slide[
+  = CeTZ integration using `interface`
+
+  #let canvas = interface(canvas, inner: "array", hider: draw.hide.with(bounds: true))
+  #canvas({
+    // You can use pause and animations inside CeTZ.
+    import draw: *
+    let uncover = uncover.with(mode: "array", hider: draw.hide.with(bounds: true))
+    circle((0, 0), radius: 2)
+    (pause,)
+    circle((4, 0), radius: 2)
+    uncover(3, circle((8, 0), radius: 2))
+  })
+]
+
+#slide[
+  = Fletcher integration
+
+  #let diagram = interface(diagram, hider: fletcher.hide)
+  #let f-uncover = uncover.with(hider: fletcher.hide)
+  #diagram(
+    node((0, 0), [First Node], name: <1>),
+    pause,
+    node((1, 0), [Second Node], name: <2>),
+    f-uncover(3, edge(<1>, "d,r", <2>, "->")),
+  )
+]
+```
+![Example of using CeTZ and Fletcher inegration by interface function.](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-cetz-interface.png)
+
+The nested scope can be accessed by using `adapt` function, for example, in [Alchemist](https://typst.app/universe/package/alchemist)'s cycle: 
+
+```typst 
+#import "@preview/alchemist:0.2.0" as alc: skeletize
+
+#slide[
+  = Alchemist Nested Interface
+
+  #let skeletize = interface(skeletize, inner: "array", hider: alc.hide) 
+  #let m-cycle = adapt(alc.cycle)
+  #skeletize({
+    import alc: *
+    fragment("HO")
+    single(angle: 1) 
+    (pause,)
+    m-cycle(5, {
+      single() 
+      (pause,)
+      single() 
+      single() 
+      (pause,)
+      single() 
+      single()
+    })
+  })
+]
+```
+![Alchemist animation by using adapt and interface](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-alchemist-adapt.png)
+
+You can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
+
 ```typst
 #import "@preview/cetz:0.5.2": canvas, draw
 #import "@preview/fletcher:0.5.8": diagram, edge, node
