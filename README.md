@@ -1,12 +1,17 @@
 # Presentate
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
-For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/manual/manual.pdf)
+For comprehensive usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/manual/manual.pdf)
 
 ## Highlights (0.3.0)
+Compared to the last version (0.2.x), Presentate shipped with a lot of improvements.
 - **Simpler Syntax**: Presentate now uses `#pause`, `#meanwhile`, `#jump()`, to control step-by-step reveal instead of `#show: pause`.
 - **Faster Compilation**: All internal representation of animation framework was revised and reworked to minimize use of `state` and `counter`, so it is significantly faster and easier to use. 
+- **Named Index**: You can use `#marker(<name>)` to name the current number of pauses as an index, and use the `<name>` like an index of that subslide. So it is possible to specify `#uncover(<name>)[Something]` or `#only((rel: 1, to: <name>))[Another thing]`. 
 - **Extensible Package Integration**: With `interface`, `bridge`, and settable parse mode in `uncover`, `only`, they can be fully integrated within CeTZ canvas, Fletcher diagram, or even in nested `branch`, `cycle` of Alchemist package! 
-- **Extensible Internal Elements**: Since the rework almost implements all of context, state's read-write functions, presentate provides all internal access to the states by using `applier` to create animate-able element, `getter` to get internal states, and `updater` to update the states. All element parsing and reconstructions are *recursive*, meaning that you can nested Presentate's animation functions/markers as much as you want.
+- **Extensible Internal Elements**: Since the rework contains almost all implementation of manual context and state's read-write functions, presentate provides all internal access to the states by using`getter` to get internal states, and `updater` to update the states. All element parsing and reconstructions are *recursive*, meaning that you can nested Presentate's animation functions/markers as much as you want. Like, 
+  ```typst 
+  #uncover(2)[It is #alert(3)[important], #pause right?]
+  ```
 
 ## Simple Usage 
 Import the package with 
@@ -99,6 +104,8 @@ You can use `none` and `auto`, or even `(rel: int)` to specify the index as *wit
 You can specify the `update` argument of dynamic functions to tell if that function will update the current number of pause or not. If set to `true`, the number of pauses will set to that value. 
 
 This is useful for modifying steps of the animation so that some contents appear with or after another. 
+
+Since 0.3.0, the named index were introduced. You can name a step by using `#marker(<name>)` and use the `<name>` as the index where the marker is revealed by pauses.
 
 ```typst
 #slide[
@@ -196,7 +203,7 @@ For example, Integration with [CeTZ](https://typst.app/universe/package/cetz) an
 ```
 ![Example of using CeTZ and Fletcher inegration by interface function.](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/examples/features/example-cetz-interface.png)
 
-The nested scope can be accessed by using `adapt` function, for example, in [Alchemist](https://typst.app/universe/package/alchemist)'s cycle: 
+The nested scope can be accessed by using `bridge` function, for example, in [Alchemist](https://typst.app/universe/package/alchemist)'s cycle: 
 
 ```typst 
 #import "@preview/alchemist:0.2.0" as alc: skeletize
@@ -347,6 +354,15 @@ You can find full implementations of these themes in the `assets/examples/` dire
 For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/manual/themes-guide.pdf).
 
 ## Versions
+### 0.3.0 
+- Major revision of the core animation principles. The `pause` mechanism was changed to `#pause` marker like in 0.1.0, **(breaking change)**
+- Introduce `#jump(index)` to set the pause to that index 
+- Introduce named index, which can be registered by using `#marker(<name>)`.
+- Rename `update-pause` to `update` argument **(breaking change)**
+- Introduce another package integration framework using `interface` and `bridge`, together with specifying mode of parsing so that the animation mechanism does not require manual state updates.
+- Remove `before-func` argument of `transform` **(breaking change)**
+### 0.2.7 
+- Fix bugs where nested pause does not interact properly.
 ### 0.2.6 
 - added `start` argument to `reveal-item` and `step-item` function.
 - added reference section to the manual.

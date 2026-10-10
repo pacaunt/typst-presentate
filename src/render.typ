@@ -17,21 +17,10 @@
 
 #let meanwhile = jump(1)
 
-#let marker(name, mode: "content", at: none) = {
-  // for referenceable state
-  getter(mode: mode, s => {
-    let lbl = if type(name) == label { name } else { label(name) }
-    if mode == "content" {
-      let (results: (i,)) = indices.resolve(s, at)
-      if s.at(0).subslide == i {
-        [#metadata(none)#lbl]
-      }
-    }
-  })
-  updater(mode: mode, s => {
-    s + ((name: name, at: at),)
-  })
-}
+#let marker(name, mode: "content", at: none) = updater(mode: mode, s => {
+  s + ((name: name, at: at),)
+})
+
 
 /// Reveal content on specific subslide, with space preserved.
 /// -> content
@@ -283,7 +272,7 @@
         }
       })
       body
-      updater(mode: mode,s => {
+      updater(mode: mode, s => {
         s.at(0).hidden-leader = "pause"
         s
       })
