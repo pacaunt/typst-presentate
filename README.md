@@ -230,7 +230,7 @@ The nested scope can be accessed by using `bridge` function, for example, in [Al
   })
 ]
 ```
-![Alchemist animation by using adapt and interface](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/examples/features/example-alchemist-adapt.png)
+![Alchemist animation by using bridge and interface](https://github.com/pacaunt/typst-presentate/blob/3c510564c7ff1882085f46e7f1a9b94c08966495/assets/examples/features/example-alchemist-bridge.png)
 
 You can use the `render` function to create a workspace, and import the `animation` module of Presentate to create animation with other packages. 
 
