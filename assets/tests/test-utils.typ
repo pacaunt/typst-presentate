@@ -19,7 +19,6 @@
     )
   }
 
-
   // `active` means ability to change the showing status of an element,
   // `inherited` means ability to receive the previous modifiers
   // `leftover` means ability to send the modifiers to next steps

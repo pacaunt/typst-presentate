@@ -4,10 +4,10 @@
 // start-example 
 #slide[
   Who can remember?  
-  #pause[It will be shown once.] // first pause 
+  #pause It will be shown once. // first pause 
   + #uncover(none)[Bird] // with the pause 
   + #uncover(auto)[Ant] // after the pause 
   + #uncover((rel: 1))[Bees] // also after the pause
-  + #uncover((rel: -1))[Monkey] // before the first pause
+  + #uncover((rel: 2))[Monkey] // two after the pause
   #uncover(from: (rel: 2))[What was the third animal?] 
 ]

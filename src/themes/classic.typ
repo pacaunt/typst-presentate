@@ -48,7 +48,7 @@
     number-align: right,
   )
   show heading.where(level: 1): set text(size: 1.2em) 
-  show heading.where(level: 1): empty-slide
+  show heading.where(level: 1): empty-slide.with(animated: false)
   show heading.where(level: 2): none
   set text(font: "TeX Gyre Termes", size: 22pt)
   show math.equation: set text(font: "TeX Gyre Termes Math")

@@ -1,6 +1,6 @@
 #import "utils.typ"
 #import "indices.typ"
-#import "element.typ"
+#import "element.typ": getter, updater
 
 #let prefix = "_presentate"
 
@@ -26,17 +26,25 @@
     logical-slide: true,
     default-hider: hide,
     waypoints: (:),
+    // States for determining display state of the elements.
     pause-state: (
       hider: hide,
-      default-hider: hide,
       hidden: false,
     ),
+    uncover-state: (
+      hidden: false,
+    ),
+    hidden-leader: "pause",
     parsing-state: (shown: false),
   ),
 )
 
-#let set-options(..options, mode: "content") = element.updater(mode: mode, s => {
-  s.at(0) = utils.merge-dicts(base: s.at(0), options.named())
-  return s
-})
+#let states = state(prefix + "_states", default-states)
 
+#let set-options(..options) = {
+  options = options.named()
+  states.update(s => {
+    s.at(0) = utils.merge-dicts(base: s.at(0), options)
+    return s
+  })
+}

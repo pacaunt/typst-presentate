@@ -3,7 +3,7 @@
 #set text(size: 40pt)
 // start-example 
 #slide[
-  Hello, this is presentate. #show: pause
+  Hello, this is presentate. #pause
 
   Hello, World!
 ]

@@ -8,7 +8,7 @@
     - Rice 
     - Water
   ]
-  #show: pause 
+  #pause
   Intructions
   #step-item[
     + Rinse the rice multiple times.

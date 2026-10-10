@@ -1,6 +1,6 @@
 [package]
 name = "presentate"
-version = "0.2.6"
+version = "0.3.0"
 entrypoint = "src/export.typ"
 authors = ["pacaunt <@pacaunt>"]
 license = "MIT"

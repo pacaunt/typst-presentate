@@ -4,7 +4,7 @@
 // start-example 
 #slide[
   $ 
-    (x + y)^2 pause(&= (x + y)(x + y)) \ 
-              pause(&= x^2 + 2x y + y^2)
+    (x + y)^2 pause &= (x + y)(x + y) \ 
+              pause &= x^2 + 2x y + y^2
   $ 
 ]

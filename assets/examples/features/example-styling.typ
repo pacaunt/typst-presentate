@@ -18,9 +18,9 @@
   #set align(horizon)
   Do you know that $pi != 3.141592$?
 
-  #show: pause 
+  #pause
   Yeah. Certainly.
 
-  #show: pause 
+  #pause
   Also $pi != 22/7$.
 ]
