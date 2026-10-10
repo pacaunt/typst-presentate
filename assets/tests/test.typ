@@ -11,39 +11,39 @@
 // CHORES: Check the compatibility of themes...
 = Topic
 
-// #slide[
-//   == Welcome
-//   #show: body => element.applier(body, it => context { it })
-//   Hello, this is presentate.
-//   #pause
+#slide[
+  == Welcome
+  #show: body => element.applier(body, it => context { it })
+  Hello, this is presentate.
+  #pause
 
-//   Another presentation framework.
-// ]
+  Another presentation framework.
+]
 
-// #set page(fill: yellow)
+#set page(fill: yellow)
 
-// #slide[
-//   == Everything is easy and configurable..
+#slide[
+  == Everything is easy and configurable..
 
-//   #set align(horizon)
-//   #show: block.with(height: 1fr)
+  #set align(horizon)
+  #show: block.with(height: 1fr)
 
-//   #grid(columns: (1fr,) * 2, rows: 1fr, fill: white, gutter: 2em, inset: 1em)[
-//     This is the first column.
-//     #pause
-//   ][
-//     This is the second column.
-//   ]
+  #grid(columns: (1fr,) * 2, rows: 1fr, fill: white, gutter: 2em, inset: 1em)[
+    This is the first column.
+    #pause
+  ][
+    This is the second column.
+  ]
 
-// ]
+]
 
-// #slide[
-//   #step-item[
-//     - A
-//     - #alert(auto)[B]
-//     - C
-//   ]
-// ]
+#slide[
+  #step-item[
+    - A
+    - #alert(auto)[B]
+    - C
+  ]
+]
 
 #context {
   let s = store.states.get()
@@ -70,16 +70,18 @@
 
 #context {
   let body = [
+    ONE
     #pause
     #grid(columns: (1fr, 1fr), gutter: 1em)[
-      A
+      TWO
       #pause
-      B
+      THREE
     ][
       // #meanwhile
       // #pause
+      THREE
       #rect[
-      #uncover((rel: -1))[It's 5 choose 3.]
+        #uncover(from: (rel: -1))[AT TWO #pause AT FOUR]
       ]
       D
       // #pause
@@ -88,23 +90,10 @@
   ]
 
   let s = store.states.get()
-  s.at(0).subslide = 1
+  s.at(0).subslide = 4
   let (sts, tree) = make-tree(body, states: s)
   // [#tree]
-  [#reconstruct(tree, states: s)]
+  [#reconstruct(tree, states: s).last()]
 }
 
 #pagebreak()
-
-#import "@preview/touying:0.8.0": * 
-#import themes.simple: * 
-
-#show: simple-theme 
-
-= Topic 
-
-== Sample 
-
-#pause 
-
-#table([A], [B #uncover(1)[X]])

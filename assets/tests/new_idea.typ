@@ -301,7 +301,7 @@
 // ))
 
 
-#let my-branch = adapt(alchemist.branch)
+#let my-branch = bridge(alchemist.branch)
 
 // #let my-branch(body, ..args) = mode-wrapper("array", element(
 //   fields: (

@@ -68,7 +68,7 @@
 #let containers = (
   sequence,
   styled,
-  grid.cell, 
+  grid.cell,
   table.cell,
 )
 
@@ -139,21 +139,42 @@
 
 #let applier(mode: "content", template: generic, ..args) = mode-wrapper(mode, template(mode: mode, ..args))
 
+/// Label contents such that the label will only appear once.
+/// Example usage:
+/// ```typst
+/// #labeler(
+///   figure(image("example.png"), caption: [A caption.]),
+///   <name>
+/// )
+/// From @name, it is an example.
+/// ```
+/// -> content
+#let labeler(
+  /// The content to get labeled.
+  /// -> content
+  body,
+  /// The label 
+  /// -> label
+  name,
+) = getter(s => {
+  if s.at(0).subslide == s.at(0).steps { [#body#name] } else { body }
+})
+
 /// A custom interface that makes Presentate reach the content inside.
 /// -> function
 #let interface(
-  /// The environment function. Such as `cetz.canvas`. 
+  /// The environment function. Such as `cetz.canvas`.
   /// -> function
   func,
-  /// Inner mode of parsing 
+  /// Inner mode of parsing
   /// -> "array" | "content"
   inner: "array",
   /// Outer mode of parsing, i.e. the environment surrounding this element.
   /// -> "array" | "content"
   outer: "content",
   /// Default hider used by `pause`
-  /// -> function
-  hider: hide,
+  /// -> function | auto
+  hider: auto,
 ) = (..args) => mode-wrapper(outer, collect(
   args.pos(),
   func,
@@ -162,15 +183,15 @@
   inner-hider: hider,
 ))
 
-/// Another custom interface, used within the `interface`, i.e. 
+/// Another custom interface, used within the `interface`, i.e.
 /// when the inner and outer mode is the same. You can use this to wraps around `context` in content mode.
-/// 
+///
 /// -> function
-#let adapt(
-  /// The sub-environment function, such as `group()` in CeTZ or `branch()` in alchemist package. 
+#let bridge(
+  /// The sub-environment function, such as `group()` in CeTZ or `branch()` in alchemist package.
   /// -> function
   func,
-  /// Mode of parsing, which determines the 'kind' of content inside. 
+  /// Mode of parsing, which determines the 'kind' of content inside.
   /// -> "array" | "content"
   mode: "array",
   ..props,
@@ -241,14 +262,26 @@
     hider: auto,
   ),
 ) = {
+  // Hiding element mechanism 
+  //
+  // There are 3 states governing the hiding of an element. 
+  // The first is `pause-state.hidden`, which is controlled by put a `#pause`, `#jump()`, or `#meanwhile` markers.
+  // The second is `uncover-state.hidden` which is controlled by the animation functions such as `#uncover()`, `#only()`, `#alert()`, and others (except `#render()` and `#motion()`, since the inner function is not accessible.)
+  // The third is `hidden-leader`, which is like a decision maker that tells whether an element should be hidden because of applying `#pause` or `#uncover`.  
   states.at(0).parsing-state.shown = false
 
+  let hiding(s) = if s.at(0).hidden-leader == "pause" {
+    s.at(0).pause-state.hidden
+  } else if s.at(0).hidden-leader == "uncover" {
+    s.at(0).uncover-state.hidden
+  }
+  // for scoped hider, the `inner-hider` of an element property.
   let hider = if scope.hider == auto {
     states.at(0).pause-state.hider
   } else { scope.hider }
-
+  // decision whether an element is showing or hiding
   let visible(s) = {
-    not s.at(0).pause-state.hidden or s.at(0).parsing-state.shown
+    not hiding(s) or s.at(0).parsing-state.shown
   }
 
   let item-funcs = (enum.item, list.item)
@@ -405,9 +438,9 @@
       })
     }
 
-    // Only when the parent element does not contain any state update will the
+    // Only when the parent element does not contain any visible children will its
     // element be hidden.
-    if not s.at(0).parsing-state.shown and states.at(0).pause-state.hidden {
+    if not s.at(0).parsing-state.shown and hiding(states) {
       hider(body)
     } else {
       normal(body)

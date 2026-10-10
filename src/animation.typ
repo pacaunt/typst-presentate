@@ -3,15 +3,20 @@
 #import "indices.typ"
 
 // show only when the number of pauses are less than or equal to the subslide number.
-#let pause(s, body, hider: it => none) = {
+#let pause(s, body, hider: it => none, _return-state: false) = {
   let (info, ..idx) = s
   let (pauses,) = indices.resolve(s)
+  let is-shown = false
+  let result
   if pauses <= info.subslide {
-    body
-  } else { hider(body) }
+    result = body
+    is-shown = true
+  } else { result = hider(body) }
+
+  if _return-state { is-shown } else { result }
 }
 
-#let uncover(s, ..n, body, hider: auto, from: (), to: ()) = {
+#let uncover(s, ..n, body, hider: auto, from: (), to: (), _return-state: false) = {
   let hider = if hider == auto { s.at(0).default-hider } else { hider }
   //  Show only when the subslides are in the specified indices, or in the range of from-to.
   // Minideck's original
@@ -36,16 +41,15 @@
     return in-group or in-range
   }
 
-  if logic(s) {
-    body
-  } else { hider(body) }
+  let is-shown = logic(s)
+  let result = if is-shown { body } else { hider(body) }
+
+  if _return-state { is-shown } else { result }
 }
 
-#let only(s, ..n, body, hider: it => none, from: (), to: ()) = {
-  uncover(s, ..n, body, hider: hider, from: from, to: to)
+#let only(s, ..n, body, hider: it => none, from: (), to: (), _return-state: false) = {
+  uncover(s, ..n, body, hider: hider, from: from, to: to, _return-state: _return-state)
 }
-
-
 
 #let fragments(
   s,
@@ -55,19 +59,27 @@
   reveal-step: false,
   repeat-last: true,
   item-wrapper: it => it,
+  _return-state: false,
 ) = {
   let (info, ..x) = s
   let (results: (start,)) = indices.resolve(s, start)
   bodies = bodies.pos().map(item-wrapper)
   let last-index = if not repeat-last { start + bodies.len() - 1 } else { () }
+  let results = ()
 
   // Very similar idea to Polylux's one-by-one and friends.
   for (i, v) in bodies.enumerate() {
     if reveal-step {
-      uncover(s, start + i, v, hider: hider)
+      results.push(uncover(s, start + i, v, hider: hider, _return-state: _return-state))
     } else {
-      uncover(s, from: start + i, to: last-index, v, hider: hider)
+      results.push(uncover(s, from: start + i, to: last-index, v, hider: hider, _return-state: _return-state))
     }
+  }
+
+  if _return-state {
+    results
+  } else {
+    results.sum(default: none)
   }
 }
 
@@ -76,9 +88,9 @@
   start: auto,
   body,
   ..funcs,
-  before-func: it => none,
   repeat-last: true,
   hider: it => none,
+  _return-state: false,
 ) = {
   let (info, ..x) = s
   let (results: (start,)) = indices.resolve(s, start)
@@ -88,14 +100,24 @@
       if type(f) != function { x => f } else { f }
     })
   let last-index = start + funcs.len()
+  let is-shown = false
+  let result
 
   if info.subslide < start {
-    before-func(body)
+    result = hider(body)
   } else if info.subslide < last-index {
-    (funcs.at(info.subslide - start))(body)
+    result = (funcs.at(info.subslide - start))(body)
+    is-shown = true
   } else {
-    if repeat-last { (funcs.last())(body) } else { hider(body) }
+    if repeat-last {
+      result = (funcs.last())(body)
+      is-shown = true
+    } else {
+      result = hider(body)
+    }
   }
+
+  if _return-state { is-shown } else { result }
 }
 
 #let alert(s, ..n, from: auto, to: (), body, func: emph) = {
@@ -184,19 +206,15 @@
   // (name.start, func) = apply function from now on, and change the shown state to true
   // (name.stop, func) = apply the function as hider from now on.
   // name.revert = revert back to identity function
-  let is-command(command) = {
-    (
-      type(command) == str
-        or {
-          (
-            type(command) == array
-              and command.len() == 2
-              and type(command.first()) == str
-              and type(command.last()) == function
-          )
-        }
-    )
-  }
+  let is-command(command) = (
+    type(command) == str
+      or (
+        type(command) == array
+          and command.len() == 2
+          and type(command.first()) == str
+          and type(command.last()) == function
+      )
+  )
 
   // `active` means ability to change the showing status of an element,
   // `inherited` means ability to receive the previous modifiers
@@ -352,15 +370,12 @@
   func((info,))
 }
 
-
-#let settings(hider: it => none, start: auto) = {
-  (
-    pause: pause.with(hider: hider),
-    uncover: uncover.with(hider: hider),
-    fragments: fragments.with(start: start, hider: hider),
-    transform: transform.with(hider: hider, start: start),
-  )
-}
+#let settings(hider: it => none, start: auto) = (
+  pause: pause.with(hider: hider),
+  uncover: uncover.with(hider: hider),
+  fragments: fragments.with(start: start, hider: hider),
+  transform: transform.with(hider: hider, start: start),
+)
 
 // Touying and Polylux's Idea.
 #let pdfpc-slide-markers(s, i) = context [
@@ -371,4 +386,3 @@
   #metadata((t: "Overlay", v: i - 1)) <pdfpc>
   #metadata((t: "LogicalSlide", v: counter(page).get().first() + info.add-page-index)) <pdfpc>
 ]
-

@@ -9,7 +9,7 @@
   = Alchemist Nested Interface
 
   #let skeletize = interface(skeletize, inner: "array", hider: alc.hide) 
-  #let m-cycle = adapt(alc.cycle)
+  #let m-cycle = bridge(alc.cycle)
   #skeletize({
     import alc: *
     fragment("HO")

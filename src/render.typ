@@ -8,6 +8,7 @@
   s.push(idx)
   let (pauses,) = indices.resolve(s)
   if hider != auto { s.at(0).pause-state.hider = hider }
+  s.at(0).hidden-leader = "pause"
   s.at(0).pause-state.hidden = pauses > s.at(0).subslide
   return s
 })
@@ -16,9 +17,21 @@
 
 #let meanwhile = jump(1)
 
-#let marker(name, mode: "content", at: none, advances: false) = updater(mode: mode, s => {
-  s + ((name: name, at: at),)
-})
+#let marker(name, mode: "content", at: none) = {
+  // for referenceable state
+  getter(mode: mode, s => {
+    let lbl = if type(name) == label { name } else { label(name) }
+    if mode == "content" {
+      let (results: (i,)) = indices.resolve(s, at)
+      if s.at(0).subslide == i {
+        [#metadata(none)#lbl]
+      }
+    }
+  })
+  updater(mode: mode, s => {
+    s + ((name: name, at: at),)
+  })
+}
 
 /// Reveal content on specific subslide, with space preserved.
 /// -> content
@@ -47,6 +60,11 @@
 ) = applier(
   {
     updater(mode: mode, s => {
+      // Detect whether the content inside is shown or not
+      let shown-state = animation.uncover(s, ..n, hider: hider, from: from, to: to, body, _return-state: true)
+      s.at(0).uncover-state.hidden = not shown-state
+      s.at(0).hidden-leader = "uncover"
+      // Update state
       let n = n.pos()
       if update {
         s + (..n, from, to)
@@ -55,13 +73,17 @@
       }
     })
     body
+    // Revert hidden hierachy
+    updater(mode: mode, s => {
+      s.at(0).hidden-leader = "pause"
+      s
+    })
   },
   mode: mode,
   contextual: true,
   hidable: false,
   (s, body) => animation.uncover(s, ..n, hider: hider, from: from, to: to, body),
 )
-
 
 /// Show content on specific subslide without preserving space.
 /// -> content
@@ -129,8 +151,17 @@
       template: element.collect,
       contexual: true,
       {
+        updater(mode: "array", s => {
+          let shown-state = animation
+            .fragments(s, start: start, ..bodies, hider: hider, item-wrapper: item-wrapper, _return-state: true)
+            .any(it => it)
+          s.at(0).uncover-state.hidden = not shown-state
+          s.at(0).hidden-leader = "uncover"
+          s
+        })
         bodies
         updater(mode: "array", s => {
+          s.at(0).hidden-leader = "pause"
           if update {
             s + (start,) + (auto,) * (n - 1)
           } else {
@@ -164,9 +195,6 @@
   /// whether to update the current number of pauses.
   /// -> bool
   update: true,
-  /// A function to apply before the start index
-  /// -> function
-  before-func: hide,
   /// mode of using this function
   /// -> "content" | "array"
   mode: "content",
@@ -175,27 +203,38 @@
     mode: mode,
     contextual: true,
     {
-      body
       updater(mode: mode, s => {
-        let (pauses, results: (start,)) = indices.resolve(s, start)
+        let shown-state = animation.transform(
+          s,
+          start: start,
+          body,
+          ..funcs,
+          hider: hider,
+          repeat-last: repeat-last,
+          _return-state: true,
+        )
+        s.at(0).uncover-state.hidden = not shown-state
+        s.at(0).hidden-leader = "uncover"
         if update {
-          s + (start + funcs.pos().len() - 1,)
+          s + ((to: start, rel: funcs.pos().len() - 1),)
         } else {
-          s + ((start + funcs.pos().len() - 1,),)
+          s + (((to: start, rel: funcs.pos().len() - 1),),)
         }
       })
+      body
+      updater(mode: mode, s => {
+        s.at(0).hidden-leader = "pause"
+        s
+      })
     },
-    (s, body) => {
-      animation.transform(
-        s,
-        start: start,
-        body,
-        ..funcs,
-        hider: hider,
-        before-func: before-func,
-        repeat-last: repeat-last,
-      )
-    },
+    (s, body) => animation.transform(
+      s,
+      start: start,
+      body,
+      ..funcs,
+      hider: hider,
+      repeat-last: repeat-last,
+    ),
   )
 }
 
@@ -234,6 +273,9 @@
     contextual: true,
     {
       updater(mode: mode, s => {
+        let shown-state = animation.alert(s, ..n, body, from: from, to: to, func: func, _return-state: true)
+        s.at(0).uncover-state.hidden = not shown-state
+        s.at(0).hidden-leader = "uncover"
         if update {
           s + (..n, from, to)
         } else {
@@ -241,6 +283,10 @@
         }
       })
       body
+      updater(mode: mode,s => {
+        s.at(0).hidden-leader = "pause"
+        s
+      })
     },
     (s, body) => { animation.alert(s, ..n, body, from: from, to: to, func: func) },
   )

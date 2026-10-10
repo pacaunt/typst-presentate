@@ -7,4 +7,4 @@
 #import "utils.typ"
 #import "store.typ" as store: set-options
 #import "themes/themes.typ" 
-#import "element.typ" as element: adapt, interface, getter, updater
+#import "element.typ" as element: bridge, interface, getter, updater, labeler

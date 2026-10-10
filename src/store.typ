@@ -26,11 +26,15 @@
     logical-slide: true,
     default-hider: hide,
     waypoints: (:),
+    // States for determining display state of the elements.
     pause-state: (
       hider: hide,
-      default-hider: hide,
       hidden: false,
     ),
+    uncover-state: (
+      hidden: false,
+    ),
+    hidden-leader: "pause",
     parsing-state: (shown: false),
   ),
 )

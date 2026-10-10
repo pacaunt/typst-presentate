@@ -2,6 +2,11 @@
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
 For usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/manual/manual.pdf)
 
+## Highlights (0.3.0)
+- **Simpler Syntax**: Presentate now uses `#pause`, `#meanwhile`, `#jump()`, to control step-by-step reveal instead of `#show: pause`.
+- **Faster Compilation**: All internal representation of animation framework was revised and reworked to minimize use of `state` and `counter`, so it is significantly faster and easier to use. 
+- **Extensible Package Integration**: With `interface`, `bridge`, and settable parse mode in `uncover`, `only`, they can be fully integrated within CeTZ canvas, Fletcher diagram, or even in nested `branch`, `cycle` of Alchemist package! 
+- **Extensible Internal Elements**: Since the rework almost implements all of context, state's read-write functions, presentate provides all internal access to the states by using `applier` to create animate-able element, `getter` to get internal states, and `updater` to update the states. All element parsing and reconstructions are *recursive*, meaning that you can nested Presentate's animation functions/markers as much as you want.
 
 ## Simple Usage 
 Import the package with 
@@ -19,7 +24,7 @@ The easiest is to type `#show: pause`. For example,
 
 #slide[
   Hello World!
-  #pause;
+  #pause
 
   This is `presentate`.
 ]
@@ -37,8 +42,7 @@ You can style the slides as you would do with normal Typst document. For example
 
 #slide[
   = Welcome to Presentate! 
-  \
-  A lazy author \
+  \ A lazy author \
   #datetime.today().display()
 ]
 
@@ -116,7 +120,7 @@ This is useful for modifying steps of the animation so that some contents appear
   #only(<end>)[That's it.]
 ]
 ```
-![Example of using marker and relative indices to synchronize the animation](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-marker.png)
+![Example of using markers and relative indices to synchronize the animation](https://github.com/pacaunt/typst-presentate/blob/34584b0751538ef1e121b00290ff29d60511b288/assets/examples/features/example-marker.png)
 
 ### Motion Control
 
@@ -201,7 +205,7 @@ The nested scope can be accessed by using `adapt` function, for example, in [Alc
   = Alchemist Nested Interface
 
   #let skeletize = interface(skeletize, inner: "array", hider: alc.hide) 
-  #let m-cycle = adapt(alc.cycle)
+  #let m-cycle = bridge(alc.cycle)
   #skeletize({
     import alc: *
     fragment("HO")

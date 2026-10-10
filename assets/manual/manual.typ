@@ -307,19 +307,19 @@ Here is an example of using this functionality: to annotate a mathematical expre
 = Package Integration Framework
 Presentate's animation relies on parsing data in two formats: 
 _content_ and _array_, which are only two data types that can be joined intrinsically.
-Every parsable data, in Presentate's view, must be 1) reachable, meaning that *animation cannot be used in show-rules nor in `context` calls*, 2) recognizable, such as integer, content, string, etc. By design, Presentate transforms all contents into internal representation called `element`, the animation calls are just these elements wrapped by `metadata` or `array` so that they can join with the surrounding contents. From the limitation of 'reachable', Presentate overcomes this by introducing element constructors that can natively supports parsing of `array` and custom `content` datatypes: `interface` and `adapt`. 
+Every parsable data, in Presentate's view, must be 1) reachable, meaning that *animation cannot be used in show-rules nor in `context` calls*, 2) recognizable, such as integer, content, string, etc. By design, Presentate transforms all contents into internal representation called `element`, the animation calls are just these elements wrapped by `metadata` or `array` so that they can join with the surrounding contents. From the limitation of 'reachable', Presentate overcomes this by introducing element constructors that can natively supports parsing of `array` and custom `content` datatypes: `interface` and `bridge`. 
 
-== Integration by parsing: `interface` and `adapt` functions 
+== Integration by parsing: `interface` and `bridge` functions 
 To make Presentate reach the animation functions inside non-content environment, you must use `interface`, which splits the data and sends them to Presentate to process before rendering them back to its original environment. 
 #source-example("img/cetz-interface.typ")
 #render-pdf("img/cetz-interface.pdf", pages: 3)
 
 All animation functions (except `pause` and `meanwhile` which are handled automatically) that are usable in non-content environment have a `mode` argument, accepting either `"content"` or `"array"`. `"content"` is default, but you can change it so that the functions are able to join inside `array` environment, like CeTZ and Alchemist's frameworks. 
 
-However, this still has a limitation, it cannot process nested elements like in `draw.group()` of CeTZ or `cycle()` of alchemist. So, another interface, which is just a shorthand for `interface()` with the same mode of both inner data and outer environment, is introduced: `adapt()` function (because it adapts the wrapped function to work): 
+However, this still has a limitation, it cannot process nested elements like in `draw.group()` of CeTZ or `cycle()` of alchemist. So, another interface, which is just a shorthand for `interface()` with the same mode of both inner data and outer environment, is introduced: `bridge()` function (because it bridges between the inner and outer workspace of the function): 
 
-#source-example("img/alchemist-adapt.typ")
-#render-pdf("img/alchemist-adapt.pdf", pages: 3)
+#source-example("img/alchemist-bridge.typ")
+#render-pdf("img/alchemist-bridge.pdf", pages: 3)
 
 
 == Animate the inanimate: a custom way to hide
@@ -349,7 +349,8 @@ All of these options can be set by
 ```
 where `options` are the options in the form `key: value`.
 = Exposed Utilities
-
+== Internal element representation
+Every content and accessible elements (wrapped with `interface()` or `bridge`, for examples), are internally represented as _element_, which is a dictionary containing its construction function, arguments, and reactive properties such as ability to be hidden, inner hider function, or ability to change the parsing mode. These elements are wrapped with `element.mode-wrapper(mode, element)` which returns a metadata or an array in `"content"` or `"array"` mode, respectively, so that the elements can be joined natively to their surrounding elements. 
 
 == Internal states
 Internally, Presentate store all of the slides information in a state in the `store` module. You can access this state by

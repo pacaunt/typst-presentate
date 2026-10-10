@@ -8,7 +8,7 @@
 #import "@preview/alchemist:0.2.0" as alc: skeletize
 // enable Presentate's parsing
 #let skeletize = interface(skeletize, inner: "array", hider: alc.hide)
-#let m-cycle = adapt(alc.cycle)  // default mode is "array"
+#let m-cycle = bridge(alc.cycle)  // default mode is "array"
 
 #slide[
   = Alchemist Environment 
