@@ -262,9 +262,6 @@
     contextual: true,
     {
       updater(mode: mode, s => {
-        let shown-state = animation.alert(s, ..n, body, from: from, to: to, func: func, _return-state: true)
-        s.at(0).uncover-state.hidden = not shown-state
-        s.at(0).hidden-leader = "uncover"
         if update {
           s + (..n, from, to)
         } else {
@@ -272,10 +269,6 @@
         }
       })
       body
-      updater(mode: mode, s => {
-        s.at(0).hidden-leader = "pause"
-        s
-      })
     },
     (s, body) => { animation.alert(s, ..n, body, from: from, to: to, func: func) },
   )

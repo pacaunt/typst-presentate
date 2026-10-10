@@ -97,3 +97,9 @@
 }
 
 #pagebreak()
+
+#slide[
+  First. 
+
+  #uncover(from: 2, update: true)[It is #alert(3)[important], #pause right?]
+]
