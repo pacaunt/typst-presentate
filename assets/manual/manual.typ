@@ -234,12 +234,21 @@ In the last example, you can see that the number in `enum` did not hide properly
 #render-pdf("img/step-item.pdf", pages: 6)
 Each of the item's body and its marker are wrapped in `pause` function, and synchronize the animation by using the `update-pause` hack. Therefore, you can nested them indefinitely, but it always update the pauses.
 
-If you want to reveal the items chunk by chunk, Presentate also have the `reveal-item` function. This function can show item in group by group without breaking them. However, since the implementation of `reveal-item` requires additional Typst's state, it can decrease the speed of Typst compilation. So use this function sparingly.
+If you want to reveal the items chunk by chunk, Presentate also have the `reveal-item` function. This function can show item in group by group without breaking them.
 
 #source-example("img/reveal-item.typ")
 #render-pdf("img/reveal-item.pdf", pages: 3)
 
 Note that both `step-item` and `reveal-item` function receive `start: auto` argument, which indicates when will the first item (or item group) be revealed.
+
+*Warning.* To hide the markers without using `states`, Presentate wraps each item in a `block` which breaks the continuation of numbering in `enum`. Therefore, when hiding `enum`, it is recommended to write _explicit number_ like this 
+```typ 
+1. First Item #pause 
+2. Second Item #pause 
+// This is not recommended !
++ Third Item // hidden as 1. Third Item
++ Fourth Item
+```
 
 = Advanced Usage
 == Groupping pauses: the `fragments` function
@@ -255,7 +264,7 @@ Every animation function in Presentation has a named argument `hider`, which is 
 - `uncover`, `pause`, `step-item`, `fragments` uses native Typst's `hide` function, which preserves space.
 If you want to change the hiding method of the text from completely hiding it to making it gray, you can use `text.with(fill: gray.transparentize(50%))` as the hider, like the following example,
 #source-example("img/gray-hider.typ")
-#render-pdf("img/gray-hider.pdf", pages: 4)
+#render-pdf("img/gray-hider.pdf", pages: 3)
 
 == Change the appearance of the content: the `transform` function
 `transform` requires a content as a base, it will be hidden by the `hider` until the specified index is reached (default is `auto`). Then, on each consecutive subslide, the content will transform by each function one by one. The following example shows how to emphasize content in a list by using `transform`.
@@ -321,6 +330,10 @@ However, this still has a limitation, it cannot process nested elements like in 
 #source-example("img/alchemist-bridge.typ")
 #render-pdf("img/alchemist-bridge.pdf", pages: 3)
 
+The `bridge` function not only joins the content inside the `interface`, it is, in general, just a wrapper that let Presentate read the content inside. Therefore, you can use `bridge` to wrap another function that usually requires `context` so that Presentate's animations can be rendered. To illustrate this, let's use annotation blocks from #footlink("https://typst.app/universe/package/gentle-clues/")[gentle-clues] which naturally uses `context`: 
+
+#source-example("img/gentle-clues.typ")
+#render-pdf("img/gentle-clues.pdf", pages: 3)
 
 == Animate the inanimate: a custom way to hide
 Presentate also has a function for handle a custom way to hide elements from other packages, which is the `animate` function in the `animation` module. This `animate` create another function that _react_ with the current state `s`, so that the element will be shown one by one based on the current number of pauses, just like what normal pause do, and hidden with the specified `modifier`. To demonstrate this functionality, we will use an example to draw a chemical structure from #footlink("https://typst.app/universe/package/alchemist/")[Alchemist] package:
@@ -349,9 +362,6 @@ All of these options can be set by
 ```
 where `options` are the options in the form `key: value`.
 = Exposed Utilities
-== Internal element representation
-Every content and accessible elements (wrapped with `interface()` or `bridge`, for examples), are internally represented as _element_, which is a dictionary containing its construction function, arguments, and reactive properties such as ability to be hidden, inner hider function, or ability to change the parsing mode. These elements are wrapped with `element.mode-wrapper(mode, element)` which returns a metadata or an array in `"content"` or `"array"` mode, respectively, so that the elements can be joined natively to their surrounding elements. 
-
 == Internal states
 Internally, Presentate store all of the slides information in a state in the `store` module. You can access this state by
 ```typc

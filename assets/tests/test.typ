@@ -61,8 +61,8 @@
   // for i in range(1, post.at(0).steps + 1) {
   s.at(0).subslide = 1
   let (_, new-body) = reconstruct(tree, states: s)
-  new-body
-  repr(new-body)
+  // new-body
+  // repr(new-body)
   pagebreak()
   // subslide(s, i, tree)
   // }
@@ -83,10 +83,10 @@
       #rect[
         #uncover(from: (rel: -1))[AT TWO #pause AT FOUR]
       ]
-      D
+      FOUR
       // #pause
     ]
-    E
+    FOUR
   ]
 
   let s = store.states.get()
@@ -102,4 +102,16 @@
   First. 
 
   #uncover(from: 2, update: true)[It is #alert(3)[important], #pause right?]
+]
+
+#set page(fill: white)
+
+#slide[
+  = Step Item Bug 
+
+  #step-item(hider: text.with(fill: gray))[
+    - First Item 
+    - Second Item 
+    - Third Item
+  ]
 ]
