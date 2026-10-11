@@ -221,7 +221,7 @@ For example,
 #render-pdf("img/relative-indices.pdf", pages: 4)
 As you can see, the last text that was shown on subslide 4 was a little bit inconvenient to write `(rel: 2)` to make it shown when every animation was finished. It would be nice if we can use `pause` at the end and make it 'see' the previous `uncover`s. You can make the next pause reveal a content after (almost) any animation functions by specifying `update: true` into its argument.
 #source-example("img/update-pause.typ")
-#render-pdf("img/update-pause.pdf", pages: 4)
+#render-pdf("img/update-pause.pdf", pages: 5)
 With this interaction between the current number of pauses and the `update` argument, you can set the pauses to _any_ number to modify the animation. For example, making the content shown in sync side by side:
 #source-example("img/in-sync.typ")
 #render-pdf("img/in-sync.pdf", pages: 3)
