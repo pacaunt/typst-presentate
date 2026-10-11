@@ -92,10 +92,7 @@
 
 // Document
 #set page(numbering: "1")
-#show selector.or(
-  heading.where(level: 1),
-  heading.where(level: 2),
-): set heading(numbering: "1.1 ")
+#set heading(numbering: "1.1 ")
 #show heading: set block(above: 1.4em, below: 1em)
 #show heading.where(level: 3): set heading(numbering: none)
 #set par(justify: true, first-line-indent: 1.2em)
