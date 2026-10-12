@@ -204,6 +204,17 @@ A            // shown on subslide 1
 Moreover, you can mark a progress according to the current number of pauses by using `marker(<name>)`. This name can be used like the other indices. 
 #source-example("img/marker-example.typ")
 #render-pdf("img/marker-example.pdf", pages: 5, columns: 2)
+By default, the marker must be per-slide unique for referencing the right index. However, if you set `locatable: true`, the marker will emit a labeled content that can be used with `link()` or `locate()` globally.
+```typ
+#slide[ 
+  Use $F = m a$ #marker(<start>, locatable: true) #pause 
+  and calculate as usual.
+] 
+
+#slide[
+  If you want to review the steps, see #link(<start>)[this].
+]
+```
 
 == Time traveling with relative indices
 Most of the time when creating presentation, the step of revealing the content is either
@@ -309,6 +320,17 @@ For the version after 0.2.5, you can use a special syntax that let you modify th
 Here is an example of using this functionality: to annotate a mathematical expression:
 #source-example("img/motion-func.typ")
 #render-pdf("img/motion-func.pdf", pages: 3)
+
+== Referencable Elements 
+Presentate freeze counters of `figure.where(kind: image)`, `figure.where(kind: table)`, `heading`, `math.equation`, and `footnote`, by default. Therefore, the numbering should be correctly displayed. However, referencing them is a bit tricky. For `math.equation`, `figure`, and `heading`, *Presentate only keeps the label on the last subslide* for preventing multiple label error. Hence, if you use show-rules on these elements' labels, it will only apply on the last subslide, while the normal reference will work as usual.
+#source-example("img/references.typ")
+#render-pdf("img/references.pdf", pages: 3)
+
+If you really want the label to remain on every subslide, you have to use the `labeler()` function, following the syntax below. 
+```typst
+#labeler($ a^2 + b^2 $, <hidden-label>, at: "all") 
+```
+The `at` argument tells when to apply the label. If this is set to `"last"`, it will only apply on the last subslide, while `"all"` applies the label on every subslide. This is crucial for label-based styling, but its drawback is you cannot reference the element directly.
 
 = Package Integration Framework
 Presentate's animation relies on parsing data in two formats: 
