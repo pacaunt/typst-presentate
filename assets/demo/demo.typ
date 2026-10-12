@@ -66,3 +66,12 @@
   #pause 
   @figx
 ]
+
+#import "@preview/pinit:0.2.2": * 
+== Link 
+#slide[Pythygorean Theorem][
+  $ a^2 + b^2 = #pin(1)c^2#pin(2) $
+
+  #pause 
+  #pinit-point-from(2)[It is simple.]
+]

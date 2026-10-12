@@ -432,7 +432,9 @@ You can visit the examples of the structured themes here:
   #render-pdf("../examples/themes/example-miniframes.pdf", pages: 6)
   #link(home + "examples/themes/example-miniframes.typ")[Source]
 
+
 = Function Reference
+#show heading: set heading(numbering: none)
 #set par(first-line-indent: 0em)
 #show heading.where(level: 3): it => {
   set text(size: 1.2em)
