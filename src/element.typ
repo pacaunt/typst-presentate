@@ -29,6 +29,9 @@
   (curve, "..components"),
   (polygon, "..vertices"),
   (layout, "func"),
+  (image, "source"), 
+  (h, "amount"), 
+  (v, "amount"),
   // Math functions
   (math.attach, "base"),
   ($a$.body.func(), "text"),
