@@ -2,7 +2,7 @@
 **Presentate** is a package for creating presentation in Typst. It provides a framework for creating dynamic animation that is compatible with other packages. 
 For comprehensive usage, please refer to [manual.pdf](https://github.com/pacaunt/typst-presentate/blob/fee2676ab3a93af2d5bef1eeb7597d0022a7e676/assets/manual/manual.pdf)
 
-## Highlights (0.3.0)
+## Highlights (0.3.0+)
 Compared to the last version (0.2.x), Presentate shipped with a lot of improvements.
 - **Simpler Syntax**: Presentate now uses `#pause`, `#meanwhile`, `#jump()`, to control step-by-step reveal instead of `#show: pause`.
 - **Faster Compilation**: All internal representation of animation framework was revised and reworked to minimize use of `state` and `counter`, so it is significantly faster and easier to use. 
@@ -16,7 +16,7 @@ Compared to the last version (0.2.x), Presentate shipped with a lot of improveme
 ## Simple Usage 
 Import the package with 
 ```typst
-#import "@preview/presentate:0.3.0": *
+#import "@preview/presentate:0.3.1": *
 ```
 and then, the functions are automatically available. 
 
@@ -326,7 +326,7 @@ Presentate now includes a suite of **structured themes** designed to automatical
 Structured themes are located in the `themes` namespace. They are applied via a `show` rule:
 
 ```typ
-#import "@preview/presentate:0.3.0": *
+#import "@preview/presentate:0.3.1": *
 #show: themes.sidebar.template.with(
   title: [My Presentation],
   author: [pacaunt],
@@ -354,6 +354,8 @@ You can find full implementations of these themes in the `assets/examples/` dire
 For detailed information on customization (colors, spacing, behavior), please refer to the [Structured Themes Guide](https://github.com/pacaunt/typst-presentate/blob/fee2676ab3a93af2d5bef1eeb7597d0022a7e676/assets/manual/themes-guide.pdf).
 
 ## Versions
+### 0.3.1 
+- Bug fixes (parsing `layout` function)
 ### 0.3.0 
 - Major revision of the core animation principles. The `pause` mechanism was changed to `#pause` marker like in 0.1.0, **(breaking change)**
 - Introduce `#jump(index)` to set the pause to that index 

@@ -28,6 +28,7 @@
   (rotate, "angle", "body"),
   (curve, "..components"),
   (polygon, "..vertices"),
+  (layout, "func"),
   // Math functions
   (math.attach, "base"),
   ($a$.body.func(), "text"),
@@ -54,7 +55,7 @@
   [#state("_").update(none)].func(),
   (context {}).func(),
   $a$.body.func(),
-  layout,
+  layout(_ => {}).func(),
   image,
   bibliography,
   outline,

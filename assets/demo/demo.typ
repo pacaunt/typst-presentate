@@ -1,6 +1,6 @@
 #import "@local/presentate:0.3.0": *
 #import "@preview/codly:1.3.0": codly, codly-init
-#import themes.split: *
+#import themes.progressive-outline: *
 
 #show: codly-init
 #show: template.with(
@@ -28,50 +28,37 @@
 
 = Simple animations
 
-#slide[Pause, Meanwhile, Jump][
-  #utils.multicols(2)[
-    You can incrementally show content with `#pause`.
-
-    #pause
-    This text appears later.
-  ][
-    #show: block.with(inset: 1em, stroke: 0.5pt)
-
-    #meanwhile
-    `#meanwhile` is used to show something in between.
-
-    #pause 
-    Such as this comment.
-  ]
-  `#jump(index)` is used to 'jump' to the specified index.
-
-  #jump(1)
-  You will see _me_ in the first subslide because of `#jump(1)`.
-]
-
-#slide[Uncover, only][
-  #figure(rect(), caption: [A Caption])<fig1>
-  #marker(<pin>, locatable: true)
-  #pause 
-  From @fig1
-]
-
-#slide[
-  According to #link(<pin>)[word]
-  #[#[]<a>].fields()
-]
-
-#slide[
-  #labeler(figure(rect(), caption: [Another Caption]), <figx>, at: "last")
-  #pause 
-  @figx
-]
-
-#import "@preview/pinit:0.2.2": * 
-== Link 
-#slide[Pythygorean Theorem][
-  $ a^2 + b^2 = #pin(1)c^2#pin(2) $
+#slide[Using `#pause` and `#meanwhile`][
+  You can use `#pause` to reveal contents chunk by chunk, and `#meanwhile` to reveal another sequence in parallel. 
 
   #pause 
-  #pinit-point-from(2)[It is simple.]
+  - First Chunk #pause 
+  - Second Chunk #pause 
+  - Third Chunk 
+  #meanwhile 
+  ...Meanwhile, another... #pause 
+  parallel... #pause text... #pause is revealed.
+]
+
+#slide[Precise animation with `#uncover` and `#only`][
+  You can see #uncover(1, 3)[this text] in subslide 1 and 3, 
+
+  This line has a #only(2)[*BIG*] surprise.
+
+
+]
+
+#slide[Alert/Transform][
+
+]
+
+= Package Integration
+#slide[][
+
+]
+
+= Advanced Animation 
+
+#slide[Chemical Bonding][
+  Atoms are weird, they want to join with each other to become more stable. Why? 
 ]
