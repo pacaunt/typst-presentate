@@ -5,12 +5,12 @@
 #import "animation.typ"
 
 /// Jump the pause to the given index.
-/// 
-/// Example usage: 
+///
+/// Example usage:
 /// ```typst
 /// First #pause
 /// Second #jump(1)
-/// First // This becomes visible at subslide 1 
+/// First // This becomes visible at subslide 1
 /// ```
 /// -> marker
 #let jump(
@@ -607,3 +607,45 @@
   updater(mode: mode, s => s + ((rel: -1, to: start),))
   display-item(..indices, bodies.sum(), hider: hider)
 }
+
+/// Only show this content in the handouts.
+/// -> any
+#let handout-only(
+  /// The content to be shown.
+  /// -> any
+  body,
+  /// The hider used to hide in slides mode.
+  /// -> function
+  hider: it => none,
+  /// The mode of wrapping this content.
+  /// -> "array" | "content"
+  mode: "content",
+) = applier(
+  mode: mode,
+  body,
+  (s, body) => {
+    if s.at(0).handout { body } else { hider(body) }
+  },
+  contextual: true,
+)
+
+/// Only show this content in the presentation.
+/// -> any
+#let slides-only(
+  /// The content to be shown.
+  /// -> any
+  body,
+  /// The hider used to hide in handout mode.
+  /// -> function
+  hider: hide,
+  /// The mode of wrapping this content.
+  /// -> "array" | "content"
+  mode: "content",
+) = applier(
+  mode: mode,
+  body,
+  (s, body) => {
+    if not s.at(0).handout { body } else { hider(body) }
+  },
+  contextual: true,
+)

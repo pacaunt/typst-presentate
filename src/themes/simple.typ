@@ -1,7 +1,7 @@
 #import "../presentate.typ" as p
 #import "../store.typ": *
 
-#let save-headings = state(prefix + "_headings")
+#let save-headings = state(prefix + "_headings", ())
 
 #let current-section() = {
   query(heading.where(level: 1).before(here())).at(-1, default: box[]).body
@@ -38,8 +38,8 @@
     (title, body) = args
     title = heading(level: 2, title)
   }
-  // Save both level 1 and level 2 headings.
   context save-headings.update(query(selector.or(heading.where(level: 1, outlined: true), heading.where(level: 2, outlined: true)).before(here())))
+  // Save both level 1 and level 2 headings.
   p.slide(
     ..kwargs,
     [

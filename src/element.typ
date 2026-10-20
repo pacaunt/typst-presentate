@@ -29,8 +29,8 @@
   (curve, "..components"),
   (polygon, "..vertices"),
   (layout, "func"),
-  (image, "source"), 
-  (h, "amount"), 
+  (image, "source"),
+  (h, "amount"),
   (v, "amount"),
   // Math functions
   (math.attach, "base"),
@@ -114,7 +114,7 @@
 )
 
 #let join(children, ..props) = element(
-  array.sum,
+  array.sum.with(default: none),
   fields: (children: children),
   positionals: ("children",),
   hidable: false,
@@ -305,6 +305,7 @@
   let item-funcs = (enum.item, list.item)
 
   if type-of(tree) == array {
+    let last-idx = tree.len() - 1
     let peek = peek.with(arr: tree)
     let item-object = object(
       "item",
@@ -315,16 +316,11 @@
     )
 
     let allowed-empty-between-item(it) = (
-      (it in ([], [ ], parbreak()))
-        or {
-          type-of(it) == "state-updater"
-        }
+      (it in ([], [ ], parbreak())) or type-of(it) == "state-updater"
     )
+
     let allowed-between-item(it) = (
-      allowed-empty-between-item(it)
-        or {
-          type-of(it) == "element" and it.func in item-funcs
-        }
+      allowed-empty-between-item(it) or type-of(it) == "element" and it.func in item-funcs
     )
 
     let this-item = item-object
@@ -347,7 +343,7 @@
       // The allowed between items, after the first item.
       if item-count > 0 and allowed-between-item(sub-tree) {
         this-item.group.push(sub-tree)
-        if sub-tree == parbreak() { this-item.tight = false }
+        if sub-tree == parbreak() and i != last-idx { this-item.tight = false }
       }
       // The not-allowed between items, after the first item. This will
       // terminates item groupping.
@@ -477,7 +473,7 @@
   }
   // strip off the label of referenceable elements, and allow attach only on the last subslide.
   if tree.func in referenceables and "label" in tree.fields.keys() {
-    if states.at(0).subslide != states.at(0).steps { tree.fields.label = none } 
+    if states.at(0).subslide != states.at(0).steps { tree.fields.label = none }
   }
 
   for (k, v) in tree.fields.pairs() {
@@ -501,10 +497,8 @@
   states: (),
   scope: (
     mode: "content",
-    semantic-array: false,
   ),
 ) = {
-  // if scope.mode == "array" { scope.semantic-array = true }
   let make-tree = make-tree.with(scope: scope)
 
   if type-of(body) == "state-updater" {

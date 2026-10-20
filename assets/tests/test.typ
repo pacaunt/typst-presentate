@@ -3,7 +3,7 @@
 
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
-// #set heading(numbering: "1 ")
+#set heading(numbering: "1.1 ")
 
 // #show heading.where(level: 1): it => {
 //   slide(context { it })
