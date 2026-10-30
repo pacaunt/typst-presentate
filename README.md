@@ -355,7 +355,7 @@ For detailed information on customization (colors, spacing, behavior), please re
 
 ## Versions
 ### 0.3.1 
-- Bug fixes (parsing `layout` function)
+- Bug fixes (parsing `layout` function, stray "2" in `sqrt` math parsing, and item groupping)
 - Added `handout-only` and `slides-only` functions for only showing contents in the specified modes.
 ### 0.3.0 
 - Major revision of the core animation principles. The `pause` mechanism was changed to `#pause` marker like in 0.1.0, **(breaking change)**

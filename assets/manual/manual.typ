@@ -392,7 +392,21 @@ context store.states.get()
 ```
 The state's information will be an array of indices with the global info in the first member of this array. It is the same `s` as you can access from `render` or `motion` function.
 
-= Themes
+== Single mode display 
+You can show contents only in handouts by using `handout-only([body]) ` or only in presentation mode using `slides-only([body])`. Both functions accept `hider: hide` and `mode: "content"` which can be modified to match your datatypes and hiding method.
+
+= Customization 
+== `preamble` vs `body-fn` arguments 
+In the `slide` function, there are two named arguments for applying functions that cover the slide's body. The first one is `preamble` argument, which wraps all the subslides as a whole and will apply once per slide, while `body-fn` covers only the slide's content and will apply on each subslide individually. It is encourage to use `body-fn` when wrapping the slide's body with a function because Presentate can grap the function internally and will not disrupt the animation system.
+#source-example("img/preamble-body-fn.typ")
+#render-pdf("img/preamble-body-fn.pdf", pages: 3)
+Note that doing the following will result in an error, because Presentate uses `pagebreak()` to create new subslides. 
+```typ
+#slide(
+  preamble: block // error: pagebreaks are not allowed inside of containers
+)[ .. ]
+```
+== Predefined Themes
 There are 2 types of themes that Presentate provides:
 + *normal type*, which is just a decoration of the slide,
   - *default* theme, just a normal, plain presentation,
