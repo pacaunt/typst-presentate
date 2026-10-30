@@ -43,7 +43,6 @@
   p.slide(
     ..kwargs,
     [
-      
       #show heading.where(level: 2): block.with(inset: (bottom: 0.65em), stroke: (bottom: 2pt + eastern))
       #title
       #set std.align(align)

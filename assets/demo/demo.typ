@@ -143,3 +143,18 @@
 
 = Advanced Animation
 
+#slide[
+  Paragraph before the list 
+  - First Item 
+
+
+  Paragraph after the list
+]
+
+  Paragraph before the list  
+  - First Item 
+
+  - Second Item 
+  - Third Item 
+
+  Paragraph after the list

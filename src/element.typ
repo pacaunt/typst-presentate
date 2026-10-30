@@ -319,7 +319,7 @@
       (it in ([], [ ], parbreak())) or type-of(it) == "state-updater"
     )
 
-    let allowed-between-item(it) = (
+    let allowed-between-items(it) = (
       allowed-empty-between-item(it) or type-of(it) == "element" and it.func in item-funcs
     )
 
@@ -341,20 +341,20 @@
         }
       }
       // The allowed between items, after the first item.
-      if item-count > 0 and allowed-between-item(sub-tree) {
+      if item-count > 0 and allowed-between-items(sub-tree) {
         this-item.group.push(sub-tree)
         if sub-tree == parbreak() and i != last-idx { this-item.tight = false }
       }
       // The not-allowed between items, after the first item. This will
       // terminates item groupping.
-      if not allowed-between-item(sub-tree) and item-count > 0 {
+      if not allowed-between-items(sub-tree) and item-count > 0 {
         item-count = 0
         this-item.follow-parbreak = true
         inter-tree.push(this-item)
         this-item = item-object
       }
       // The other not-allowed between items
-      if not allowed-between-item(sub-tree) {
+      if not allowed-between-items(sub-tree) {
         inter-tree.push(sub-tree)
       }
       // The allowed between items, but present before the items.
@@ -427,10 +427,6 @@
     // Resolving spacing between items. This will break the items but force the
     // label to be hidden.
     if tree.func in item-funcs {
-      if scope.item-counter == 1 and not scope.item-tight {
-        normal = it => parbreak() + it
-      }
-
       hider = it => hider(context {
         if not scope.item-tight { return block(it) }
 
