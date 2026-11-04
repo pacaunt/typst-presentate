@@ -20,7 +20,7 @@ with open("README.md", "r+") as readme_file:
     
     # Replace the old URL prefixes with the newly extracted base URL prefix
     updated_content = re.sub(
-        r'https://github\.com/pacaunt/typst-presentate/blob/[^/]+', 
+        r'https://github\.com/pacaunt/typst-presentate/[^/]+/[^/]+', 
         new_url_prefix, 
         content
     )
