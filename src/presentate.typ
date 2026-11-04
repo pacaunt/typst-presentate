@@ -17,10 +17,8 @@
   }
   // Touying x Polylux's originals
   {
-    let body
-    set heading(outlined: i == 1, bookmarked: i == 1)
-    (_, body) = reconstruct(tree, states: s)
-    body
+    set heading(outlined: i == 1, bookmarked: i == 1) if not s.at(0).handout
+    reconstruct(tree, states: s).last()
   }
   // Prevent styling bugs in page footer
   v(0pt)
@@ -86,8 +84,9 @@
     states.at(0).markers = animation-info.markers
     // main slide content
     if not states.at(0).handout {
-      for i in range(1, total-steps + 1) {
-        if i > 1 { freeze-states-mark(states) }
+      subslide(states, 1, tree) 
+      context for i in range(2, total-steps + 1) {
+        freeze-states-mark(states) 
         subslide(states, i, tree)
       }
     } else {

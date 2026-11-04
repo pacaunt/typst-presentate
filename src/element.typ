@@ -28,6 +28,10 @@
   (rotate, "angle", "body"),
   (curve, "..components"),
   (polygon, "..vertices"),
+  (layout, "func"),
+  (image, "source"),
+  (h, "amount"),
+  (v, "amount"),
   // Math functions
   (math.attach, "base"),
   ($a$.body.func(), "text"),
@@ -37,7 +41,7 @@
   (math.class, "class", "body"),
   (math.mat, "..rows"),
   (math.primes, "count"),
-  (math.root, (index: "2"), "radicand"),
+  (math.root, (index: none), "radicand"),
   (math.underbrace, "body", "annotation"),
   (math.overbrace, "body", "annotation"),
   (math.underbracket, "body", "annotation"),
@@ -54,7 +58,7 @@
   [#state("_").update(none)].func(),
   (context {}).func(),
   $a$.body.func(),
-  layout,
+  layout(_ => {}).func(),
   image,
   bibliography,
   outline,
@@ -110,7 +114,7 @@
 )
 
 #let join(children, ..props) = element(
-  array.sum,
+  array.sum.with(default: none),
   fields: (children: children),
   positionals: ("children",),
   hidable: false,
@@ -301,6 +305,7 @@
   let item-funcs = (enum.item, list.item)
 
   if type-of(tree) == array {
+    let last-idx = tree.len() - 1
     let peek = peek.with(arr: tree)
     let item-object = object(
       "item",
@@ -311,16 +316,11 @@
     )
 
     let allowed-empty-between-item(it) = (
-      (it in ([], [ ], parbreak()))
-        or {
-          type-of(it) == "state-updater"
-        }
+      (it in ([], [ ], parbreak())) or type-of(it) == "state-updater"
     )
-    let allowed-between-item(it) = (
-      allowed-empty-between-item(it)
-        or {
-          type-of(it) == "element" and it.func in item-funcs
-        }
+
+    let allowed-between-items(it) = (
+      allowed-empty-between-item(it) or type-of(it) == "element" and it.func in item-funcs
     )
 
     let this-item = item-object
@@ -341,20 +341,20 @@
         }
       }
       // The allowed between items, after the first item.
-      if item-count > 0 and allowed-between-item(sub-tree) {
+      if item-count > 0 and allowed-between-items(sub-tree) {
         this-item.group.push(sub-tree)
-        if sub-tree == parbreak() { this-item.tight = false }
+        if sub-tree == parbreak() and i != last-idx { this-item.tight = false }
       }
       // The not-allowed between items, after the first item. This will
       // terminates item groupping.
-      if not allowed-between-item(sub-tree) and item-count > 0 {
+      if not allowed-between-items(sub-tree) and item-count > 0 {
         item-count = 0
         this-item.follow-parbreak = true
         inter-tree.push(this-item)
         this-item = item-object
       }
       // The other not-allowed between items
-      if not allowed-between-item(sub-tree) {
+      if not allowed-between-items(sub-tree) {
         inter-tree.push(sub-tree)
       }
       // The allowed between items, but present before the items.
@@ -427,10 +427,6 @@
     // Resolving spacing between items. This will break the items but force the
     // label to be hidden.
     if tree.func in item-funcs {
-      if scope.item-counter == 1 and not scope.item-tight {
-        normal = it => parbreak() + it
-      }
-
       hider = it => hider(context {
         if not scope.item-tight { return block(it) }
 
@@ -473,7 +469,7 @@
   }
   // strip off the label of referenceable elements, and allow attach only on the last subslide.
   if tree.func in referenceables and "label" in tree.fields.keys() {
-    if states.at(0).subslide != states.at(0).steps { tree.fields.label = none } 
+    if states.at(0).subslide != states.at(0).steps { tree.fields.label = none }
   }
 
   for (k, v) in tree.fields.pairs() {
@@ -497,10 +493,8 @@
   states: (),
   scope: (
     mode: "content",
-    semantic-array: false,
   ),
 ) = {
-  // if scope.mode == "array" { scope.semantic-array = true }
   let make-tree = make-tree.with(scope: scope)
 
   if type-of(body) == "state-updater" {

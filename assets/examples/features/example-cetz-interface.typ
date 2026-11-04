@@ -3,7 +3,7 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
 
-#import "@preview/cetz:0.5.2": canvas, draw
+#import "@preview/cetz:0.5.3": canvas, draw
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 
 #slide[

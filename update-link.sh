@@ -1,0 +1,1 @@
+gh browse assets/manual/manual.pdf --commit=$(git rev-parse HEAD) -n | python3 update.py
