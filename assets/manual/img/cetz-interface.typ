@@ -2,7 +2,7 @@
 #set page(paper: "presentation-16-9")
 #set text(size: 40pt)
 // start-example 
-#import "@preview/cetz:0.5.2": draw, canvas 
+#import "@preview/cetz:0.5.3": draw, canvas 
 // The wrapper
 #let canvas = interface(
   canvas,                             // The environment function

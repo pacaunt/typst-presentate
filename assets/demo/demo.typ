@@ -1,4 +1,4 @@
-#import "@local/presentate:0.3.1": *
+#import "@local/presentate:0.3.2": *
 #import "@preview/codly:1.3.0": codly, codly-init
 #import "@preview/calloutly:1.2.0" as cly
 #import themes.progressive-outline: *
