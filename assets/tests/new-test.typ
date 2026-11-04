@@ -27,3 +27,11 @@
 #for i in range(4) [
   #dummy()
 ]
+
+#repr($root(2, x)$)
+
+#repr($sqrt(x)$.body)
+#pagebreak()
+#slide[
+  $ sqrt(x pause x) root(3, x) $
+]

@@ -41,7 +41,7 @@
   (math.class, "class", "body"),
   (math.mat, "..rows"),
   (math.primes, "count"),
-  (math.root, (index: "2"), "radicand"),
+  (math.root, (index: none), "radicand"),
   (math.underbrace, "body", "annotation"),
   (math.overbrace, "body", "annotation"),
   (math.underbracket, "body", "annotation"),
