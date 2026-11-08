@@ -33,5 +33,7 @@
 #repr($sqrt(x)$.body)
 #pagebreak()
 #slide[
-  $ sqrt(x pause x) root(3, x) $
+  $ sqrt(x pause x) root(3, x) binom(n, k) $
 ]
+
+#repr($binom(n, k, p, n)$)

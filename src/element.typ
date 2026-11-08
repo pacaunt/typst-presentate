@@ -34,10 +34,9 @@
   (v, "amount"),
   // Math functions
   (math.attach, "base"),
-  ($a$.body.func(), "text"),
   (math.frac, "num", "denom"),
   (math.accent, "base", "accent"),
-  (math.binom, "upper", "lower"),
+  (math.binom, "upper", "..lower"),
   (math.class, "class", "body"),
   (math.mat, "..rows"),
   (math.primes, "count"),
