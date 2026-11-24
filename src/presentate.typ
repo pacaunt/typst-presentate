@@ -12,7 +12,7 @@
   s.at(0).parsing-state.shown = false
   s = s.slice(0, 1)
   // freeze page number, tricks from minideck.
-  if i > 1 or not s.at(0).logical-slide {
+  if { i > 1 and not s.at(0).handout } or not s.at(0).logical-slide {
     counter(page).update(x => x - 1)
   }
   // Touying x Polylux's originals

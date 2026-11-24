@@ -356,6 +356,7 @@ For detailed information on customization (colors, spacing, behavior), please re
 ## Versions
 ### 0.3.2 
 - Fix `sqrt(x)` displaying as 2 in the index. 
+- Fix `binom()` incorrect display
 ### 0.3.1 
 - Bug fixes (parsing `layout` function, stray "2" in `sqrt` math parsing, and item groupping)
 - Added `handout-only` and `slides-only` functions for only showing contents in the specified modes.
